@@ -32,7 +32,7 @@ Both repositories exist with their history, licenses and tooling, and the upstre
     2. Create branch `feat/process-plugins` from upstream `main` and record the base commit in `spec/ai-diffusion-for-photocraft/HOST-BASE.md`.
     3. Build and run `cargo xtask ci` on the untouched base to record the baseline pass/fail state.
 
-- [ ] **TASK-2: Merge upstream Krita AI Diffusion history and add licensing**
+- [x] **TASK-2: Merge upstream Krita AI Diffusion history and add licensing**
   - **Associated Acceptance Criteria**: `38.1`
   - **Concrete Steps**:
     1. Add remote `upstream` → `Acly/krita-ai-diffusion`. Merge tag `v1.54.0-pre` with `--allow-unrelated-histories`, keeping `ai_diffusion/` at the root.

@@ -1,129 +1,32 @@
-<h1><img width="64px" src="ai_diffusion/icons/logo-128.png"> Generative AI <i>for Krita</i></h1>
+# AI Diffusion for PhotoCraft
 
-✨[Features](#features) | ⭳ [Download](https://github.com/Acly/krita-ai-diffusion/releases/latest) | 🛠️[Installation](https://docs.interstice.cloud/installation) | 🎞️ [Video](https://youtu.be/Ly6USRwTHe0) | 🖼️[Gallery](#gallery) | 📖[User Guide](https://docs.interstice.cloud) | 💬[Discussion](https://github.com/Acly/krita-ai-diffusion/discussions) | 🗣️[Discord](https://discord.gg/pWyzHfHHhU)
+Generative AI inside [PhotoCraft](https://github.com/storytold/photocraft), the open-source Rust image editor. Generate, refine, inpaint, live-paint and upscale with local or remote [ComfyUI](https://github.com/comfyanonymous/ComfyUI), using regional prompts, control layers, styles and custom ComfyUI graphs, all from a panel inside PhotoCraft.
 
-This is a plugin to use generative AI in image painting and editing workflows
-from within Krita. Visit
-[**www.interstice.cloud**](https://www.interstice.cloud) for an introduction. Learn how to install and use it on [**docs.interstice.cloud**](https://docs.interstice.cloud).
+> **Status: in development.** This is not usable yet. Work is tracked in [`spec/ai-diffusion-for-photocraft/tasks.md`](spec/ai-diffusion-for-photocraft/tasks.md).
 
-The main goals of this project are:
-* **Precision and Control.** Creating entire images from text can be unpredictable.
-  To get the result you envision, you can restrict generation to selections,
-  refine existing content with a variable degree of strength, focus text on image
-  regions, and guide generation with reference images, sketches, line art,
-  depth maps, and more.
-* **Workflow Integration.** Most image generation tools focus heavily on AI parameters.
-  This project aims to be an unobtrusive tool that integrates and synergizes
-  with image editing workflows in Krita. Draw, paint, edit and generate seamlessly without worrying about resolution and technical details.
-* **Local, Open, Free.** We are committed to open source models. Customize presets, bring your
-  own models, and run everything local on your hardware. Cloud generation is also available
-  to get started quickly without heavy investment.  
+## Based on Krita AI Diffusion
 
-[![Watch video demo](media/screenshot-video-preview.webp)](https://youtu.be/Ly6USRwTHe0 "Watch video demo")
+This project is a port of [**Krita AI Diffusion**](https://github.com/Acly/krita-ai-diffusion) (v1.54.0-pre), the generative AI plug-in for Krita, and aims to work the same way. Nearly all of the generation logic, ComfyUI integration, styles, presets and translations come from Krita AI Diffusion, and its git history is part of this repository. Credit for that work belongs to the Krita AI Diffusion contributors. See [NOTICE](NOTICE) for attribution, and [UPSTREAM-CHANGES.md](UPSTREAM-CHANGES.md) for every file this project changes.
 
-## <a name="features"></a> Features
+The differences from Krita AI Diffusion are deliberate and few:
 
-* **Inpainting**: Use selections for generative fill, expand, to add or remove objects
-* **Live Painting**: Let AI interpret your canvas in real time for immediate feedback. [Watch Video](https://youtu.be/AF2VyqSApjA?si=Ve5uQJWcNOATtABU)
-* **Upscaling**: Upscale and enrich images to 4k, 8k and beyond without running out of memory.
-* **Diffusion Models**: Flux 2, Z-Image, Stable Diffusion 1.5, XL, Illustrious
-* **Edit Models**: Make modifications to images via text instructions
-* **ControlNet**: Scribble, Line art, Canny edge, Pose, Depth, Normals, Segmentation, +more
-* **IP-Adapter**: Reference images, Style and composition transfer, Face swap
-* **Regions**: Assign individual text descriptions to image areas defined by layers.
-* **Job Queue**: Queue and cancel generation jobs while working on your image.
-* **History**: Preview results and browse previous generations and prompts at any time.
-* **Strong Defaults**: Versatile default style presets allow for a streamlined UI.
-* **Customization**: Create your own presets - custom checkpoints, LoRA, samplers and more.
+- It runs inside PhotoCraft instead of Krita.
+- It can detect an existing Krita AI Diffusion setup and use the same ComfyUI server and models.
+- Documents in any bit depth or colour mode are converted for generation instead of refused.
+- The online-service mode is not included.
+- The Animation workspace is deferred until PhotoCraft has a Frame Animation panel.
 
-## <a name="installation"></a> Getting Started
+## How it works
 
-See the [Plugin Installation Guide](https://docs.interstice.cloud/installation) for instructions.
+AI Diffusion for PhotoCraft runs as its own process next to PhotoCraft:
 
-A concise (more technical) version is below:
+- **PhotoCraft's side** is a generic process plug-in host. It lets a plug-in read and change documents, receive change events, and show panels that PhotoCraft draws natively. It's developed in the [`coreyx/photocraft`](https://github.com/coreyx/photocraft) fork, branch `feat/process-plugins`.
+- **This plug-in** runs Krita AI Diffusion's Python code on Python 3.12 with headless PyQt6. It replaces only Krita's API (with a stand-in that talks to PhotoCraft) and the way its Qt widgets reach the screen (mirrored into PhotoCraft's own UI).
 
-### Operating System
+The full specification is in [`spec/ai-diffusion-for-photocraft/`](spec/ai-diffusion-for-photocraft/), and the analysis it's based on is in [`analysis/ai-diffusion-for-photocraft/`](analysis/ai-diffusion-for-photocraft/).
 
-Windows, Linux, MacOS
+## License
 
-#### Hardware support
+[GNU General Public License v3.0](LICENSE), the same as Krita AI Diffusion. PhotoCraft itself and the host changes in its fork are MIT OR Apache-2.0. The plug-in and PhotoCraft are separate programs that communicate over a protocol.
 
-To run locally a powerful graphics card with at least 6 GB VRAM (NVIDIA) is
-recommended. Otherwise generating images will take very long or may fail due to
-insufficient memory!
-
-<table>
-<tr><td>NVIDIA GPU</td><td>supported via CUDA (Windows/Linux)</td></tr>
-<tr><td>AMD GPU</td><td>supported via ROCm (Windows/Linux)</td></tr>
-<tr><td>Intel GPU</td><td>supported via XPU (Windows/Linux)</td></tr>
-<tr><td>Apple Silicon</td><td>MPS on macOS 14+</td></tr>
-<tr><td>CPU</td><td>supported, but very slow</td></tr>
-</table>
-
-
-### Installation
-
-1. If you haven't yet, go and install [Krita](https://krita.org/)! _Required version: 5.2.0 or newer_
-1. [Download the plugin](https://github.com/Acly/krita-ai-diffusion/releases/latest).
-2. Start Krita and install the plugin via Tools ▸ Scripts ▸ Import Python Plugin from File...
-    * Point it to the ZIP archive you downloaded in the previous step.
-    * Check [Krita's official documentation](https://docs.krita.org/en/user_manual/python_scripting/install_custom_python_plugin.html) for more options.
-3. Restart Krita and create a new document or open an existing image.
-4. To show the plugin docker: Settings ‣ Dockers ‣ AI Image Generation.
-5. In the plugin docker, click "Configure" to start local server installation or connect.
-
-> [!NOTE]
-> If you encounter problems please check the [FAQ / list of common issues](https://docs.interstice.cloud/common-issues) for solutions.
->
-> Reach out via [discussions](https://github.com/Acly/krita-ai-diffusion/discussions), our [Discord](https://discord.gg/pWyzHfHHhU), or report [an issue here](https://github.com/Acly/krita-ai-diffusion/issues). Please note that official Krita channels are **not** the right place to seek help with
-> issues related to this extension!
-
-### _Optional:_ Custom ComfyUI Server
-
-The plugin uses [ComfyUI](https://github.com/comfyanonymous/ComfyUI) as backend.
-As an alternative to the automatic installation, you can install it manually or
-use an existing installation. If the server is already running locally before
-starting Krita, the plugin will automatically try to connect. Using a remote
-server is also possible this way.
-
-Please check the list of [required extensions and models](https://docs.interstice.cloud/comfyui-setup) to make sure your installation is compatible.
-
-### _Optional:_ Object selection tools (Segmentation)
-
-If you're looking for a way to easily select objects or remove background in the
-image, there is a [separate plugin](https://github.com/Acly/krita-ai-tools)
-which adds AI segmentation tools.
-
-
-## Contributing
-
-Contributions are very welcome! Check the [contributing guide](CONTRIBUTING.md) to get started.
-
-## <a name="gallery"></a> Gallery
-
-_Live painting with regions (Click for video)_
-[![Watch video demo](media/screenshot-regions.png)](https://youtu.be/PPxOE9YH57E "Watch video demo")
-
-_Inpainting on a photo using a realistic model_
-<img src="media/screenshot-2.png">
-
-_Reworking and adding content to an AI generated image_
-<img src="media/screenshot-1.png">
-
-_Adding detail and iteratively refining small parts of the image_
-<img src="media/screenshot-3.png">
-
-_Modifying the pose vector layer to control character stances (Click for video)_
-[![Watch video demo](media/screenshot-5.png)](https://youtu.be/-QDPEcVmdLI "Watch video demo")
-
-_Control layers: Scribble, Line art, Depth map, Pose_
-![Scribble control layer](media/control-scribble-screen.png)
-![Line art control layer](media/control-line-screen.png)
-![Depth map control layer](media/control-depth-screen.png)
-![Pose control layer](media/control-pose-screen.png)
-
-## Technology
-
-* Image generation: [Stable Diffusion](https://github.com/Stability-AI/generative-models), [Flux](https://blackforestlabs.ai/)
-* Diffusion backend: [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
-* Inpainting: [ControlNet](https://github.com/lllyasviel/ControlNet), [IP-Adapter](https://github.com/tencent-ailab/IP-Adapter)
+AI models you download through the plug-in come with their own licenses, and some don't allow commercial use. The plug-in shows each model's license before downloading it.

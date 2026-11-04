@@ -1,0 +1,25 @@
+AI Diffusion for PhotoCraft
+===========================
+
+AI Diffusion for PhotoCraft is a modified version of Krita AI Diffusion
+(https://github.com/Acly/krita-ai-diffusion), copyright Krita AI Diffusion
+contributors, licensed under the GNU General Public License, version 3.
+The modified work is distributed under the same license; see LICENSE.
+
+Base version: Krita AI Diffusion v1.54.0-pre (commit 828b70c). Its full history
+is part of this repository's history.
+
+Modifications: this project adapts Krita AI Diffusion to run as an
+out-of-process plug-in for PhotoCraft. Every file changed from upstream is
+listed, with the reason, in UPSTREAM-CHANGES.md. Code added by this project
+lives in photocraft_host/, packaging/ and tests/photocraft/.
+
+Third-party components kept from upstream, under their own licenses:
+- ai_diffusion/websockets: python-websockets 14.2 (BSD 3-Clause License)
+- ai_diffusion/debugpy: debugpy 1.8.20 (MIT License), development only
+
+PhotoCraft is a separate program by its own authors, licensed MIT OR
+Apache-2.0 (https://github.com/storytold/photocraft). This plug-in talks to it
+only through PhotoCraft's process plug-in protocol and contains no PhotoCraft
+code. "Krita" and "PhotoCraft" are used here only to name the programs this
+work comes from and runs in.
