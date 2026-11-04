@@ -80,7 +80,7 @@ PhotoCraft discovers, launches, talks to and survives a test plug-in.
     4. Implement shutdown (`shutdown`, a 5 s grace period, then kill) and stderr capture into a rotated log.
     5. Inject the manager through `Services::process_plugins`, native only, as `None` on wasm.
 
-- [ ] **TASK-7: Echo test plug-in and integration harness**
+- [x] **TASK-7: Echo test plug-in and integration harness**
   - **Associated Acceptance Criteria**: `1.1`, `1.3`, `1.4`, `1.5`
   - **Concrete Steps**:
     1. Create `examples/process-plugin-echo`, a Rust binary. Its modes are conformance, crash-on-command, invalid-frame, oversize-frame, wrong-nonce, hang, and a widget gallery.
