@@ -1,0 +1,80 @@
+# CI for AI Diffusion for PhotoCraft: lint, type-check and test the code this
+# project adds, and run upstream's unit tests that need no ComfyUI server.
+#
+# Upstream's own workflow (test.yml) installs a ComfyUI server and downloads
+# models; it is kept unchanged to avoid merge conflicts and is disabled for this
+# repository in GitHub's Actions settings instead.
+name: PhotoCraft plug-in
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+
+env:
+  # Upstream unit tests that run against upstream's mock krita module without a
+  # ComfyUI server or network access. test_client, test_workflow, test_server,
+  # test_updates and test_image_transfer need a server and run in the GPU
+  # end-to-end suite instead.
+  UPSTREAM_UNIT_TESTS: >-
+    tests/test_api.py tests/test_comfy_workflow.py tests/test_connection.py
+    tests/test_custom_workflow.py tests/test_document.py tests/test_files.py
+    tests/test_image.py tests/test_layer.py tests/test_model.py
+    tests/test_persistence.py tests/test_platform.py tests/test_pose.py
+    tests/test_properties.py tests/test_resolution.py tests/test_resources.py
+    tests/test_service.py tests/test_settings.py tests/test_text.py tests/test_util.py
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Dependencies
+        run: pip install -r requirements-photocraft.txt
+      - name: Format
+        run: ruff format --diff photocraft_host tests/photocraft
+      - name: Lint
+        if: ${{ !cancelled() }}
+        run: ruff check --output-format=github photocraft_host tests/photocraft
+      - name: Typecheck
+        if: ${{ !cancelled() }}
+        run: pyright -p packaging/pyrightconfig.json
+
+  test:
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-14, windows-2022]
+    runs-on: ${{ matrix.os }}
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      # PyQt6.QtGui needs libEGL even with the offscreen platform.
+      - name: Packages
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libegl1 libgl1 libxkbcommon-x11-0
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Dependencies
+        run: pip install -r requirements-photocraft.txt
+      - name: Plug-in tests
+        run: python -m pytest tests/photocraft -v --cov=photocraft_host --cov-branch --cov-report=term-missing
+      - name: Upstream unit tests
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: python -m pytest $UPSTREAM_UNIT_TESTS -q --timeout 60

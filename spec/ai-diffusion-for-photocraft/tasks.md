@@ -40,7 +40,7 @@ Both repositories exist with their history, licenses and tooling, and the upstre
     3. Add `LICENSE` (GPL-3.0, upstream's), `NOTICE` (Krita AI Diffusion credit and copyright) and a README with attribution and the plug-in name.
     4. Create `UPSTREAM-CHANGES.md` listing the files design.md expects to change, all marked "pending".
 
-- [ ] **TASK-3: Set up plug-in project tooling and CI**
+- [x] **TASK-3: Set up plug-in project tooling and CI**
   - **Associated Acceptance Criteria**: `13.2`
   - **Concrete Steps**:
     1. Configure `pyproject.toml` and `uv.lock` for CPython 3.12: PyQt6 6.11.x, websockets (pinned), pytest, pytest-asyncio, pytest-cov, ruff and pyright, using upstream's lint configuration extended to `photocraft_host/`.

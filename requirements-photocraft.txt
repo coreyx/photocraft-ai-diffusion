@@ -1,0 +1,15 @@
+# Development and test dependencies for AI Diffusion for PhotoCraft.
+#
+# Builds on upstream's requirements.txt (left unchanged so upstream merges stay
+# clean) and pins Qt to the version the plug-in runtime ships
+# (packaging/runtime/pyproject.toml).
+#
+#   uv venv .venv --python 3.12
+#   uv pip install --python .venv -r requirements-photocraft.txt
+
+-r requirements.txt
+
+PyQt6==6.11.*
+PyQt6-Qt6==6.11.*
+pytest-cov
+pytest-timeout

@@ -1,0 +1,22 @@
+# Python runtime of the AI Diffusion for PhotoCraft plug-in.
+#
+# On first run the plug-in provisions CPython 3.12 with uv and installs exactly
+# what `uv.lock` beside this file pins (`uv sync --frozen`). Upstream Krita AI
+# Diffusion runs inside Krita's embedded Python, which already provides Qt; this
+# plug-in runs on its own, so it supplies PyQt6 (QtCore, QtGui, QtNetwork, and
+# QtWidgets for the Qt mirror) itself. python-websockets is vendored by upstream
+# as a git submodule and is not listed here.
+
+[project]
+name = "ai-diffusion-for-photocraft-runtime"
+version = "0.1.0"
+description = "Runtime dependencies of the AI Diffusion for PhotoCraft plug-in"
+requires-python = "==3.12.*"
+license = "GPL-3.0-only"
+dependencies = [
+    "PyQt6==6.11.*",
+    "PyQt6-Qt6==6.11.*",
+]
+
+[tool.uv]
+package = false

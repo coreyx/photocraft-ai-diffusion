@@ -1,0 +1,15 @@
+{
+  "include": [
+    "../photocraft_host",
+    "../tests/photocraft"
+  ],
+  "exclude": [
+    "**/__pycache__"
+  ],
+  "extraPaths": [
+    ".."
+  ],
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "standard",
+  "reportMissingModuleSource": false
+}

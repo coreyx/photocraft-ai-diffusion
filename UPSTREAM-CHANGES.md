@@ -36,6 +36,8 @@ This project keeps Krita AI Diffusion's files as unchanged as possible, so later
 - **Git submodules** `ai_diffusion/websockets` (python-websockets 14.2, `624a36c`) and `ai_diffusion/debugpy` (1.8.20, `7ac3d1f`), with `.gitmodules`. They stay at upstream's pinned commits. Upstream imports `websockets` from the vendored path (`from ..websockets.src import websockets`), so keeping the submodule avoids editing `comfy_client.py` and `__init__.py`.
 
   This differs from tech.md's literal plan of installing websockets as a normal dependency. The intent of that plan (pinned at upstream's commit, smallest diff) is unchanged.
+- **Build and test configuration**: `pyproject.toml`, `requirements.txt` and `.gitignore` stay unchanged. This project's runtime pins live in `packaging/runtime/pyproject.toml`, its development dependencies in `requirements-photocraft.txt`, and its type-check settings in `packaging/pyrightconfig.json`. Local ignores (`.venv/`, coverage output) go in `.git/info/exclude`.
+- **Upstream CI** `.github/workflows/test.yml` is kept unchanged. It installs a ComfyUI server and downloads models, so it is disabled for this repository in GitHub's Actions settings (`gh workflow disable test.yml`) rather than edited. This project's CI is `.github/workflows/photocraft.yml`.
 - **Test images in Git LFS** (`tests/images/*.png`). When cloning, fetch them from upstream if this repository's LFS storage doesn't have them: `git lfs fetch upstream v1.54.0-pre`.
 
 ## Merging a new upstream release
