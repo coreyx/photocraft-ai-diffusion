@@ -1,0 +1,96 @@
+{
+ "input": {
+  "images": {
+   "extent": {
+    "desired": [
+     1024,
+     1024
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     1024,
+     1024
+    ]
+   },
+   "initial_image": "image:dab14b9d038b9c03d5867fa4"
+  },
+  "kind": "upscale_simple",
+  "upscale": {
+   "model": "4x_NMKD-Superscale-SP_178000_G.pth"
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "UpscaleModelLoader",
+   "inputs": {
+    "model_name": "4x_NMKD-Superscale-SP_178000_G.pth"
+   }
+  },
+  "2": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:5bc3c7e2dab138ce18a3878b"
+   }
+  },
+  "3": {
+   "class_type": "ImageUpscaleWithModel",
+   "inputs": {
+    "image": [
+     "2",
+     0
+    ],
+    "upscale_model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "4": {
+   "class_type": "ImageScale",
+   "inputs": {
+    "crop": "disabled",
+    "height": 1024,
+    "image": [
+     "3",
+     0
+    ],
+    "upscale_method": "lanczos",
+    "width": 1024
+   }
+  },
+  "5": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "4",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "upscale",
+  "arch": "flux",
+  "controls": [],
+  "id": "flux-upscale-simple",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {
+   "factor": 2.0
+  }
+ }
+}

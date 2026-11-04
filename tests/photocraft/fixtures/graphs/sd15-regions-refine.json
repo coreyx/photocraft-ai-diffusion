@@ -1,0 +1,448 @@
+{
+ "input": {
+  "batch_count": 4,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "negative": "blurry, bad quality, low resolution, blurry",
+   "positive": "a lighthouse on a cliff at dusk",
+   "regions": [
+    {
+     "bounds": [
+      0,
+      0,
+      512,
+      512
+     ],
+     "control": [],
+     "loras": [],
+     "mask": "image:eabc2ec38132fabe1af3a2da",
+     "positive": "a lighthouse on a cliff at dusk"
+    },
+    {
+     "bounds": [
+      0,
+      0,
+      512,
+      512
+     ],
+     "control": [],
+     "loras": [],
+     "mask": "image:3272b9248a8fbef5252ea9ad",
+     "positive": "a red sailboat, a lighthouse on a cliff at dusk"
+    },
+    {
+     "bounds": [
+      0,
+      0,
+      512,
+      512
+     ],
+     "control": [],
+     "loras": [],
+     "mask": "image:ee26998788cb0efd40552c09",
+     "positive": "a flock of birds, a lighthouse on a cliff at dusk"
+    },
+    {
+     "bounds": [
+      0,
+      0,
+      512,
+      512
+     ],
+     "control": [],
+     "loras": [],
+     "mask": "image:f0068cf89619928119524b29",
+     "positive": "a stone tower, a lighthouse on a cliff at dusk"
+    }
+   ]
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   },
+   "initial_image": "image:8ab1379ea116e7d914a74f17"
+  },
+  "kind": "refine",
+  "models": {
+   "checkpoint": "dreamshaper_8.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default"
+  },
+  "sampling": {
+   "cfg_scale": 7.0,
+   "sampler": "dpmpp_2m",
+   "scheduler": "karras",
+   "seed": 1234,
+   "start_step": 10,
+   "total_steps": 20
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "CheckpointLoaderSimple",
+   "inputs": {
+    "ckpt_name": "dreamshaper_8.safetensors"
+   }
+  },
+  "10": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:185448dc724dbd9dd47f275a"
+   }
+  },
+  "11": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "a stone tower, a lighthouse on a cliff at dusk"
+   }
+  },
+  "12": {
+   "class_type": "ETN_DefineRegion",
+   "inputs": {
+    "conditioning": [
+     "11",
+     0
+    ],
+    "mask": [
+     "10",
+     1
+    ],
+    "regions": [
+     "9",
+     0
+    ]
+   }
+  },
+  "13": {
+   "class_type": "ETN_AttentionMask",
+   "inputs": {
+    "model": [
+     "1",
+     0
+    ],
+    "regions": [
+     "12",
+     0
+    ]
+   }
+  },
+  "14": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:44c701c413128fc5a4b1604b"
+   }
+  },
+  "15": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:d44df9c1cd30d513b205baa8"
+   }
+  },
+  "16": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "a lighthouse on a cliff at dusk"
+   }
+  },
+  "17": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "blurry, bad quality, low resolution, blurry"
+   }
+  },
+  "18": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "15",
+     0
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "19": {
+   "class_type": "RepeatLatentBatch",
+   "inputs": {
+    "amount": 4,
+    "samples": [
+     "18",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "a lighthouse on a cliff at dusk"
+   }
+  },
+  "20": {
+   "class_type": "CFGGuider",
+   "inputs": {
+    "cfg": 7.0,
+    "model": [
+     "13",
+     0
+    ],
+    "negative": [
+     "17",
+     0
+    ],
+    "positive": [
+     "16",
+     0
+    ]
+   }
+  },
+  "21": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "13",
+     0
+    ],
+    "scheduler": "karras",
+    "steps": 20
+   }
+  },
+  "22": {
+   "class_type": "SplitSigmas",
+   "inputs": {
+    "sigmas": [
+     "21",
+     0
+    ],
+    "step": 10
+   }
+  },
+  "23": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "24": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "dpmpp_2m"
+   }
+  },
+  "25": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "20",
+     0
+    ],
+    "latent_image": [
+     "19",
+     0
+    ],
+    "noise": [
+     "23",
+     0
+    ],
+    "sampler": [
+     "24",
+     0
+    ],
+    "sigmas": [
+     "22",
+     1
+    ]
+   }
+  },
+  "26": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "25",
+     1
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "27": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "26",
+     0
+    ]
+   }
+  },
+  "3": {
+   "class_type": "ETN_BackgroundRegion",
+   "inputs": {
+    "conditioning": [
+     "2",
+     0
+    ]
+   }
+  },
+  "4": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:1dad430892cd6e84b6e4d4c8"
+   }
+  },
+  "5": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "a red sailboat, a lighthouse on a cliff at dusk"
+   }
+  },
+  "6": {
+   "class_type": "ETN_DefineRegion",
+   "inputs": {
+    "conditioning": [
+     "5",
+     0
+    ],
+    "mask": [
+     "4",
+     1
+    ],
+    "regions": [
+     "3",
+     0
+    ]
+   }
+  },
+  "7": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:7d5ee1e2f96a8140c009965c"
+   }
+  },
+  "8": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "a flock of birds, a lighthouse on a cliff at dusk"
+   }
+  },
+  "9": {
+   "class_type": "ETN_DefineRegion",
+   "inputs": {
+    "conditioning": [
+     "8",
+     0
+    ],
+    "mask": [
+     "7",
+     1
+    ],
+    "regions": [
+     "6",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "sd15",
+  "controls": [],
+  "id": "sd15-regions-refine",
+  "inpaint_mode": null,
+  "regions": [
+   {
+    "color": [
+     200,
+     30,
+     30
+    ],
+    "ellipse": [
+     40,
+     260,
+     200,
+     160
+    ],
+    "prompt": "a red sailboat"
+   },
+   {
+    "color": [
+     30,
+     200,
+     30
+    ],
+    "ellipse": [
+     260,
+     40,
+     220,
+     140
+    ],
+    "prompt": "a flock of birds"
+   },
+   {
+    "color": [
+     30,
+     30,
+     200
+    ],
+    "ellipse": [
+     300,
+     200,
+     160,
+     260
+    ],
+    "prompt": "a stone tower"
+   }
+  ],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 0.5,
+  "upscale": {}
+ }
+}

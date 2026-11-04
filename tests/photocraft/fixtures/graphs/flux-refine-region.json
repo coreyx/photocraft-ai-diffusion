@@ -1,0 +1,353 @@
+{
+ "input": {
+  "batch_count": 4,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "negative": "blurry, bad quality, low resolution, blurry",
+   "positive": "a lighthouse on a cliff at dusk",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     288,
+     272
+    ],
+    "initial": [
+     288,
+     272
+    ],
+    "input": [
+     288,
+     272
+    ],
+    "target": [
+     288,
+     272
+    ]
+   },
+   "hires_mask": "image:630af37e1eb96fa6f7735ae8",
+   "initial_image": "image:2cfd89ca06fa0cc80110a861"
+  },
+  "inpaint": {
+   "blend": 22,
+   "feather": 19,
+   "fill": "blur",
+   "grow": 13,
+   "mode": "fill",
+   "target_bounds": [
+    0,
+    0,
+    288,
+    272
+   ]
+  },
+  "kind": "refine_region",
+  "models": {
+   "checkpoint": "flux1-krea-dev_fp8_scaled.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default",
+   "version": "flux"
+  },
+  "sampling": {
+   "cfg_scale": 3.5,
+   "sampler": "euler",
+   "scheduler": "simple",
+   "seed": 1234,
+   "start_step": 8,
+   "total_steps": 20
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "UNETLoader",
+   "inputs": {
+    "unet_name": "flux1-krea-dev_fp8_scaled.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  "10": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "5",
+     0
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "11": {
+   "class_type": "SetLatentNoiseMask",
+   "inputs": {
+    "mask": [
+     "7",
+     0
+    ],
+    "samples": [
+     "10",
+     0
+    ]
+   }
+  },
+  "12": {
+   "class_type": "RepeatLatentBatch",
+   "inputs": {
+    "amount": 4,
+    "samples": [
+     "11",
+     0
+    ]
+   }
+  },
+  "13": {
+   "class_type": "FluxGuidance",
+   "inputs": {
+    "conditioning": [
+     "8",
+     0
+    ],
+    "guidance": 3.5
+   }
+  },
+  "14": {
+   "class_type": "BasicGuider",
+   "inputs": {
+    "conditioning": [
+     "13",
+     0
+    ],
+    "model": [
+     "4",
+     0
+    ]
+   }
+  },
+  "15": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "4",
+     0
+    ],
+    "scheduler": "simple",
+    "steps": 20
+   }
+  },
+  "16": {
+   "class_type": "SplitSigmas",
+   "inputs": {
+    "sigmas": [
+     "15",
+     0
+    ],
+    "step": 8
+   }
+  },
+  "17": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "18": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "euler"
+   }
+  },
+  "19": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "14",
+     0
+    ],
+    "latent_image": [
+     "12",
+     0
+    ],
+    "noise": [
+     "17",
+     0
+    ],
+    "sampler": [
+     "18",
+     0
+    ],
+    "sigmas": [
+     "16",
+     1
+    ]
+   }
+  },
+  "2": {
+   "class_type": "DualCLIPLoaderGGUF",
+   "inputs": {
+    "clip_name1": "clip_l.safetensors",
+    "clip_name2": "t5-v1_1-xxl-encoder-Q5_K_M.gguf",
+    "type": "flux"
+   }
+  },
+  "20": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "19",
+     1
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "21": {
+   "class_type": "INPAINT_ColorMatch",
+   "inputs": {
+    "exclude_mask": [
+     "7",
+     0
+    ],
+    "reference": [
+     "5",
+     0
+    ],
+    "strength": 1.0,
+    "target": [
+     "20",
+     0
+    ]
+   }
+  },
+  "22": {
+   "class_type": "ThresholdMask",
+   "inputs": {
+    "mask": [
+     "7",
+     0
+    ],
+    "value": 0.0
+   }
+  },
+  "23": {
+   "class_type": "INPAINT_ShrinkMask",
+   "inputs": {
+    "blur": 22,
+    "blur_type": "gaussian",
+    "mask": [
+     "22",
+     0
+    ],
+    "shrink": 11
+   }
+  },
+  "24": {
+   "class_type": "ETN_ApplyMaskToImage",
+   "inputs": {
+    "image": [
+     "21",
+     0
+    ],
+    "mask": [
+     "23",
+     0
+    ]
+   }
+  },
+  "25": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "24",
+     0
+    ]
+   }
+  },
+  "3": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "flux_vae.safetensors"
+   }
+  },
+  "4": {
+   "class_type": "DifferentialDiffusion",
+   "inputs": {
+    "model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "5": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:398a7f7162b265f775bcd587"
+   }
+  },
+  "6": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:b448525af38e0a45096928e6"
+   }
+  },
+  "7": {
+   "class_type": "INPAINT_ExpandMask",
+   "inputs": {
+    "blur": 19,
+    "blur_type": "linear",
+    "grow": 13,
+    "mask": [
+     "6",
+     1
+    ]
+   }
+  },
+  "8": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "a lighthouse on a cliff at dusk"
+   }
+  },
+  "9": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "blurry, bad quality, low resolution, blurry"
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "flux",
+  "controls": [],
+  "id": "flux-refine-region",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": [
+   "ellipse",
+   160,
+   120,
+   200,
+   180
+  ],
+  "size": [
+   512,
+   512
+  ],
+  "strength": 0.6,
+  "upscale": {}
+ }
+}

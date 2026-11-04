@@ -1,0 +1,192 @@
+{
+ "input": {
+  "batch_count": 4,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "positive": "a lighthouse on a cliff at dusk",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   }
+  },
+  "kind": "generate",
+  "models": {
+   "checkpoint": "z_image_turbo_fp8_e4m3fn.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default",
+   "version": "zimage"
+  },
+  "sampling": {
+   "cfg_scale": 1.0,
+   "sampler": "euler",
+   "scheduler": "simple",
+   "seed": 1234,
+   "total_steps": 8
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "UNETLoader",
+   "inputs": {
+    "unet_name": "z_image_turbo_fp8_e4m3fn.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  "10": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "6",
+     0
+    ],
+    "latent_image": [
+     "4",
+     0
+    ],
+    "noise": [
+     "8",
+     0
+    ],
+    "sampler": [
+     "9",
+     0
+    ],
+    "sigmas": [
+     "7",
+     0
+    ]
+   }
+  },
+  "11": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "10",
+     1
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "12": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "11",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "CLIPLoaderGGUF",
+   "inputs": {
+    "clip_name": "Qwen3-4B-Q4_K_M.gguf",
+    "type": "lumina2"
+   }
+  },
+  "3": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "flux_vae.safetensors"
+   }
+  },
+  "4": {
+   "class_type": "EmptySD3LatentImage",
+   "inputs": {
+    "batch_size": 4,
+    "height": 512,
+    "width": 512
+   }
+  },
+  "5": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "a lighthouse on a cliff at dusk"
+   }
+  },
+  "6": {
+   "class_type": "BasicGuider",
+   "inputs": {
+    "conditioning": [
+     "5",
+     0
+    ],
+    "model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "7": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "1",
+     0
+    ],
+    "scheduler": "simple",
+    "steps": 8
+   }
+  },
+  "8": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "9": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "euler"
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "zimage",
+  "controls": [
+   {
+    "mode": "style"
+   },
+   {
+    "mode": "composition"
+   }
+  ],
+  "id": "zimage-control-style-composition",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {}
+ }
+}

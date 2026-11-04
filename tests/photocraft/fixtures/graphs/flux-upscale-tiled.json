@@ -1,0 +1,411 @@
+{
+ "input": {
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [
+    {
+     "mode": "blur",
+     "strength": 0.5
+    }
+   ],
+   "positive": "4k uhd",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     896,
+     896
+    ],
+    "initial": [
+     1024,
+     1024
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     1024,
+     1024
+    ]
+   },
+   "initial_image": "image:dab14b9d038b9c03d5867fa4"
+  },
+  "kind": "upscale_tiled",
+  "models": {
+   "checkpoint": "flux1-krea-dev_fp8_scaled.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default",
+   "version": "flux"
+  },
+  "sampling": {
+   "cfg_scale": 3.5,
+   "sampler": "euler",
+   "scheduler": "simple",
+   "seed": 1234,
+   "start_step": 14,
+   "total_steps": 20
+  },
+  "upscale": {
+   "model": "4x_NMKD-Superscale-SP_178000_G.pth"
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "UNETLoader",
+   "inputs": {
+    "unet_name": "flux1-krea-dev_fp8_scaled.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  "10": {
+   "class_type": "ETN_GenerateTileMask",
+   "inputs": {
+    "index": 0,
+    "layout": [
+     "8",
+     0
+    ]
+   }
+  },
+  "11": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "4k uhd"
+   }
+  },
+  "12": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": ""
+   }
+  },
+  "13": {
+   "class_type": "ImageScale",
+   "inputs": {
+    "crop": "disabled",
+    "height": 1024,
+    "image": [
+     "4",
+     0
+    ],
+    "upscale_method": "lanczos",
+    "width": 1024
+   }
+  },
+  "14": {
+   "class_type": "ETN_ExtractImageTile",
+   "inputs": {
+    "image": [
+     "13",
+     0
+    ],
+    "index": 0,
+    "layout": [
+     "8",
+     0
+    ]
+   }
+  },
+  "15": {
+   "class_type": "ControlNetLoader",
+   "inputs": {
+    "control_net_name": "FLUX.1-dev-ControlNet-Union-Pro-2.0-fp8.safetensors"
+   }
+  },
+  "16": {
+   "class_type": "SetUnionControlNetType",
+   "inputs": {
+    "control_net": [
+     "15",
+     0
+    ],
+    "type": "tile"
+   }
+  },
+  "17": {
+   "class_type": "ControlNetApplyAdvanced",
+   "inputs": {
+    "control_net": [
+     "16",
+     0
+    ],
+    "end_percent": 1.0,
+    "image": [
+     "14",
+     0
+    ],
+    "negative": [
+     "12",
+     0
+    ],
+    "positive": [
+     "11",
+     0
+    ],
+    "start_percent": 0.0,
+    "strength": 0.5,
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "18": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "9",
+     0
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "19": {
+   "class_type": "SetLatentNoiseMask",
+   "inputs": {
+    "mask": [
+     "10",
+     0
+    ],
+    "samples": [
+     "18",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "DualCLIPLoaderGGUF",
+   "inputs": {
+    "clip_name1": "clip_l.safetensors",
+    "clip_name2": "t5-v1_1-xxl-encoder-Q5_K_M.gguf",
+    "type": "flux"
+   }
+  },
+  "20": {
+   "class_type": "FluxGuidance",
+   "inputs": {
+    "conditioning": [
+     "17",
+     0
+    ],
+    "guidance": 3.5
+   }
+  },
+  "21": {
+   "class_type": "BasicGuider",
+   "inputs": {
+    "conditioning": [
+     "20",
+     0
+    ],
+    "model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "22": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "1",
+     0
+    ],
+    "scheduler": "simple",
+    "steps": 20
+   }
+  },
+  "23": {
+   "class_type": "SplitSigmas",
+   "inputs": {
+    "sigmas": [
+     "22",
+     0
+    ],
+    "step": 14
+   }
+  },
+  "24": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "25": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "euler"
+   }
+  },
+  "26": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "21",
+     0
+    ],
+    "latent_image": [
+     "19",
+     0
+    ],
+    "noise": [
+     "24",
+     0
+    ],
+    "sampler": [
+     "25",
+     0
+    ],
+    "sigmas": [
+     "23",
+     1
+    ]
+   }
+  },
+  "27": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "26",
+     1
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "28": {
+   "class_type": "ETN_MergeImageTile",
+   "inputs": {
+    "image": [
+     "7",
+     0
+    ],
+    "index": 0,
+    "layout": [
+     "8",
+     0
+    ],
+    "tile": [
+     "27",
+     0
+    ]
+   }
+  },
+  "29": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "28",
+     0
+    ]
+   }
+  },
+  "3": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "flux_vae.safetensors"
+   }
+  },
+  "4": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:5bc3c7e2dab138ce18a3878b"
+   }
+  },
+  "5": {
+   "class_type": "UpscaleModelLoader",
+   "inputs": {
+    "model_name": "4x_NMKD-Superscale-SP_178000_G.pth"
+   }
+  },
+  "6": {
+   "class_type": "ImageUpscaleWithModel",
+   "inputs": {
+    "image": [
+     "4",
+     0
+    ],
+    "upscale_model": [
+     "5",
+     0
+    ]
+   }
+  },
+  "7": {
+   "class_type": "ImageScale",
+   "inputs": {
+    "crop": "disabled",
+    "height": 1024,
+    "image": [
+     "6",
+     0
+    ],
+    "upscale_method": "lanczos",
+    "width": 1024
+   }
+  },
+  "8": {
+   "class_type": "ETN_TileLayout",
+   "inputs": {
+    "blending": 24,
+    "image": [
+     "7",
+     0
+    ],
+    "min_tile_size": 896,
+    "multiple": 16,
+    "padding": 48
+   }
+  },
+  "9": {
+   "class_type": "ETN_ExtractImageTile",
+   "inputs": {
+    "image": [
+     "7",
+     0
+    ],
+    "index": 0,
+    "layout": [
+     "8",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "upscale",
+  "arch": "flux",
+  "controls": [],
+  "id": "flux-upscale-tiled",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {
+   "diffusion": true,
+   "factor": 2.0,
+   "strength": 0.3
+  }
+ }
+}

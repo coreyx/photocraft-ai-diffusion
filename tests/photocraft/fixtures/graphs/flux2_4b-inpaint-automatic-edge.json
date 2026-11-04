@@ -1,0 +1,445 @@
+{
+ "input": {
+  "batch_count": 4,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "edit_reference": true,
+   "positive": "Fill the green spaces according to the image.\n\na lighthouse on a cliff at dusk",
+   "regions": []
+  },
+  "crop_upscale_extent": [
+   352,
+   512
+  ],
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   },
+   "hires_mask": "image:50f43411c71aa86b19860860",
+   "initial_image": "image:dab14b9d038b9c03d5867fa4"
+  },
+  "inpaint": {
+   "blend": 25,
+   "feather": 53,
+   "fill": "green",
+   "grow": 30,
+   "mode": "expand",
+   "target_bounds": [
+    160,
+    0,
+    352,
+    512
+   ],
+   "use_inpaint_model": true
+  },
+  "kind": "inpaint",
+  "models": {
+   "checkpoint": "flux-2-klein-4b-Q6_K.gguf",
+   "loras": [],
+   "vae": "Checkpoint Default",
+   "version": "flux2_4b"
+  },
+  "sampling": {
+   "cfg_scale": 1.0,
+   "sampler": "euler",
+   "scheduler": "flux2",
+   "seed": 1234,
+   "total_steps": 5
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "UnetLoaderGGUF",
+   "inputs": {
+    "unet_name": "flux-2-klein-4b-Q6_K.gguf"
+   }
+  },
+  "10": {
+   "class_type": "INPAINT_ExpandMask",
+   "inputs": {
+    "blur": 0,
+    "blur_type": "gaussian",
+    "grow": 4,
+    "mask": [
+     "6",
+     1
+    ]
+   }
+  },
+  "11": {
+   "class_type": "EmptyImage",
+   "inputs": {
+    "batch_size": 1,
+    "color": 65280,
+    "height": 512,
+    "width": 512
+   }
+  },
+  "12": {
+   "class_type": "ThresholdMask",
+   "inputs": {
+    "mask": [
+     "10",
+     0
+    ],
+    "value": 0.99
+   }
+  },
+  "13": {
+   "class_type": "ImageCompositeMasked",
+   "inputs": {
+    "destination": [
+     "5",
+     0
+    ],
+    "mask": [
+     "12",
+     0
+    ],
+    "resize_source": false,
+    "source": [
+     "11",
+     0
+    ],
+    "x": 0,
+    "y": 0
+   }
+  },
+  "14": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "Fill the green spaces according to the image.\n\na lighthouse on a cliff at dusk"
+   }
+  },
+  "15": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "13",
+     0
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "16": {
+   "class_type": "ReferenceLatent",
+   "inputs": {
+    "conditioning": [
+     "14",
+     0
+    ],
+    "latent": [
+     "15",
+     0
+    ]
+   }
+  },
+  "17": {
+   "class_type": "ReferenceLatent",
+   "inputs": {
+    "conditioning": [
+     "14",
+     0
+    ],
+    "latent": [
+     "15",
+     0
+    ]
+   }
+  },
+  "18": {
+   "class_type": "LoraLoaderModelOnly",
+   "inputs": {
+    "lora_name": "flux-2-klein-4B-outpaint-lora.safetensors",
+    "model": [
+     "4",
+     0
+    ],
+    "strength_model": 1.0
+   }
+  },
+  "19": {
+   "class_type": "SetLatentNoiseMask",
+   "inputs": {
+    "mask": [
+     "9",
+     0
+    ],
+    "samples": [
+     "15",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "CLIPLoaderGGUF",
+   "inputs": {
+    "clip_name": "Qwen3-4B-Q4_K_M.gguf",
+    "type": "flux2"
+   }
+  },
+  "20": {
+   "class_type": "RepeatLatentBatch",
+   "inputs": {
+    "amount": 4,
+    "samples": [
+     "19",
+     0
+    ]
+   }
+  },
+  "21": {
+   "class_type": "BasicGuider",
+   "inputs": {
+    "conditioning": [
+     "16",
+     0
+    ],
+    "model": [
+     "18",
+     0
+    ]
+   }
+  },
+  "22": {
+   "class_type": "Flux2Scheduler",
+   "inputs": {
+    "height": 512,
+    "steps": 5,
+    "width": 512
+   }
+  },
+  "23": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "24": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "euler"
+   }
+  },
+  "25": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "21",
+     0
+    ],
+    "latent_image": [
+     "20",
+     0
+    ],
+    "noise": [
+     "23",
+     0
+    ],
+    "sampler": [
+     "24",
+     0
+    ],
+    "sigmas": [
+     "22",
+     0
+    ]
+   }
+  },
+  "26": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "25",
+     1
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "27": {
+   "class_type": "INPAINT_ColorMatch",
+   "inputs": {
+    "exclude_mask": [
+     "9",
+     0
+    ],
+    "reference": [
+     "13",
+     0
+    ],
+    "strength": 1.0,
+    "target": [
+     "26",
+     0
+    ]
+   }
+  },
+  "28": {
+   "class_type": "ImageCrop",
+   "inputs": {
+    "height": 512,
+    "image": [
+     "27",
+     0
+    ],
+    "width": 352,
+    "x": 160,
+    "y": 0
+   }
+  },
+  "29": {
+   "class_type": "ThresholdMask",
+   "inputs": {
+    "mask": [
+     "8",
+     0
+    ],
+    "value": 0.0
+   }
+  },
+  "3": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "flux2-vae.safetensors"
+   }
+  },
+  "30": {
+   "class_type": "INPAINT_ShrinkMask",
+   "inputs": {
+    "blur": 25,
+    "blur_type": "gaussian",
+    "mask": [
+     "29",
+     0
+    ],
+    "shrink": 12
+   }
+  },
+  "31": {
+   "class_type": "ETN_ApplyMaskToImage",
+   "inputs": {
+    "image": [
+     "28",
+     0
+    ],
+    "mask": [
+     "30",
+     0
+    ]
+   }
+  },
+  "32": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "31",
+     0
+    ]
+   }
+  },
+  "4": {
+   "class_type": "DifferentialDiffusion",
+   "inputs": {
+    "model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "5": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:5bc3c7e2dab138ce18a3878b"
+   }
+  },
+  "6": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:3fa3bd685852cf4c0295ee68"
+   }
+  },
+  "7": {
+   "class_type": "INPAINT_ExpandMask",
+   "inputs": {
+    "blur": 53,
+    "blur_type": "linear",
+    "grow": 30,
+    "mask": [
+     "6",
+     1
+    ]
+   }
+  },
+  "8": {
+   "class_type": "CropMask",
+   "inputs": {
+    "height": 512,
+    "mask": [
+     "7",
+     0
+    ],
+    "width": 352,
+    "x": 160,
+    "y": 0
+   }
+  },
+  "9": {
+   "class_type": "INPAINT_StabilizeMask",
+   "inputs": {
+    "epsilon": 0.01,
+    "mask": [
+     "7",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "flux2_4b",
+  "controls": [],
+  "id": "flux2_4b-inpaint-automatic-edge",
+  "inpaint_mode": "automatic",
+  "regions": [],
+  "selection": [
+   "rect",
+   352,
+   0,
+   160,
+   512
+  ],
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {}
+ }
+}

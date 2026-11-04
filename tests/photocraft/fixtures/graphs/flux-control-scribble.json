@@ -1,0 +1,212 @@
+{
+ "input": {
+  "batch_count": 4,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "negative": "blurry, bad quality, low resolution, blurry",
+   "positive": "a lighthouse on a cliff at dusk",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   }
+  },
+  "kind": "generate",
+  "models": {
+   "checkpoint": "flux1-krea-dev_fp8_scaled.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default",
+   "version": "flux"
+  },
+  "sampling": {
+   "cfg_scale": 3.5,
+   "sampler": "euler",
+   "scheduler": "simple",
+   "seed": 1234,
+   "total_steps": 20
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "UNETLoader",
+   "inputs": {
+    "unet_name": "flux1-krea-dev_fp8_scaled.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  "10": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "11": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "euler"
+   }
+  },
+  "12": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "8",
+     0
+    ],
+    "latent_image": [
+     "4",
+     0
+    ],
+    "noise": [
+     "10",
+     0
+    ],
+    "sampler": [
+     "11",
+     0
+    ],
+    "sigmas": [
+     "9",
+     0
+    ]
+   }
+  },
+  "13": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "12",
+     1
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "14": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "13",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "DualCLIPLoaderGGUF",
+   "inputs": {
+    "clip_name1": "clip_l.safetensors",
+    "clip_name2": "t5-v1_1-xxl-encoder-Q5_K_M.gguf",
+    "type": "flux"
+   }
+  },
+  "3": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "flux_vae.safetensors"
+   }
+  },
+  "4": {
+   "class_type": "EmptySD3LatentImage",
+   "inputs": {
+    "batch_size": 4,
+    "height": 512,
+    "width": 512
+   }
+  },
+  "5": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "a lighthouse on a cliff at dusk"
+   }
+  },
+  "6": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "blurry, bad quality, low resolution, blurry"
+   }
+  },
+  "7": {
+   "class_type": "FluxGuidance",
+   "inputs": {
+    "conditioning": [
+     "5",
+     0
+    ],
+    "guidance": 3.5
+   }
+  },
+  "8": {
+   "class_type": "BasicGuider",
+   "inputs": {
+    "conditioning": [
+     "7",
+     0
+    ],
+    "model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "9": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "1",
+     0
+    ],
+    "scheduler": "simple",
+    "steps": 20
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "flux",
+  "controls": [
+   {
+    "mode": "scribble",
+    "strength": 0.6
+   }
+  ],
+  "id": "flux-control-scribble",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {}
+ }
+}

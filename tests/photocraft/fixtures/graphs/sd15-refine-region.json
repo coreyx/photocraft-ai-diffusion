@@ -1,0 +1,439 @@
+{
+ "input": {
+  "batch_count": 3,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "negative": "blurry, bad quality, low resolution, blurry",
+   "positive": "a lighthouse on a cliff at dusk",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     528,
+     512
+    ],
+    "initial": [
+     528,
+     512
+    ],
+    "input": [
+     288,
+     272
+    ],
+    "target": [
+     288,
+     272
+    ]
+   },
+   "hires_mask": "image:630af37e1eb96fa6f7735ae8",
+   "initial_image": "image:2cfd89ca06fa0cc80110a861"
+  },
+  "inpaint": {
+   "blend": 22,
+   "feather": 19,
+   "fill": "blur",
+   "grow": 13,
+   "mode": "fill",
+   "target_bounds": [
+    0,
+    0,
+    288,
+    272
+   ],
+   "use_inpaint_model": true
+  },
+  "kind": "refine_region",
+  "models": {
+   "checkpoint": "dreamshaper_8.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default"
+  },
+  "sampling": {
+   "cfg_scale": 7.0,
+   "sampler": "dpmpp_2m",
+   "scheduler": "karras",
+   "seed": 1234,
+   "start_step": 8,
+   "total_steps": 20
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "CheckpointLoaderSimple",
+   "inputs": {
+    "ckpt_name": "dreamshaper_8.safetensors"
+   }
+  },
+  "10": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "a lighthouse on a cliff at dusk"
+   }
+  },
+  "11": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "blurry, bad quality, low resolution, blurry"
+   }
+  },
+  "12": {
+   "class_type": "InpaintPreprocessor",
+   "inputs": {
+    "black_pixel_for_xinsir_cn": false,
+    "image": [
+     "4",
+     0
+    ],
+    "mask": [
+     "9",
+     0
+    ]
+   }
+  },
+  "13": {
+   "class_type": "ControlNetLoader",
+   "inputs": {
+    "control_net_name": "control_v11p_sd15_inpaint_fp16.safetensors"
+   }
+  },
+  "14": {
+   "class_type": "ControlNetApplyAdvanced",
+   "inputs": {
+    "control_net": [
+     "13",
+     0
+    ],
+    "end_percent": 1.0,
+    "image": [
+     "12",
+     0
+    ],
+    "negative": [
+     "11",
+     0
+    ],
+    "positive": [
+     "10",
+     0
+    ],
+    "start_percent": 0.0,
+    "strength": 1.0,
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "15": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "4",
+     0
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "16": {
+   "class_type": "SetLatentNoiseMask",
+   "inputs": {
+    "mask": [
+     "9",
+     0
+    ],
+    "samples": [
+     "15",
+     0
+    ]
+   }
+  },
+  "17": {
+   "class_type": "RepeatLatentBatch",
+   "inputs": {
+    "amount": 3,
+    "samples": [
+     "16",
+     0
+    ]
+   }
+  },
+  "18": {
+   "class_type": "CFGGuider",
+   "inputs": {
+    "cfg": 7.0,
+    "model": [
+     "2",
+     0
+    ],
+    "negative": [
+     "14",
+     1
+    ],
+    "positive": [
+     "14",
+     0
+    ]
+   }
+  },
+  "19": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "2",
+     0
+    ],
+    "scheduler": "karras",
+    "steps": 20
+   }
+  },
+  "2": {
+   "class_type": "DifferentialDiffusion",
+   "inputs": {
+    "model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "20": {
+   "class_type": "SplitSigmas",
+   "inputs": {
+    "sigmas": [
+     "19",
+     0
+    ],
+    "step": 8
+   }
+  },
+  "21": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "22": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "dpmpp_2m"
+   }
+  },
+  "23": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "18",
+     0
+    ],
+    "latent_image": [
+     "17",
+     0
+    ],
+    "noise": [
+     "21",
+     0
+    ],
+    "sampler": [
+     "22",
+     0
+    ],
+    "sigmas": [
+     "20",
+     1
+    ]
+   }
+  },
+  "24": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "23",
+     1
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "25": {
+   "class_type": "INPAINT_ColorMatch",
+   "inputs": {
+    "exclude_mask": [
+     "9",
+     0
+    ],
+    "reference": [
+     "4",
+     0
+    ],
+    "strength": 1.0,
+    "target": [
+     "24",
+     0
+    ]
+   }
+  },
+  "26": {
+   "class_type": "ImageScale",
+   "inputs": {
+    "crop": "disabled",
+    "height": 272,
+    "image": [
+     "25",
+     0
+    ],
+    "upscale_method": "lanczos",
+    "width": 288
+   }
+  },
+  "27": {
+   "class_type": "ThresholdMask",
+   "inputs": {
+    "mask": [
+     "6",
+     0
+    ],
+    "value": 0.0
+   }
+  },
+  "28": {
+   "class_type": "INPAINT_ShrinkMask",
+   "inputs": {
+    "blur": 22,
+    "blur_type": "gaussian",
+    "mask": [
+     "27",
+     0
+    ],
+    "shrink": 11
+   }
+  },
+  "29": {
+   "class_type": "ETN_ApplyMaskToImage",
+   "inputs": {
+    "image": [
+     "26",
+     0
+    ],
+    "mask": [
+     "28",
+     0
+    ]
+   }
+  },
+  "3": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:398a7f7162b265f775bcd587"
+   }
+  },
+  "30": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "29",
+     0
+    ]
+   }
+  },
+  "4": {
+   "class_type": "ImageScale",
+   "inputs": {
+    "crop": "disabled",
+    "height": 512,
+    "image": [
+     "3",
+     0
+    ],
+    "upscale_method": "lanczos",
+    "width": 528
+   }
+  },
+  "5": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:b448525af38e0a45096928e6"
+   }
+  },
+  "6": {
+   "class_type": "INPAINT_ExpandMask",
+   "inputs": {
+    "blur": 19,
+    "blur_type": "linear",
+    "grow": 13,
+    "mask": [
+     "5",
+     1
+    ]
+   }
+  },
+  "7": {
+   "class_type": "MaskToImage",
+   "inputs": {
+    "mask": [
+     "6",
+     0
+    ]
+   }
+  },
+  "8": {
+   "class_type": "ImageScale",
+   "inputs": {
+    "crop": "disabled",
+    "height": 512,
+    "image": [
+     "7",
+     0
+    ],
+    "upscale_method": "bilinear",
+    "width": 528
+   }
+  },
+  "9": {
+   "class_type": "ImageToMask",
+   "inputs": {
+    "channel": "red",
+    "image": [
+     "8",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "sd15",
+  "controls": [],
+  "id": "sd15-refine-region",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": [
+   "ellipse",
+   160,
+   120,
+   200,
+   180
+  ],
+  "size": [
+   512,
+   512
+  ],
+  "strength": 0.6,
+  "upscale": {}
+ }
+}

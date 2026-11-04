@@ -48,7 +48,7 @@ Both repositories exist with their history, licenses and tooling, and the upstre
     3. Add a GitHub Actions workflow for lint, unit tests and coverage on Ubuntu, Windows and macOS, headless.
     4. Verify that upstream's own unit tests that don't need a server pass in this environment with upstream's mock.
 
-- [ ] **TASK-4: Capture graph-parity fixtures from unmodified upstream**
+- [x] **TASK-4: Capture graph-parity fixtures from unmodified upstream**
   - **Associated Acceptance Criteria**: `39.2`
   - **Concrete Steps**:
     1. Write `scripts/capture_parity.py`. It checks `v1.54.0-pre` out into a temporary worktree and runs `workflow.create` under upstream's own mock Krita and resource stubs.

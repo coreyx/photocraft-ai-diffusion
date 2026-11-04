@@ -1,0 +1,267 @@
+{
+ "input": {
+  "batch_count": 4,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "edit_reference": true,
+   "negative": "bad quality, low resolution, blurry",
+   "positive": "",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   },
+   "initial_image": "image:dab14b9d038b9c03d5867fa4"
+  },
+  "kind": "refine",
+  "models": {
+   "checkpoint": "flux1-dev-kontext_fp8_scaled.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default",
+   "version": "flux_k"
+  },
+  "sampling": {
+   "cfg_scale": 3.5,
+   "sampler": "euler",
+   "scheduler": "simple",
+   "seed": 1234,
+   "start_step": 8,
+   "total_steps": 20
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "UNETLoader",
+   "inputs": {
+    "unet_name": "flux1-dev-kontext_fp8_scaled.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  "10": {
+   "class_type": "RepeatLatentBatch",
+   "inputs": {
+    "amount": 4,
+    "samples": [
+     "7",
+     0
+    ]
+   }
+  },
+  "11": {
+   "class_type": "FluxGuidance",
+   "inputs": {
+    "conditioning": [
+     "8",
+     0
+    ],
+    "guidance": 3.5
+   }
+  },
+  "12": {
+   "class_type": "BasicGuider",
+   "inputs": {
+    "conditioning": [
+     "11",
+     0
+    ],
+    "model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "13": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "1",
+     0
+    ],
+    "scheduler": "simple",
+    "steps": 20
+   }
+  },
+  "14": {
+   "class_type": "SplitSigmas",
+   "inputs": {
+    "sigmas": [
+     "13",
+     0
+    ],
+    "step": 8
+   }
+  },
+  "15": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "16": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "euler"
+   }
+  },
+  "17": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "12",
+     0
+    ],
+    "latent_image": [
+     "10",
+     0
+    ],
+    "noise": [
+     "15",
+     0
+    ],
+    "sampler": [
+     "16",
+     0
+    ],
+    "sigmas": [
+     "14",
+     1
+    ]
+   }
+  },
+  "18": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "17",
+     1
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "19": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "18",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "DualCLIPLoaderGGUF",
+   "inputs": {
+    "clip_name1": "clip_l.safetensors",
+    "clip_name2": "t5-v1_1-xxl-encoder-Q5_K_M.gguf",
+    "type": "flux"
+   }
+  },
+  "3": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "flux_vae.safetensors"
+   }
+  },
+  "4": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:5bc3c7e2dab138ce18a3878b"
+   }
+  },
+  "5": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": ""
+   }
+  },
+  "6": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "bad quality, low resolution, blurry"
+   }
+  },
+  "7": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "4",
+     0
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "8": {
+   "class_type": "ReferenceLatent",
+   "inputs": {
+    "conditioning": [
+     "5",
+     0
+    ],
+    "latent": [
+     "7",
+     0
+    ]
+   }
+  },
+  "9": {
+   "class_type": "ReferenceLatent",
+   "inputs": {
+    "conditioning": [
+     "6",
+     0
+    ],
+    "latent": [
+     "7",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "flux_k",
+  "controls": [],
+  "id": "flux_k-refine",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 0.6,
+  "upscale": {}
+ }
+}

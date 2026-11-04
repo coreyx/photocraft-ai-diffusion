@@ -1,0 +1,186 @@
+{
+ "input": {
+  "batch_count": 4,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "negative": "blurry, bad quality, low resolution, blurry",
+   "positive": "a lighthouse on a cliff at dusk",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   }
+  },
+  "kind": "generate",
+  "models": {
+   "checkpoint": "dreamshaper_8.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default"
+  },
+  "sampling": {
+   "cfg_scale": 7.0,
+   "sampler": "dpmpp_2m",
+   "scheduler": "karras",
+   "seed": 1234,
+   "total_steps": 20
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "CheckpointLoaderSimple",
+   "inputs": {
+    "ckpt_name": "dreamshaper_8.safetensors"
+   }
+  },
+  "10": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "9",
+     1
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "11": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "10",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "EmptyLatentImage",
+   "inputs": {
+    "batch_size": 4,
+    "height": 512,
+    "width": 512
+   }
+  },
+  "3": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "a lighthouse on a cliff at dusk"
+   }
+  },
+  "4": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "blurry, bad quality, low resolution, blurry"
+   }
+  },
+  "5": {
+   "class_type": "CFGGuider",
+   "inputs": {
+    "cfg": 7.0,
+    "model": [
+     "1",
+     0
+    ],
+    "negative": [
+     "4",
+     0
+    ],
+    "positive": [
+     "3",
+     0
+    ]
+   }
+  },
+  "6": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "1",
+     0
+    ],
+    "scheduler": "karras",
+    "steps": 20
+   }
+  },
+  "7": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "8": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "dpmpp_2m"
+   }
+  },
+  "9": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "5",
+     0
+    ],
+    "latent_image": [
+     "2",
+     0
+    ],
+    "noise": [
+     "7",
+     0
+    ],
+    "sampler": [
+     "8",
+     0
+    ],
+    "sigmas": [
+     "6",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "sd15",
+  "controls": [],
+  "id": "sd15-generate",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {}
+ }
+}

@@ -1,0 +1,75 @@
+{
+ "input": {
+  "control_mode": "depth",
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   },
+   "initial_image": "image:6532ad34cc331e667d55c635"
+  },
+  "kind": "control_image"
+ },
+ "prompt": {
+  "1": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:1a8dc6484dbfb571aeb1a054"
+   }
+  },
+  "2": {
+   "class_type": "DepthAnythingV2Preprocessor",
+   "inputs": {
+    "ckpt_name": "depth_anything_v2_vitb.pth",
+    "image": [
+     "1",
+     0
+    ],
+    "resolution": 512
+   }
+  },
+  "3": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "2",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "control_image",
+  "arch": "sdxl",
+  "controls": [
+   {
+    "mode": "depth"
+   }
+  ],
+  "id": "sdxl-control-image-depth",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {}
+ }
+}

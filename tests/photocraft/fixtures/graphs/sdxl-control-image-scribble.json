@@ -1,0 +1,94 @@
+{
+ "input": {
+  "control_mode": "scribble",
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   },
+   "initial_image": "image:6532ad34cc331e667d55c635"
+  },
+  "kind": "control_image"
+ },
+ "prompt": {
+  "1": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:1a8dc6484dbfb571aeb1a054"
+   }
+  },
+  "2": {
+   "class_type": "PiDiNetPreprocessor",
+   "inputs": {
+    "image": [
+     "1",
+     0
+    ],
+    "resolution": 512,
+    "safe": "enable"
+   }
+  },
+  "3": {
+   "class_type": "ScribblePreprocessor",
+   "inputs": {
+    "image": [
+     "2",
+     0
+    ],
+    "resolution": 512
+   }
+  },
+  "4": {
+   "class_type": "ImageInvert",
+   "inputs": {
+    "image": [
+     "3",
+     0
+    ]
+   }
+  },
+  "5": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "4",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "control_image",
+  "arch": "sdxl",
+  "controls": [
+   {
+    "mode": "scribble"
+   }
+  ],
+  "id": "sdxl-control-image-scribble",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {}
+ }
+}

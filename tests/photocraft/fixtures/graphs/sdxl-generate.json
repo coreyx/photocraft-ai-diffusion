@@ -1,0 +1,200 @@
+{
+ "input": {
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "negative": "blurry, bad quality, low resolution, blurry",
+   "positive": "a lighthouse on a cliff at dusk",
+   "regions": [],
+   "style": "best quality, highres"
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     800,
+     800
+    ],
+    "initial": [
+     800,
+     800
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   }
+  },
+  "kind": "generate",
+  "models": {
+   "checkpoint": "RealVisXL_V5.0_fp16.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default",
+   "version": "sdxl"
+  },
+  "sampling": {
+   "cfg_scale": 7.0,
+   "sampler": "dpmpp_2m",
+   "scheduler": "karras",
+   "seed": 1234,
+   "total_steps": 20
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "CheckpointLoaderSimple",
+   "inputs": {
+    "ckpt_name": "RealVisXL_V5.0_fp16.safetensors"
+   }
+  },
+  "10": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "9",
+     1
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "11": {
+   "class_type": "ImageScale",
+   "inputs": {
+    "crop": "disabled",
+    "height": 512,
+    "image": [
+     "10",
+     0
+    ],
+    "upscale_method": "lanczos",
+    "width": 512
+   }
+  },
+  "12": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "11",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "EmptyLatentImage",
+   "inputs": {
+    "batch_size": 1,
+    "height": 800,
+    "width": 800
+   }
+  },
+  "3": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "a lighthouse on a cliff at dusk, best quality, highres"
+   }
+  },
+  "4": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "blurry, bad quality, low resolution, blurry"
+   }
+  },
+  "5": {
+   "class_type": "CFGGuider",
+   "inputs": {
+    "cfg": 7.0,
+    "model": [
+     "1",
+     0
+    ],
+    "negative": [
+     "4",
+     0
+    ],
+    "positive": [
+     "3",
+     0
+    ]
+   }
+  },
+  "6": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "1",
+     0
+    ],
+    "scheduler": "karras",
+    "steps": 20
+   }
+  },
+  "7": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "8": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "dpmpp_2m"
+   }
+  },
+  "9": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "5",
+     0
+    ],
+    "latent_image": [
+     "2",
+     0
+    ],
+    "noise": [
+     "7",
+     0
+    ],
+    "sampler": [
+     "8",
+     0
+    ],
+    "sigmas": [
+     "6",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "sdxl",
+  "controls": [],
+  "id": "sdxl-generate",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {}
+ }
+}

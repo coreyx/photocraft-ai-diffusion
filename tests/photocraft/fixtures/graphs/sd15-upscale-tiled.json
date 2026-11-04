@@ -1,0 +1,380 @@
+{
+ "input": {
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [
+    {
+     "mode": "blur",
+     "strength": 0.5
+    }
+   ],
+   "positive": "4k uhd",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     672,
+     672
+    ],
+    "initial": [
+     1024,
+     1024
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     1024,
+     1024
+    ]
+   },
+   "initial_image": "image:dab14b9d038b9c03d5867fa4"
+  },
+  "kind": "upscale_tiled",
+  "models": {
+   "checkpoint": "dreamshaper_8.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default"
+  },
+  "sampling": {
+   "cfg_scale": 7.0,
+   "sampler": "dpmpp_2m",
+   "scheduler": "karras",
+   "seed": 1234,
+   "start_step": 14,
+   "total_steps": 20
+  },
+  "upscale": {
+   "model": "4x_NMKD-Superscale-SP_178000_G.pth"
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "CheckpointLoaderSimple",
+   "inputs": {
+    "ckpt_name": "dreamshaper_8.safetensors"
+   }
+  },
+  "10": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": ""
+   }
+  },
+  "11": {
+   "class_type": "ImageScale",
+   "inputs": {
+    "crop": "disabled",
+    "height": 1024,
+    "image": [
+     "2",
+     0
+    ],
+    "upscale_method": "lanczos",
+    "width": 1024
+   }
+  },
+  "12": {
+   "class_type": "ETN_ExtractImageTile",
+   "inputs": {
+    "image": [
+     "11",
+     0
+    ],
+    "index": 0,
+    "layout": [
+     "6",
+     0
+    ]
+   }
+  },
+  "13": {
+   "class_type": "ControlNetLoader",
+   "inputs": {
+    "control_net_name": "control_lora_rank128_v11f1e_sd15_tile_fp16.safetensors"
+   }
+  },
+  "14": {
+   "class_type": "ControlNetApplyAdvanced",
+   "inputs": {
+    "control_net": [
+     "13",
+     0
+    ],
+    "end_percent": 1.0,
+    "image": [
+     "12",
+     0
+    ],
+    "negative": [
+     "10",
+     0
+    ],
+    "positive": [
+     "9",
+     0
+    ],
+    "start_percent": 0.0,
+    "strength": 0.5,
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "15": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "7",
+     0
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "16": {
+   "class_type": "SetLatentNoiseMask",
+   "inputs": {
+    "mask": [
+     "8",
+     0
+    ],
+    "samples": [
+     "15",
+     0
+    ]
+   }
+  },
+  "17": {
+   "class_type": "CFGGuider",
+   "inputs": {
+    "cfg": 7.0,
+    "model": [
+     "1",
+     0
+    ],
+    "negative": [
+     "14",
+     1
+    ],
+    "positive": [
+     "14",
+     0
+    ]
+   }
+  },
+  "18": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "1",
+     0
+    ],
+    "scheduler": "karras",
+    "steps": 20
+   }
+  },
+  "19": {
+   "class_type": "SplitSigmas",
+   "inputs": {
+    "sigmas": [
+     "18",
+     0
+    ],
+    "step": 14
+   }
+  },
+  "2": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:5bc3c7e2dab138ce18a3878b"
+   }
+  },
+  "20": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "21": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "dpmpp_2m"
+   }
+  },
+  "22": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "17",
+     0
+    ],
+    "latent_image": [
+     "16",
+     0
+    ],
+    "noise": [
+     "20",
+     0
+    ],
+    "sampler": [
+     "21",
+     0
+    ],
+    "sigmas": [
+     "19",
+     1
+    ]
+   }
+  },
+  "23": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "22",
+     1
+    ],
+    "vae": [
+     "1",
+     2
+    ]
+   }
+  },
+  "24": {
+   "class_type": "ETN_MergeImageTile",
+   "inputs": {
+    "image": [
+     "5",
+     0
+    ],
+    "index": 0,
+    "layout": [
+     "6",
+     0
+    ],
+    "tile": [
+     "23",
+     0
+    ]
+   }
+  },
+  "25": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "24",
+     0
+    ]
+   }
+  },
+  "3": {
+   "class_type": "UpscaleModelLoader",
+   "inputs": {
+    "model_name": "4x_NMKD-Superscale-SP_178000_G.pth"
+   }
+  },
+  "4": {
+   "class_type": "ImageUpscaleWithModel",
+   "inputs": {
+    "image": [
+     "2",
+     0
+    ],
+    "upscale_model": [
+     "3",
+     0
+    ]
+   }
+  },
+  "5": {
+   "class_type": "ImageScale",
+   "inputs": {
+    "crop": "disabled",
+    "height": 1024,
+    "image": [
+     "4",
+     0
+    ],
+    "upscale_method": "lanczos",
+    "width": 1024
+   }
+  },
+  "6": {
+   "class_type": "ETN_TileLayout",
+   "inputs": {
+    "blending": 24,
+    "image": [
+     "5",
+     0
+    ],
+    "min_tile_size": 672,
+    "multiple": 16,
+    "padding": 48
+   }
+  },
+  "7": {
+   "class_type": "ETN_ExtractImageTile",
+   "inputs": {
+    "image": [
+     "5",
+     0
+    ],
+    "index": 0,
+    "layout": [
+     "6",
+     0
+    ]
+   }
+  },
+  "8": {
+   "class_type": "ETN_GenerateTileMask",
+   "inputs": {
+    "index": 0,
+    "layout": [
+     "6",
+     0
+    ]
+   }
+  },
+  "9": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "1",
+     1
+    ],
+    "text": "4k uhd"
+   }
+  }
+ },
+ "scenario": {
+  "action": "upscale",
+  "arch": "sd15",
+  "controls": [],
+  "id": "sd15-upscale-tiled",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {
+   "diffusion": true,
+   "factor": 2.0,
+   "strength": 0.3
+  }
+ }
+}

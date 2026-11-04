@@ -1,0 +1,218 @@
+{
+ "input": {
+  "batch_count": 4,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [],
+   "positive": "a lighthouse on a cliff at dusk",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   },
+   "initial_image": "image:dab14b9d038b9c03d5867fa4"
+  },
+  "kind": "refine",
+  "models": {
+   "checkpoint": "z_image_turbo_fp8_e4m3fn.safetensors",
+   "loras": [],
+   "vae": "Checkpoint Default",
+   "version": "zimage"
+  },
+  "sampling": {
+   "cfg_scale": 1.0,
+   "sampler": "euler",
+   "scheduler": "simple",
+   "seed": 1234,
+   "start_step": 3,
+   "total_steps": 8
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "UNETLoader",
+   "inputs": {
+    "unet_name": "z_image_turbo_fp8_e4m3fn.safetensors",
+    "weight_dtype": "default"
+   }
+  },
+  "10": {
+   "class_type": "SplitSigmas",
+   "inputs": {
+    "sigmas": [
+     "9",
+     0
+    ],
+    "step": 3
+   }
+  },
+  "11": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "12": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "euler"
+   }
+  },
+  "13": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "8",
+     0
+    ],
+    "latent_image": [
+     "7",
+     0
+    ],
+    "noise": [
+     "11",
+     0
+    ],
+    "sampler": [
+     "12",
+     0
+    ],
+    "sigmas": [
+     "10",
+     1
+    ]
+   }
+  },
+  "14": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "13",
+     1
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "15": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "14",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "CLIPLoaderGGUF",
+   "inputs": {
+    "clip_name": "Qwen3-4B-Q4_K_M.gguf",
+    "type": "lumina2"
+   }
+  },
+  "3": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "flux_vae.safetensors"
+   }
+  },
+  "4": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:5bc3c7e2dab138ce18a3878b"
+   }
+  },
+  "5": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "a lighthouse on a cliff at dusk"
+   }
+  },
+  "6": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "4",
+     0
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "7": {
+   "class_type": "RepeatLatentBatch",
+   "inputs": {
+    "amount": 4,
+    "samples": [
+     "6",
+     0
+    ]
+   }
+  },
+  "8": {
+   "class_type": "BasicGuider",
+   "inputs": {
+    "conditioning": [
+     "5",
+     0
+    ],
+    "model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "9": {
+   "class_type": "BasicScheduler",
+   "inputs": {
+    "denoise": 1.0,
+    "model": [
+     "1",
+     0
+    ],
+    "scheduler": "simple",
+    "steps": 8
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "zimage",
+  "controls": [],
+  "id": "zimage-refine",
+  "inpaint_mode": null,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 0.6,
+  "upscale": {}
+ }
+}
