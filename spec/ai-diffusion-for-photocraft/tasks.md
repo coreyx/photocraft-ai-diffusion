@@ -60,7 +60,7 @@ Both repositories exist with their history, licenses and tooling, and the upstre
 
 PhotoCraft discovers, launches, talks to and survives a test plug-in.
 
-- [ ] **TASK-5: Protocol crate**
+- [x] **TASK-5: Protocol crate**
   - **Associated Acceptance Criteria**: `1.4`, `1.8`
   - **Concrete Steps**:
     1. Create `crates/process-plugin-protocol` with `Frame`, the `Header` request/response/event types, typed params and results for every method in design.md, the widget `Node`/`Patch`/`InputEvent` types, and `PROTOCOL_VERSION`.
