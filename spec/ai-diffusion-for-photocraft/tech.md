@@ -41,7 +41,7 @@ The work spans two repositories.
 | Piece | Location | Layer | Notes |
 |---|---|---|---|
 | Protocol types and frame codec | new crate `crates/process-plugin-protocol` (`photocraft-process-plugin-protocol`) | L0, standalone | Pure `serde` types, frame encode and decode, version constants. Builds for wasm. Registered in `xtask/src/layers.rs`. |
-| Request handlers against the document | new engine module `crates/engine/src/process_plugin/` | L5 | Document, layer, pixel, selection, blob, timeline, vector, preview-layer and action-registry handling, each as `Session` operations. No process spawning and no I/O. Change events come from per-document revision and selection diffs. |
+| Request handlers against the document | new engine module `crates/engine/src/process_plugin/` | L5 | Document, layer, pixel, selection, blob, vector, preview-layer and action-registry handling, each as `Session` operations. No process spawning and no I/O. Change events come from per-document revision and selection diffs. |
 | Process spawning and transport | `apps/photocraft/src/process_plugins.rs` | exempt (app) | Native only. Injected through `Services` the same way the update check is (`updates_cmds.rs` precedent). |
 | UI | new `crates/ui-egui/src/plugin_ui/` | L6 | Widget-tree renderer, a generic plug-in dock group with dynamic tabs, dialogs, the plug-in manager preferences page, and plug-in actions in menus, the command palette and Keyboard Shortcuts. |
 | Document storage | `photocraft-doc` (`Document.plugin_data`), `photocraft-format` (`.pcraft` version bump), `photocraft-io` / `photocraft-psd` (PSD image resource) | L1/L3/L4 | See "Plug-in data in documents". |

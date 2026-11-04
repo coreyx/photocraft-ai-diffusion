@@ -6,7 +6,7 @@ status: approved
 
 ## 1. Project Summary
 
-**AI Diffusion for PhotoCraft** brings the full feature set of Krita AI Diffusion v1.54.0 into PhotoCraft, the open-source Rust image editor. Users get generation, refinement, inpainting, live painting, upscaling, animation, regional prompts, control layers and custom ComfyUI graphs in a docked panel, driven by a local or remote ComfyUI server, and it should behave the same way Krita AI Diffusion does in Krita.
+**AI Diffusion for PhotoCraft** brings the full feature set of Krita AI Diffusion v1.54.0 into PhotoCraft, the open-source Rust image editor. Users get generation, refinement, inpainting, live painting, upscaling, regional prompts, control layers and custom ComfyUI graphs in a docked panel, driven by a local or remote ComfyUI server, and it should behave the same way Krita AI Diffusion does in Krita.
 
 The work has two parts with deliberately separate licenses:
 
@@ -23,6 +23,7 @@ The plug-in keeps **its own configuration**, at parity with Krita AI Diffusion's
 The parity baseline is Krita AI Diffusion **v1.54.0** (commit `828b70c`). The host baseline is PhotoCraft at commit `5617e00` or later.
 
 **Out of scope**:
+- the Animation workspace, the Graph workspace's Generate Animation mode and live-painting recording, deferred until PhotoCraft has a Frame Animation panel (REQ-26), along with the host's timeline access (REQ-9);
 - the PhotoCraft web (WebAssembly) build;
 - importing Krita `.kra` files;
 - the Interstice cloud service itself;
@@ -120,17 +121,17 @@ Requirements use the Easy Approach to Requirements Syntax (EARS):
 
 ### REQ-4: Change events
 
-**User Story**: As a plug-in author, I want to be told when the user changes the document, layers, selection, active layer, active document or current frame, so that the plug-in can react (for example, in live painting) without polling.
+**User Story**: As a plug-in author, I want to be told when the user changes the document, layers, selection, active layer or active document, so that the plug-in can react (for example, in live painting) without polling.
 
 **Source**: derived from app-findings.md (Krita AI Diffusion polls every 20–500 ms, inventory §5.9). The push model is new.
 
-- **4.0.1 (Event-Driven)**: When a document's pixels, layer tree, layer properties, selection, active layer, active document or current animation frame changes, the host shall send a change event to each subscribed plug-in. The event names the document and what kind of change it was, and includes a monotonically increasing revision.
+- **4.0.1 (Event-Driven)**: When a document's pixels, layer tree, layer properties, selection, active layer or active document changes, the host shall send a change event to each subscribed plug-in. The event names the document and what kind of change it was, and includes a monotonically increasing revision.
 - **4.0.2 (Ubiquitous)**: The host shall coalesce events so that a burst of changes, such as a brush stroke, produces at most one event per kind per display frame.
 - **4.0.3 (Event-Driven)**: When a document is opened, closed, saved or renamed, the host shall send a matching lifecycle event.
 
 #### Acceptance Criteria
 - **4.1**: Painting one stroke produces at least one pixels-changed event within 50 ms of the stroke ending, and no more than one per frame while the stroke is in progress.
-- **4.2**: Each of the following produces the matching event within 50 ms: changing the selection, switching the active layer, switching documents, scrubbing the timeline, renaming a layer, and reordering layers.
+- **4.2**: Each of the following produces the matching event within 50 ms: changing the selection, switching the active layer, switching documents, renaming a layer, and reordering layers.
 - **4.3**: Changes made by the plug-in itself raise events tagged with the plug-in as their origin.
 
 ### REQ-5: Plug-in panels and dialogs drawn by the host
@@ -213,11 +214,13 @@ Requirements use the Easy Approach to Requirements Syntax (EARS):
 - **8.3**: Opening, editing and saving such a document with the plug-in disabled keeps the blobs.
 - **8.4**: Layer key/value data survives saving, reopening and duplicating the layer.
 
-### REQ-9: Animation and timeline access
+### REQ-9: Timeline access and frame import (deferred)
 
-**User Story**: As a plug-in author, I want to read the timeline and an animated layer's frames and to create animated layers from frames, so that animation generation works.
+**User Story**: As a plug-in author, I want to read the timeline and an animated layer's frames and to create animated layers from frames, so that animation generation and live recording work.
 
 **Source**: reverse-engineered from inventory §1.1.4 and §5.7. The mapping onto PhotoCraft's frame model is an open question in app-findings.md.
+
+**Status**: deferred with REQ-26, and not part of this release. Nothing in this release needs timeline access once the Animation workspace, Generate Animation and live recording are deferred. The statements and criteria below record the target behavior.
 
 - **9.0.1 (Ubiquitous)**: The host shall expose a document's timeline: whether it exists, fps, current frame, playback range and frame count.
 - **9.0.2 (Ubiquitous)**: The host shall report which frames of a layer hold distinct content (keyframes), read a layer's pixels at a given frame, and write pixels into a layer at a given frame.
@@ -309,17 +312,17 @@ Requirements use the Easy Approach to Requirements Syntax (EARS):
 
 ### REQ-14: Docker panel and workspaces
 
-**User Story**: As a user, I want one AI panel with the same five workspaces as Krita AI Diffusion, so that my workflow carries over.
+**User Story**: As a user, I want one AI panel with the same workspaces as Krita AI Diffusion, so that my workflow carries over.
 
 **Source**: reverse-engineered from inventory §1.1 and §2.1–§2.2.
 
-- **14.0.1 (Ubiquitous)**: The plug-in panel shall provide the Generate, Upscale, Live, Animation and Graph workspaces. Each has the controls, defaults and labels listed in inventory §1.1 and §2.2, selected through a workspace drop-down.
+- **14.0.1 (Ubiquitous)**: The plug-in panel shall provide the Generate, Upscale, Live and Graph workspaces. The Animation workspace is deferred (REQ-26) and hidden. Each workspace has the controls, defaults and labels listed in inventory §1.1 and §2.2, selected through a workspace drop-down.
 - **14.0.2 (State-Driven)**: While the plug-in has no connection, the panel shall show the connection status and a button that opens Settings › Connection.
 - **14.0.3 (Event-Driven)**: When the user leaves the Live workspace, live generation shall stop.
 - **14.0.4 (Ubiquitous)**: Each document shall keep its own workspace, prompts, regions, control layers, queue and history. Switching documents switches the panel to that document's state.
 
 #### Acceptance Criteria
-- **14.1**: The workspace drop-down lists exactly Generate, Upscale, Live, Animation and Graph, and each one shows the controls in the inventory.
+- **14.1**: The workspace drop-down lists exactly Generate, Upscale, Live and Graph, and each one shows the controls in the inventory.
 - **14.2**: With two documents open, each keeps its own prompt and history when switching between them.
 - **14.3**: Switching from Live to Generate stops live generation within one cycle.
 
@@ -529,18 +532,19 @@ Requirements use the Easy Approach to Requirements Syntax (EARS):
   - slim region and root prompts;
   - add region and control layer;
   - a preview with a busy overlay;
-  - Apply and Apply to New Layer;
-  - recording.
+  - Apply and Apply to New Layer.
+
+  Recording is deferred with REQ-26, and its button is hidden.
 - **24.0.2 (State-Driven)**: While live generation is active and its document is the active one, the plug-in shall rebuild the workflow input whenever the document changes. When the input differs from the last one, it shall schedule a job using the grace-period rules in inventory §1.1.2.
 - **24.0.3 (Ubiquitous)**: Live jobs shall use the style's live sampler preset and its auto-injected LoRA, batch size 1, and live region padding. The result is shown with the hatch pattern outside the generated area (REQ-7).
-- **24.0.4 (Event-Driven)**: When recording, the plug-in shall write `frame-<n>.webp` files into `<document>.live-frames/` next to the saved document. When recording stops, it shall import them as an animated layer `[Rec] <start>-<end>: <prompt>` (REQ-9). Recording requires a saved document.
+- **24.0.4 (Event-Driven)**: *Deferred with REQ-26.* When recording, the plug-in shall write `frame-<n>.webp` files into `<document>.live-frames/` next to the saved document. When recording stops, it shall import them as an animated layer `[Rec] <start>-<end>: <prompt>` (REQ-9). Recording requires a saved document.
 - **24.0.5 (Unwanted Behavior)**: If a live job fails, then the plug-in shall stop live mode and show the error.
 
 #### Acceptance Criteria
 - **24.1**: With an SD1.5 or SDXL live style on the reference GPU, a stroke ends with a refreshed preview within the generation time plus ≤ 250 ms of plug-in and host overhead.
 - **24.2**: Painting with no net change to the input (for example, undoing a stroke right away) schedules no new job.
 - **24.3**: Apply copies the live result into the active layer. Apply to New Layer creates a new layer.
-- **24.4**: Recording 5 results and stopping creates a `[Rec]` animated layer with 5 frames.
+- **24.4**: *Deferred with REQ-26.* Recording 5 results and stopping creates a `[Rec]` animated layer with 5 frames.
 
 ### REQ-25: Upscale workspace
 
@@ -557,11 +561,13 @@ Requirements use the Easy Approach to Requirements Syntax (EARS):
 - **25.2**: For a fixture, the tiled upscale graph (tile size, overlap, unblur ControlNet) matches Krita AI Diffusion.
 - **25.3**: With no Unblur ControlNet installed, Image guidance is disabled and shows the tooltip.
 
-### REQ-26: Animation workspace
+### REQ-26: Animation workspace (deferred)
 
 **User Story**: As a user, I want to generate a full animation or a single frame, so that I can make animated pieces.
 
 **Source**: reverse-engineered from inventory §1.1.4. Uses REQ-9.
+
+**Status**: deferred, and not part of this release. It's a future improvement, to be revisited once PhotoCraft implements a Frame Animation panel. The statements and criteria below record the target behavior; they are not implemented or tested now. Deferred with it: the Graph workspace's Generate Animation mode (REQ-27), live-painting recording (REQ-24.0.4, 24.4), and all of REQ-9.
 
 - **26.0.1 (Ubiquitous)**: The Animation workspace shall provide sampling quality (Fast or Quality), Full Animation or Single Frame mode, a target layer for Single Frame mode, the root prompt and negative prompt, strength and control layers.
 - **26.0.2 (Event-Driven)**: When Full Animation runs, the plug-in shall enqueue one job per keyframe (or per frame at strength 1) over the playback range. It samples control layers and region masks at each frame, saves `frame-<n>.png` into `<document>.animation/`, reuses identical frames, and imports the result as `[Generated] <start>-<end>: <prompt>`. A saved document is required, and at strength below 1 the active layer must be animated.
@@ -581,7 +587,7 @@ Requirements use the Easy Approach to Requirements Syntax (EARS):
 - **27.0.1 (Ubiquitous)**: The plug-in shall list workflows from local files (`<plug-in data>/workflows/`), remote workflows published from the ComfyUI web UI, and workflows embedded in the document. They are sorted and labelled as in inventory §1.1.5, with import, save-as, overwrite and delete, and their confirmations.
 - **27.0.2 (Ubiquitous)**: The plug-in shall support the node types in inventory §1.1.5: `ETN_KritaCanvas`, `ETN_KritaSelection`, `ETN_Parameter`, `ETN_KritaImageLayer`, `ETN_KritaMaskLayer`, `ETN_KritaStyle`, `ETN_KritaStyleAndPrompt`, the Krita Output node and Send Text. These are the node pack's own class names and are used as they are.
 - **27.0.3 (Ubiquitous)**: The plug-in shall build parameter widgets for every parameter kind, with grouping and ordering by name prefix, per-group and global reset, duplicate-name validation, and values stored per workflow.
-- **27.0.4 (Ubiquitous)**: The plug-in shall provide the Generate, Generate Live and Generate Animation modes. It shall map outputs (offset, name, batch mode, resize canvas, and text outputs as labels or rich text) as in inventory §1.1.5.
+- **27.0.4 (Ubiquitous)**: The plug-in shall provide the Generate and Generate Live modes. Generate Animation is deferred with REQ-26 and hidden. It shall map outputs (offset, name, batch mode, resize canvas, and text outputs as labels or rich text) as in inventory §1.1.5.
 - **27.0.5 (Event-Driven)**: When the user clicks Open Web UI, the plug-in shall open the server URL in the browser and auto-select the next remote workflow published within 5 minutes.
 
 #### Acceptance Criteria
@@ -745,7 +751,7 @@ Krita AI Diffusion is configured with a ComfyUI server on the same machine in on
 
 #### Acceptance Criteria
 - **35.1**: Each of the 15 actions, given a shortcut, does what the inventory describes.
-- **35.2**: Toggle Workspace cycles through all 5 workspaces in order, Animation included.
+- **35.2**: Toggle Workspace cycles through the 4 available workspaces in order. Animation is skipped while it's deferred (REQ-26).
 
 ### REQ-36: Plug-in information, updates and diagnostics
 
