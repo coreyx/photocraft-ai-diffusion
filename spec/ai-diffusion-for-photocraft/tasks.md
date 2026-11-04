@@ -25,7 +25,7 @@ A task isn't done until its tests and the relevant existing suites pass (`cargo 
 
 Both repositories exist with their history, licenses and tooling, and the upstream parity fixtures are captured.
 
-- [ ] **TASK-1: Create the PhotoCraft fork and host branch**
+- [x] **TASK-1: Create the PhotoCraft fork and host branch**
   - **Associated Acceptance Criteria**: none (project setup)
   - **Concrete Steps**:
     1. Confirm with the user, then run `gh repo fork storytold/photocraft` under the user's account. Clone it beside this repository.
