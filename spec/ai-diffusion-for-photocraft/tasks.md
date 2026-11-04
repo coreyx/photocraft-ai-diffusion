@@ -68,7 +68,7 @@ PhotoCraft discovers, launches, talks to and survives a test plug-in.
     3. Register the crate in `xtask/src/layers.rs` at L0, with `[lints] workspace = true`.
     4. Add unit tests, a `cargo fuzz` target for the decoder, and confirm the wasm check passes.
 
-- [ ] **TASK-6: Plug-in manager: discovery, launch, handshake, shutdown**
+- [x] **TASK-6: Plug-in manager: discovery, launch, handshake, shutdown**
   - **Associated Acceptance Criteria**: `1.1`, `1.2`, `1.3`, `1.5`, `1.7`
   - **Concrete Steps**:
     1. Implement `apps/photocraft/src/process_plugins.rs`:
