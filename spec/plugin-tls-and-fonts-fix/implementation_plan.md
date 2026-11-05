@@ -57,7 +57,7 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
 ### Tests
 
 #### [NEW] `tests/photocraft/test_qt_setup.py`
-- [ ] **TASK-8:** `configure_fonts` unit tests:
+- [x] **TASK-8:** `configure_fonts` unit tests:
   - Windows with no setting: the folder is set;
   - an existing setting is kept;
   - macOS and Linux: nothing is set.
