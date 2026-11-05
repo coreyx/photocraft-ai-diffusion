@@ -187,7 +187,7 @@ A plug-in can build a full UI inside PhotoCraft, and the host series is ready to
     2. Send `dialog.input`/`dialog.closed` events.
     3. Add tests for gallery dialogs and snapshots.
 
-- [ ] **TASK-20: Runtime plug-in actions**
+- [x] **TASK-20: Runtime plug-in actions**
   - **Associated Acceptance Criteria**: `6.1`, `6.2`, `6.3`
   - **Concrete Steps**:
     1. Implement `action.register`/`action.update`, and show actions in a "Plug-ins ▸ <plug-in>" menu, the command palette and Edit › Keyboard Shortcuts.
