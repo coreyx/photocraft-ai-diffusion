@@ -34,7 +34,7 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
 - [x] **TASK-1:** `configure_fonts(environ: MutableMapping[str, str], platform: str = sys.platform) -> str | None`:
   - On Windows, when `QT_QPA_FONTDIR` isn't set, set it to `%WINDIR%\Fonts`. Qt's offscreen platform on Windows looks in Qt's own (empty) font folder otherwise.
   - Return the folder set, or `None`. An explicit setting is kept, and other platforms are left alone.
-- [ ] **TASK-2:** `use_platform_tls() -> str`:
+- [x] **TASK-2:** `use_platform_tls() -> str`:
   - When Qt offers the platform's own TLS backend (`schannel` on Windows, `securetransport` on macOS), make it the active one with `QSslSocket.setActiveBackend`, before any request is made.
   - Return the active backend's name.
   - A docstring explains why: two OpenSSL builds in one process crash it (the findings).

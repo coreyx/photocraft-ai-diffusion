@@ -25,3 +25,27 @@ def configure_fonts(environ: MutableMapping[str, str], platform: str = sys.platf
     folder = ntpath.join(windows, "Fonts")  # a Windows path, wherever the tests run
     environ["QT_QPA_FONTDIR"] = folder
     return folder
+
+
+#: Qt's TLS backends that use the operating system's own TLS, in order of preference.
+PLATFORM_TLS = ("schannel", "securetransport")
+
+
+def use_platform_tls() -> str:
+    r"""Make the operating system's TLS (schannel on Windows, Secure Transport on macOS) Qt's
+    active backend, where Qt has one, before any request is made. Returns the active backend.
+
+    Qt otherwise prefers its OpenSSL backend whenever it can load an OpenSSL from the DLL search
+    path, such as the one in Git for Windows' ``mingw64\bin``. Python's ``ssl``, which the
+    plug-in imports through websockets, has already loaded Python's own OpenSSL by then, and two
+    OpenSSL builds in one process crash it about 30 seconds after Qt's first HTTPS request
+    (``investigations/plugin-crash-after-30-seconds/findings.md``). Linux has no such backend:
+    there Qt's choice is left as it is.
+    """
+    from PyQt6.QtNetwork import QSslSocket
+
+    # Set rather than list first: asking which backends are available can load OpenSSL.
+    for name in PLATFORM_TLS:
+        if QSslSocket.setActiveBackend(name):
+            break
+    return QSslSocket.activeBackend()
