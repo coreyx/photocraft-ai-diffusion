@@ -9,7 +9,7 @@ status: approved
 The work spans two repositories.
 
 - **Host side**, in a GitHub fork of PhotoCraft, MIT OR Apache-2.0: the PhotoCraft toolchain as it is (Rust 1.95, edition 2024, egui 0.37 / craft-ui, `photocraft-cms`, `photocraft-psd`), plus a new protocol crate and new engine, app and UI modules. It talks to plug-ins over the child process's stdio, using length-prefixed frames that carry a JSON header and a raw binary payload.
-- **Plug-in side**, in this repository, GPL-3.0: Krita AI Diffusion's Python, merged in with its git history, running on CPython 3.12 that `uv` provisions, with headless PyQt6 6.11 (offscreen platform). On top of that sit a `krita` API shim over the protocol and a generic Qt-widget mirror that sends Krita AI Diffusion's unchanged widget tree to PhotoCraft to draw natively. Tests use pytest, pytest-cov and graph-parity fixtures captured from unmodified Krita AI Diffusion.
+- **Plug-in side**, in this repository, GPL-3.0: Krita AI Diffusion's Python, merged in with its git history, running on a CPython 3.12 the package bundles, with headless PyQt6 6.11 that `uv` installs on first run (offscreen platform). On top of that sit a `krita` API shim over the protocol and a generic Qt-widget mirror that sends Krita AI Diffusion's unchanged widget tree to PhotoCraft to draw natively. Tests use pytest, pytest-cov and graph-parity fixtures captured from unmodified Krita AI Diffusion.
 
 ## Decisions
 
@@ -141,7 +141,7 @@ magic "PCPP" (4 bytes) · header length u32 LE · payload length u64 LE · JSON 
 ### Plug-in runtime: Python and Qt
 
 **Choice:**
-- **CPython 3.12**, provisioned by **uv** (pinned 0.11.x) from python-build-standalone into `<plug-in data>/runtime/` on first run, using `uv sync --frozen` against a committed `uv.lock` (REQ-13.0.1–13.0.2). The plug-in package bundles the platform's `uv` binary.
+- **CPython 3.12** from python-build-standalone, bundled in each platform's package at build time, and **uv** (pinned 0.11.x), whose binary the package also bundles. On first run a small Python bootstrap says `hello` at once (PhotoCraft wants it within 10 seconds, too soon to download Python), shows progress in the panel, and runs `uv sync --frozen` against a committed `uv.lock` into `<plug-in data>/runtime/` for PyQt6, then continues in the same process (REQ-13.0.1–13.0.2). Bundling Python adds about 20 MB per platform; downloading it on first run instead would need a native bootstrap or a host change, and was set aside.
 - **PyQt6 6.11.x** (GPL-3.0; bundles Qt 6.11), with `QApplication` started under `QT_QPA_PLATFORM=offscreen`. QtCore and QtNetwork run upstream's logic unchanged. QtGui provides `QImage`/`QPainter` image maths. QtWidgets exists only for the Qt mirror. No display server is needed (REQ-13.0.4, 13.2).
 - **python-websockets** pinned to the commit of upstream's submodule (`624a36c`, BSD-3), installed as a normal dependency instead of a git submodule. **debugpy** is a dev dependency only.
 - **Event loop**: upstream's `eventloop.py` (asyncio pumped by a 20 ms `QTimer`), unchanged. The frame reader runs on a Python thread and posts to the Qt thread through a queued signal.
@@ -245,7 +245,7 @@ Detection of Krita AI Diffusion (REQ-31) is a new module, `photocraft_host/krita
 - **Fork maintenance.** Upstream PhotoCraft merges dozens of PRs a day. The host series must be rebased often, and conflicts concentrate in `Document`, `.pcraft`, `cmd.rs`, the dock tables and the menus. Mitigation: keep shared-file edits surgical, rebase weekly, and offer the series upstream early. Upstream may decline it ([APP-010]), which would make the fork permanent.
 - **Upstream baseline is a pre-release.** Krita AI Diffusion's newest tag is `v1.54.0-pre` (`828b70c`), which is the commit the requirements name, and there's no final `v1.54.0` tag yet. When the final tag appears, it's merged in as a normal upstream update.
 - **Qt mirror complexity.** Popups, menus, focus, size policies and widgets that draw themselves are the hardest parts. Mitigation: build a gallery test early (REQ-5.1), keep the image fallback for anything the mapping doesn't cover, and measure diff traffic.
-- **Runtime size and first start.** PyQt6 (~100 MB including Qt) plus CPython (~30 MB) download on first run. A first start without the network can't complete until the offline package variant exists.
+- **Runtime size and first start.** PyQt6 (~100 MB including Qt) downloads on first run; CPython (~20 MB) is in the package. A first start without the network can't complete until the offline package variant exists.
 - **Python start time.** Expect 1–3 s to the plug-in's `hello`. That's within REQ-1.1's 5 s, but it needs watching on slow disks.
 - **macOS Gatekeeper.** A downloaded zip containing a `uv` binary gets quarantined. The plug-in manager must clear the quarantine attribute on install, or the packages must be signed and notarized. Unsigned packages will need a manual approval step.
 - **Licenses.**

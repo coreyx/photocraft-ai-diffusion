@@ -375,8 +375,8 @@ The plug-in installs from a release package, updates itself, and passes the full
 - [ ] **TASK-42: Packaging and first-run provisioning**
   - **Associated Acceptance Criteria**: `13.1`
   - **Concrete Steps**:
-    1. Write `packaging/build.py`, which produces per-platform zips: the manifest (`io.github.coreyx.ai-diffusion-for-photocraft`), the `uv` binary, sources, `uv.lock` and licenses.
-    2. Implement first-run provisioning (`uv python install 3.12`, then `uv sync --frozen` into `<plug-in data>/runtime/`) with progress in the panel. The manifest launch command runs a small bootstrap.
+    1. Write `packaging/build.py`, which produces per-platform zips: the manifest (`io.github.coreyx.ai-diffusion-for-photocraft`), a python-build-standalone CPython 3.12, the `uv` binary, sources, `uv.lock` and licenses.
+    2. Implement first-run provisioning with a Python bootstrap that the manifest launches with the bundled Python: `hello` at once, progress in the panel while `uv sync --frozen` installs into `<plug-in data>/runtime/`, then the plug-in starts in the same process.
     3. Add a GitHub Actions release workflow that builds the packages and publishes `SHA256SUMS`.
     4. On a clean VM with PhotoCraft from the fork: install the package, start PhotoCraft, and confirm the panel shows the Connection setup.
 
