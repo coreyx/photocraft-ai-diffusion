@@ -195,7 +195,7 @@ A plug-in can build a full UI inside PhotoCraft, and the host series is ready to
     3. Send `action.triggered` with the active document.
     4. Add tests: 15 registered actions, triggering from the menu and from a shortcut, persistence across restarts, and a conflict.
 
-- [ ] **TASK-21: Host documentation, localization and upstream readiness**
+- [x] **TASK-21: Host documentation, localization and upstream readiness**
   - **Associated Acceptance Criteria**: `12.1`, `12.2`, `12.3`, `12.4`
   - **Concrete Steps**:
     1. Write `docs/process-plugins.md`: every message type with an example, the manifest format, and the security model.

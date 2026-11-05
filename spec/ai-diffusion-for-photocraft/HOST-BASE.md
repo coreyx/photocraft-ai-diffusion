@@ -33,6 +33,7 @@ The PhotoCraft fork that carries the process plug-in host (Part A of [requiremen
 | `photocraft-engine::it atn_crystallize_cell_size::integer_cell_sizes_and_defaults_preserve_playback` | Same memory-admission error |
 | `photocraft-algo tests::relight_admission_tracks_the_document_dependent_working_set` | Working-set assertion (`crates/algo/src/tests.rs:16`) |
 | `photocraft-gpu::it timing::a_refresh_that_submits_several_times_is_one_measurement` | GPU timing: summed GPU time below the measured wait |
+| `photocraft-gpu::it timing::gpu_time_tracks_execution_not_submission` | Occasional, under a full parallel run only: GPU timing again. It passed 5 of 5 runs on its own, and the fork doesn't change `photocraft-gpu` |
 
 **How host tasks are gated.** `cargo xtask ci` stops at the first failing step, so on this machine it always stops at `test` because of the four tests above. A host task's gate passes when:
 1. `cargo xtask ci` reports fmt, clippy, layers and scorecard as ok;
@@ -44,3 +45,23 @@ The PhotoCraft fork that carries the process plug-in host (Part A of [requiremen
    - `cargo xtask i18n-coverage`
 
 The fork leaves PhotoCraft's own CI workflows unchanged, and they run on GitHub's hosted runners. There, the four machine-dependent tests are expected to pass as they do upstream.
+
+## Upstream series
+
+`feat/process-plugins` keeps one commit per task, with the spec trailers. `feat/process-plugins-upstream` holds the same final tree as eleven topic commits on the same base, ready to propose upstream. Each topic ends at a tree that passed its gate on `feat/process-plugins`, with only comment and test-label wording made neutral. No commit's diff or message names a particular plug-in.
+
+| Upstream commit | Topic | Tasks |
+|---|---|---|
+| 1 | Protocol crate | TASK-5 |
+| 2 | Launching and supervising plug-ins, echo test plug-in | TASK-6, TASK-7 |
+| 3 | Preferences › Plug-ins | TASK-8 |
+| 4 | Persistent layer uids | TASK-9 |
+| 5 | Document, layer, undo, pixel, selection and mask requests | TASK-10, TASK-11 |
+| 6 | Change events | TASK-12 |
+| 7 | Data stored in documents | TASK-13 |
+| 8 | Previews and pose content | TASK-14, TASK-15 |
+| 9 | Host services and progress | TASK-16 |
+| 10 | Panels, dialogs and actions | TASK-17 to TASK-20 |
+| 11 | Documentation and error-path tests | TASK-21 |
+
+To rebuild it after more host commits, regroup the new commits the same way: by topic, each ending at a gated tree.
