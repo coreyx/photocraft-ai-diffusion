@@ -1,7 +1,9 @@
 {
   "include": [
     "../photocraft_host",
-    "../tests/photocraft"
+    "../packaging",
+    "../tests/photocraft",
+    "../tests/photocraft_upstream"
   ],
   "exclude": [
     "**/__pycache__"
@@ -11,5 +13,6 @@
   ],
   "pythonVersion": "3.12",
   "typeCheckingMode": "standard",
-  "reportMissingModuleSource": false
+  "reportMissingModuleSource": false,
+  "stubPath": "../scripts/typeshed"
 }

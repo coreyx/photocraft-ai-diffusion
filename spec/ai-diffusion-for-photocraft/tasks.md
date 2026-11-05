@@ -372,7 +372,7 @@ The plug-in configures and connects to managed, custom and reused ComfyUI server
 
 The plug-in installs from a release package, updates itself, and passes the full quality bar.
 
-- [ ] **TASK-42: Packaging and first-run provisioning**
+- [x] **TASK-42: Packaging and first-run provisioning**
   - **Associated Acceptance Criteria**: `13.1`
   - **Concrete Steps**:
     1. Write `packaging/build.py`, which produces per-platform zips: the manifest (`io.github.coreyx.ai-diffusion-for-photocraft`), a python-build-standalone CPython 3.12, the `uv` binary, sources, `uv.lock` and licenses.

@@ -181,29 +181,35 @@ def _application_closing():
         krita.Krita.instance().notifier().applicationClosing.emit()
 
 
-def main() -> int:
-    """Run the plug-in process. Returns the exit code."""
-    setup_logging()
+def main(streams=None, welcome: Welcome | None = None, first_id: int = 1) -> int:
+    """Run the plug-in process. Returns the exit code.
+
+    The bootstrap passes ``streams``, ``welcome`` and ``first_id`` when it already connected (it
+    said ``hello`` while it installed the runtime): the session then goes on from there.
+    """
+    if not logging.getLogger().handlers:
+        setup_logging()
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PyQt6.QtWidgets import QApplication
 
     from photocraft_host import transport as transport_module
 
-    reader, writer = transport_module.stdio_streams()
+    reader, writer = streams or transport_module.stdio_streams()
     app = QApplication(sys.argv[:1])
     install_krita_shim()
-    transport = transport_module.Transport(reader, writer)
+    transport = transport_module.Transport(reader, writer, first_id=first_id)
     # Upstream stops its managed server when the application closes.
     serve_session(transport, app, on_shutdown=_application_closing)
     transport.start()
-    plugin_id, version = identity()
-    try:
-        welcome = connect(
-            transport, os.environ.get("PHOTOCRAFT_PLUGIN_NONCE", ""), plugin_id, version
-        )
-    except (transport_module.RemoteError, TimeoutError, ConnectionError) as e:
-        log.error("PhotoCraft refused the connection: %s", e)
-        return 2
+    if welcome is None:
+        plugin_id, version = identity()
+        try:
+            welcome = connect(
+                transport, os.environ.get("PHOTOCRAFT_PLUGIN_NONCE", ""), plugin_id, version
+            )
+        except (transport_module.RemoteError, TimeoutError, ConnectionError) as e:
+            log.error("PhotoCraft refused the connection: %s", e)
+            return 2
     try:
         _running = start(transport, welcome)
     except Exception:

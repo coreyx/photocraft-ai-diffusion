@@ -1,0 +1,62 @@
+# Release packages of AI Diffusion for PhotoCraft (TASK-42).
+#
+# Pushing a tag vX.Y.Z builds one package per platform (packaging/build.py: the
+# plug-in, CPython from python-build-standalone and uv, each checked against its
+# publisher's SHA-256) and publishes them with SHA256SUMS as a GitHub release.
+# Running it by hand builds the packages for a version without publishing them.
+name: Release
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build (nothing is published)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - name: Packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libegl1 libgl1 libxkbcommon-x11-0
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Dependencies
+        run: pip install -r requirements-photocraft.txt
+      - name: Package checks
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m pytest tests/photocraft/test_build.py tests/photocraft/test_package_contents.py tests/photocraft/test_bootstrap.py -q
+      - name: Version
+        shell: bash
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then version="${GITHUB_REF_NAME#v}"; else version="${{ inputs.version }}"; fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+      - name: Build
+        run: python packaging/build.py --version "$VERSION" --out dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ai-diffusion-for-photocraft-${{ env.VERSION }}
+          path: dist/
+      - name: Publish
+        if: github.ref_type == 'tag'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes=(--generate-notes)
+          if [ -f RELEASE_NOTES.md ]; then notes=(--notes-file RELEASE_NOTES.md); fi
+          gh release create "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS \
+            --verify-tag --title "AI Diffusion for PhotoCraft $VERSION" "${notes[@]}"

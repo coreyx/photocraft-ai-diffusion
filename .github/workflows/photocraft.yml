@@ -38,10 +38,10 @@ jobs:
       - name: Dependencies
         run: pip install -r requirements-photocraft.txt
       - name: Format
-        run: ruff format --diff photocraft_host tests/photocraft
+        run: ruff format --diff photocraft_host packaging tests/photocraft tests/photocraft_upstream
       - name: Lint
         if: ${{ !cancelled() }}
-        run: ruff check --output-format=github photocraft_host tests/photocraft
+        run: ruff check --output-format=github photocraft_host packaging tests/photocraft tests/photocraft_upstream
       - name: Typecheck
         if: ${{ !cancelled() }}
         run: pyright -p packaging/pyrightconfig.json
@@ -78,3 +78,12 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
         run: python -m pytest $UPSTREAM_UNIT_TESTS -q --timeout 60
+      # Upstream's tests and this project's tests of upstream code, on the krita stand-in.
+      - name: Upstream code on the stand-in
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: >-
+          python -m pytest -p tests.photocraft.upstream_shim tests/test_layer.py
+          tests/test_document.py tests/test_persistence.py tests/test_model.py tests/test_text.py
+          tests/test_pose.py tests/test_custom_workflow.py tests/test_resolution.py
+          tests/photocraft_upstream -q --timeout 120
