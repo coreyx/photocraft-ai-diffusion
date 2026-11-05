@@ -9,7 +9,7 @@ from typing import NamedTuple
 from PyQt6.QtCore import QObject, pyqtSignal
 
 from .. import __version__, eventloop
-from ..backend.network import RequestManager
+from ..backend.network import NetworkError, RequestManager
 from ..platform_tools import ZipFile
 from ..util import client_logger as log
 from .properties import ObservableProperties, Property
@@ -149,7 +149,15 @@ class AutoUpdate(QObject, ObservableProperties):
     async def _check_release(self):
         """PhotoCraft: the latest GitHub release, its package for this platform, and that
         package's SHA-256 from the release's ``SHA256SUMS``."""
-        release = await self._net.get(self.api_url, timeout=10)
+        try:
+            release = await self._net.get(self.api_url, timeout=10)
+        except NetworkError as e:
+            if e.status != 404:
+                raise
+            # GitHub's answer while the project has published no release: nothing to update to.
+            log.info("No release of the plug-in is published yet")
+            self.state = UpdateState.latest
+            return
         self.latest_version = str(release.get("tag_name", "")).removeprefix("v") or None
         assets = {a.get("name"): a.get("browser_download_url") for a in release.get("assets", [])}
         name = f"ai-diffusion-for-photocraft-{self.latest_version}-{package_platform()}.zip"
