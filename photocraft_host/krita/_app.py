@@ -13,9 +13,9 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
 
-from PyQt6.QtCore import QObject, Qt, pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QDockWidget, QDoubleSpinBox, QHBoxLayout, QSlider, QWidget
+from PyQt6.QtWidgets import QDockWidget, QDoubleSpinBox, QHBoxLayout, QWidget
 
 from ._document import Document
 
@@ -415,13 +415,16 @@ class Krita(QObject):
 
 
 class DoubleParseSpinBox(QWidget):
-    """A number box that also accepts typed expressions (here: a QDoubleSpinBox)."""
+    """A number box that also accepts typed expressions (here: a QDoubleSpinBox). As in Krita,
+    the number box is ``widget()``, which callers put in their own layouts."""
+
+    _spin_type: type[QDoubleSpinBox] = QDoubleSpinBox
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
         self._layout = QHBoxLayout(self)
         self._layout.setContentsMargins(0, 0, 0, 0)
-        self._spin = QDoubleSpinBox(self)
+        self._spin = self._spin_type(self)
         self._layout.addWidget(self._spin)
 
     def widget(self) -> QDoubleSpinBox:
@@ -431,27 +434,28 @@ class DoubleParseSpinBox(QWidget):
         self._spin.stepBy(steps)
 
 
+class SliderSpin(QDoubleSpinBox):
+    """The visible part of a ``DoubleSliderSpinBox``: like Krita's ``KisDoubleSliderSpinBox``, a
+    number box drawn as a slider, which upstream puts in its layouts through ``widget()`` (so its
+    enabled state, tooltip and visibility are set on it). The Qt mirror draws it as a
+    ``sliderSpin``."""
+
+    def __init__(self, owner: DoubleSliderSpinBox):
+        super().__init__(owner)
+        self.owner = owner
+
+
 class DoubleSliderSpinBox(DoubleParseSpinBox):
-    """Krita's slider and number box in one: the Qt mirror draws it as a ``sliderSpin``."""
+    """Krita's slider and number box in one; ``widget()`` is the :class:`SliderSpin`."""
 
+    _spin_type = SliderSpin
     draggingFinished = pyqtSignal()
-
-    def __init__(self, parent: QWidget | None = None):
-        super().__init__(parent)
-        self._slider = QSlider(Qt.Orientation.Horizontal, self)
-        self._layout.insertWidget(0, self._slider)
-        self._scale = 1
-        self._slider.valueChanged.connect(self._from_slider)
-        self._slider.sliderReleased.connect(self.draggingFinished)
-        self._spin.valueChanged.connect(self._from_spin)
 
     def setRange(
         self, minimum: float, maximum: float, decimals: int = 0, _compute_fast_step: bool = True
     ):
-        self._scale = 10**decimals
         self._spin.setDecimals(decimals)
         self._spin.setRange(minimum, maximum)
-        self._slider.setRange(round(minimum * self._scale), round(maximum * self._scale))
 
     def setSoftMinimum(self, _minimum: float):
         pass
@@ -466,14 +470,5 @@ class DoubleSliderSpinBox(DoubleParseSpinBox):
         return self._spin.value()
 
     def isDragging(self) -> bool:
-        return self._slider.isSliderDown()
-
-    def _from_slider(self, raw: int):
-        value = raw / self._scale
-        if abs(self._spin.value() - value) > 0.5 / self._scale:
-            self._spin.setValue(value)
-
-    def _from_spin(self, value: float):
-        raw = round(value * self._scale)
-        if self._slider.value() != raw:
-            self._slider.setValue(raw)
+        # PhotoCraft sends a slider's value once, when the drag ends (then draggingFinished).
+        return False

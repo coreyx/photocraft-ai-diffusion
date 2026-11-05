@@ -381,6 +381,25 @@ def test_slider_spin_box(mirror):
     assert panel.props(box)["value"] == pytest.approx(0.75)
 
 
+def test_slider_spin_placed_through_widget(mirror):
+    """Upstream puts ``widget()`` in its layouts and sets enabled state and tooltip on it."""
+    box = DoubleSliderSpinBox()
+    box.setRange(0.0, 1.0, 2)
+    spin = box.widget()
+    spin.setEnabled(False)
+    spin.setToolTip("The tile/unblur control model is not installed.")
+    finished: list[bool] = []
+    box.draggingFinished.connect(lambda: finished.append(True))
+    panel = mirror(column(spin))
+    node = panel.node(spin)
+    assert node["kind"] == "sliderSpin"
+    assert node["props"]["enabled"] is False
+    assert node["props"]["tooltip"] == "The tile/unblur control model is not installed."
+    spin.setEnabled(True)
+    panel.user(spin, "change", 0.25, done=lambda: bool(finished))
+    assert box.value() == pytest.approx(0.25)
+
+
 # -- containers
 
 

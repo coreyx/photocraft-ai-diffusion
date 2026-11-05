@@ -150,6 +150,7 @@ def test_local_checkout_still_matches_upstream_fixtures(repo_root: Path):
     assert result.returncode == 0, result.stdout[-4000:] + result.stderr[-2000:]
 
 
+@pytest.mark.timeout(900)
 def test_photocraft_builds_upstream_graphs(repo_root: Path):
     """REQ-15 to REQ-17, TASK-28: every scenario run on the ``krita`` stand-in and the mock
     PhotoCraft (documents, layers and selections through the protocol) builds the same

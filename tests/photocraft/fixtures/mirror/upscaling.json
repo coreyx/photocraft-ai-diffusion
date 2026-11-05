@@ -75,8 +75,8 @@
          "text": "Strength"
         },
         {
-         "kind": "spin",
-         "qt": "QDoubleSpinBox"
+         "kind": "sliderSpin",
+         "qt": "SliderSpin"
         }
        ]
       },
@@ -89,8 +89,8 @@
          "text": "Image guidance"
         },
         {
-         "kind": "spin",
-         "qt": "QDoubleSpinBox"
+         "kind": "sliderSpin",
+         "qt": "SliderSpin"
         }
        ]
       },

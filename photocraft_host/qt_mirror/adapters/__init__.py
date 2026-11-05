@@ -24,6 +24,7 @@ from .inputs import (
     LineEditAdapter,
     SliderAdapter,
     SliderSpinAdapter,
+    SliderSpinBoxAdapter,
     SpinBoxAdapter,
 )
 from .lists import ListWidgetAdapter
@@ -49,6 +50,7 @@ ADAPTERS: list[Adapter] = [
     FrameAdapter(),
     DoubleParseSpinBoxAdapter(),
     SliderSpinAdapter(),
+    SliderSpinBoxAdapter(),
     TextEditAdapter(),
     RichTextEditAdapter(),
     ListWidgetAdapter(),

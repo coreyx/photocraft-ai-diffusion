@@ -55,8 +55,8 @@
    "kind": "row",
    "children": [
     {
-     "kind": "spin",
-     "qt": "QDoubleSpinBox"
+     "kind": "sliderSpin",
+     "qt": "SliderSpin"
     },
     {
      "kind": "toolButton",

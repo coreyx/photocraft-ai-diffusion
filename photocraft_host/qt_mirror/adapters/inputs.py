@@ -19,7 +19,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from ...krita import DoubleParseSpinBox, DoubleSliderSpinBox
+from ...krita import DoubleParseSpinBox, DoubleSliderSpinBox, SliderSpin
 from .base import Adapter, Context, Input, number
 
 
@@ -213,15 +213,29 @@ class DoubleParseSpinBoxAdapter(Adapter):
             spin.editingFinished.emit()
 
 
-class SliderSpinAdapter(DoubleParseSpinBoxAdapter):
-    """The ``krita`` stand-in's ``DoubleSliderSpinBox`` (Krita's slider and number box in one).
-    A change ends with ``draggingFinished``, as releasing Krita's slider does."""
+class SliderSpinAdapter(DoubleSpinBoxAdapter):
+    """The ``krita`` stand-in's :class:`SliderSpin`, the slider-and-number box upstream puts in
+    its layouts. A change ends with ``draggingFinished``, as releasing Krita's slider does."""
+
+    qt_class = SliderSpin
+    kind = "sliderSpin"
+
+    def apply(self, widget: QWidget, event: Input, ctx: Context) -> None:
+        assert isinstance(widget, SliderSpin)
+        if event.kind == "change":
+            widget.setValue(number(event.value, widget.value()))
+            widget.owner.draggingFinished.emit()
+
+
+class SliderSpinBoxAdapter(DoubleParseSpinBoxAdapter):
+    """A ``DoubleSliderSpinBox`` placed in a layout itself rather than through ``widget()``:
+    drawn as its :class:`SliderSpin`."""
 
     qt_class = DoubleSliderSpinBox
     kind = "sliderSpin"
 
     def apply(self, widget: QWidget, event: Input, ctx: Context) -> None:
         assert isinstance(widget, DoubleSliderSpinBox)
-        if event.kind == "change":
-            widget.setValue(number(event.value, widget.value()))
-            widget.draggingFinished.emit()
+        spin = widget.widget()
+        assert isinstance(spin, SliderSpin)
+        SliderSpinAdapter().apply(spin, event, ctx)

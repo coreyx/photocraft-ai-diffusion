@@ -132,6 +132,27 @@ def main() -> int:
     results["badge_after"] = badge_node.get("props", {}).get("text")
     results["language_after"] = model.prompt_translation_language
 
+    # Upscale: without the tile/unblur control model, Image guidance is disabled and says why.
+    from ai_diffusion.ui.upscale import UpscaleWidget
+
+    upscale = UpscaleWidget()
+    upscale.model = model
+    # Upstream sets the control's state when the connection reports its models, as on
+    # connecting to a server that lacks the tile/unblur model.
+    root.connection.models_changed.emit()
+    upscale_mirror = Mirror(upscale, link, "upscale", "Upscale", poll_ms=60_000)
+    upscale_mirror.start()
+    upscale_mirror.flush()
+    unblur = (
+        find_widget(
+            host.panels["upscale"]["tree"], upscale_mirror.node_id(upscale.unblur_slider.widget())
+        )
+        or {}
+    )
+    results["unblur_enabled"] = unblur.get("props", {}).get("enabled")
+    results["unblur_tooltip"] = unblur.get("props", {}).get("tooltip")
+    upscale_mirror.stop()
+
     print(json.dumps(results), flush=True)
     mirror.stop()
     host.close()

@@ -1,5 +1,6 @@
 """Upstream's real Generate workspace used through the Qt mirror (TASK-26): prompt weighting with
-Ctrl+Up, tag autocomplete, and the generate button drawn as an image."""
+Ctrl+Up, tag autocomplete, the generate button drawn as an image; and the Upscale workspace's
+Image guidance control (TASK-34)."""
 
 from __future__ import annotations
 
@@ -52,3 +53,10 @@ def test_the_translation_badge(results: dict):
 def test_the_generate_button_is_an_image_that_clicks(results: dict):
     assert results["button_kind"] == "image"
     assert results["generate_clicked"]
+
+
+def test_unblur_is_disabled_without_its_control_model(results: dict):
+    """REQ-25: Image guidance needs the tile/unblur control model; without it the slider is
+    disabled in PhotoCraft's panel, with upstream's tooltip saying why."""
+    assert results["unblur_enabled"] is False
+    assert results["unblur_tooltip"] == "The tile/unblur control model is not installed."

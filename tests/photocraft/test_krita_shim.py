@@ -13,7 +13,7 @@ from collections.abc import Callable
 
 import pytest
 from PyQt6.QtCore import QByteArray, QUuid
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QDoubleSpinBox
 
 from photocraft_host.krita import (
     Canvas,
@@ -469,8 +469,10 @@ def test_double_slider_spin_box(qt_app: QApplication):
     box = DoubleSliderSpinBox()
     box.setRange(0.0, 2.0, 2)
     box.setValue(1.25)
-    assert box._slider.value() == 125
-    box._slider.setValue(50)
+    spin = box.widget()
+    assert isinstance(spin, QDoubleSpinBox), "as Krita's KisDoubleSliderSpinBox"
+    assert (spin.value(), spin.decimals(), spin.maximum()) == (1.25, 2, 2.0)
+    spin.setValue(0.5)
     assert box.value() == pytest.approx(0.5)
     assert not box.isDragging()
 

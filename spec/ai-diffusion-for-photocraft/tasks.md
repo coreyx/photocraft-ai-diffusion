@@ -308,7 +308,7 @@ Every in-scope workspace produces the same ComfyUI requests and layers as upstre
     1. Drive upstream's live scheduler from host `pixels.changed` events through the shim cache, and show the live preview with the hatch.
     2. Test: no job without a net input change, Apply versus Apply to New Layer, and live overhead ≤ 250 ms (instrumented, with GPU end-to-end in TASK-45).
 
-- [ ] **TASK-34: Upscale and Graph workspaces**
+- [x] **TASK-34: Upscale and Graph workspaces**
   - **Associated Acceptance Criteria**: `25.1`, `25.2`, `25.3`, `27.1`, `27.2`, `27.3`, `27.4`
   - **Concrete Steps**:
     1. Map upstream's canvas resize to `doc.resizeCanvas`. Test the 2× upscale result layer, tiled graph parity, and the disabled Unblur state.
