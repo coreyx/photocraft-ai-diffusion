@@ -130,7 +130,7 @@ Every document capability the AI plug-in needs works through the protocol.
     3. Implement `events.subscribe`.
     4. Add tests for a stroke, a selection change, a layer switch, a document switch, a rename and a reorder, with event latency measured at 50 ms or less.
 
-- [ ] **TASK-13: Plug-in data stored in documents**
+- [x] **TASK-13: Plug-in data stored in documents**
   - **Associated Acceptance Criteria**: `8.1`, `8.2`, `8.3`, `8.4`
   - **Concrete Steps**:
     1. Add `Document.plugin_data` with `blob.get`, `blob.set`, `blob.delete` and `blob.list`, enforcing the size limit.
