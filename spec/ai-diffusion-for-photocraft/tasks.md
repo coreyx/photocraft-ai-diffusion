@@ -331,7 +331,7 @@ The plug-in configures and connects to managed, custom and reused ComfyUI server
     2. Test every settings page control through the mirrored dialog: changes persist across restarts, Restore Defaults per page, and `document_defaults`.
     3. Test configuring and connecting to a custom URL with no Krita AI Diffusion present.
 
-- [ ] **TASK-37: Managed ComfyUI server**
+- [x] **TASK-37: Managed ComfyUI server**
   - **Associated Acceptance Criteria**: `29.1`, `29.2`, `29.3`, `29.4`, `29.5`
   - **Concrete Steps**:
     1. Change the default path to `<plug-in data>/server` and the yaml section name to `photocraft-ai-diffusion-managed`.

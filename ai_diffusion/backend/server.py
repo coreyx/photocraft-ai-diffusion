@@ -932,7 +932,7 @@ def parse_common_errors(output: str, return_code: int | None = None):
 
 _extra_model_paths_yaml = """
 
-krita-managed:
+{section}:
     base_path: ../models
     checkpoints: checkpoints
     clip: clip
@@ -952,7 +952,18 @@ krita-managed:
 """
 
 
+def extra_model_paths_section() -> str:
+    """The plug-in's section in ComfyUI's ``extra_model_paths.yaml``. PhotoCraft: its own name,
+    so it is never mistaken for Krita AI Diffusion's (REQ-29.0.2)."""
+    import krita
+
+    if hasattr(krita, "photocraft_host"):
+        return "photocraft-ai-diffusion-managed"
+    return "krita-managed"
+
+
 def _configure_extra_model_paths(comfy_dir: Path):
+    section = extra_model_paths_section()
     path = comfy_dir / "extra_model_paths.yaml"
     example = comfy_dir / "extra_model_paths.yaml.example"
     if not path.exists() and example.exists():
@@ -960,16 +971,17 @@ def _configure_extra_model_paths(comfy_dir: Path):
     if not path.exists():
         raise RuntimeError(f"Could not find or create extra_model_paths.yaml in {comfy_dir}")
     contents = path.read_text()
-    if "krita-managed" not in contents:
+    if section not in contents:
         log.info(f"Extending {path}")
-        path.write_text(contents + _extra_model_paths_yaml)
+        contents += _extra_model_paths_yaml.format(section=section)
+        path.write_text(contents)
     if "model_patches" not in contents:
         log.info(f"Adding model_patches to {path}")
         lines = contents.splitlines()
         new_lines = []
         for line in lines:
             new_lines.append(line)
-            if line.strip().startswith("krita-managed:"):
+            if line.strip().startswith(f"{section}:"):
                 new_lines.append("    model_patches: model_patches")
         path.write_text("\n".join(new_lines))
 

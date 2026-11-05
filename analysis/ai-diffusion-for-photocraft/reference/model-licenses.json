@@ -1,0 +1,661 @@
+[
+ {
+  "id": [
+   "clip_vision-ip_adapter-sd15",
+   "clip_vision-ip_adapter-sdxl"
+  ],
+  "name": "CLIP Vision",
+  "license": "MIT",
+  "license_url": "https://huggingface.co/laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
+  "restriction": "open",
+  "source": "https://huggingface.co/h94/IP-Adapter (image_encoder = OpenCLIP ViT-H-14 laion2B) ; https://huggingface.co/laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
+  "confidence": "high",
+  "note": "Original weights are LAION's OpenCLIP ViT-H-14 (MIT); the h94/IP-Adapter host repo is Apache-2.0."
+ },
+ {
+  "id": "upscaler-default-all",
+  "name": "NMKD Superscale",
+  "license": "WTFPL",
+  "license_url": "http://www.wtfpl.net/txt/copying/",
+  "restriction": "open",
+  "source": "https://github.com/OpenModelDB/open-model-database/blob/main/data/models/4x-NMKD-Superscale.json",
+  "confidence": "medium",
+  "note": "License from OpenModelDB (successor of the upscale.wiki model database), not a statement found from nmkd; file sha256 matches the OpenModelDB record. The gemasai re-host states no license."
+ },
+ {
+  "id": "upscaler-fast_4x-all",
+  "name": "OmniSR Superscale",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/Francis0625/Omni-SR#license",
+  "restriction": "open",
+  "source": "https://github.com/Francis0625/Omni-SR (README: 'released under the Apache 2.0 license') ; mirror https://huggingface.co/Acly/Omni-SR",
+  "confidence": "high",
+  "note": "All three files (x2, x3, x4) are from the same original repo."
+ },
+ {
+  "id": "controlnet-inpaint-sd15",
+  "name": "ControlNet Inpaint",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "controlnet-blur-sd15",
+  "name": "ControlNet Unblur",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "ip_adapter-reference-sd15",
+  "name": "IP-Adapter (SD1.5)",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "restriction": "open",
+  "source": "https://huggingface.co/h94/IP-Adapter",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "ip_adapter-reference-sdxl",
+  "name": "IP-Adapter (SDXL)",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "restriction": "open",
+  "source": "https://huggingface.co/h94/IP-Adapter",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "lora-hyper-sd15",
+  "name": "Hyper-SD LoRA (SD1.5)",
+  "license": "CreativeML Open RAIL++-M",
+  "license_url": "https://huggingface.co/ByteDance/Hyper-SD/blob/32dffa0c8fff2f3c1a9cd4f917be1c51e1c0bc9b/LICENSE.md",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/ByteDance/Hyper-SD (LICENSE.md and README history)",
+  "confidence": "medium",
+  "note": "SD/SDXL LoRAs were released under ByteDance's CreativeML Open RAIL++-M ('For SD-related models'); the current LICENSE.md only holds the FLUX.1 [dev] license (scoped to the Flux LoRAs) and the card no longer has a license field."
+ },
+ {
+  "id": "lora-hyper-sdxl",
+  "name": "Hyper-SD LoRA (SDXL)",
+  "license": "CreativeML Open RAIL++-M",
+  "license_url": "https://huggingface.co/ByteDance/Hyper-SD/blob/32dffa0c8fff2f3c1a9cd4f917be1c51e1c0bc9b/LICENSE.md",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/ByteDance/Hyper-SD (LICENSE.md and README history)",
+  "confidence": "medium",
+  "note": "SD/SDXL LoRAs were released under ByteDance's CreativeML Open RAIL++-M ('For SD-related models'); the current LICENSE.md only holds the FLUX.1 [dev] license (scoped to the Flux LoRAs) and the card no longer has a license field."
+ },
+ {
+  "id": "inpaint-fooocus-sdxl",
+  "name": "Fooocus Inpaint",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/fooocus_inpaint",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/fooocus_inpaint",
+  "confidence": "high",
+  "note": "Card metadata 'openrail', no LICENSE file; both files (head + patch) are from this repo. Fooocus code itself is GPL-3.0."
+ },
+ {
+  "id": "inpaint-default-all",
+  "name": "MAT Inpaint",
+  "license": "CC-BY-NC-4.0",
+  "license_url": "https://github.com/fenglinglwb/MAT/blob/main/LICENSE",
+  "restriction": "non_commercial",
+  "source": "https://github.com/fenglinglwb/MAT ; mirror https://huggingface.co/Acly/MAT",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "embedding-easy_negative-sd15",
+  "name": "Easy Negative",
+  "license": "Unknown",
+  "license_url": "https://huggingface.co/datasets/gsdf/EasyNegative",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/datasets/gsdf/EasyNegative (original; sha256 identical to the embed/ re-host) ; https://civitai.com/models/7808",
+  "confidence": "low",
+  "note": "Original author gsdf marks it license 'other' with no terms. A third-party Civitai re-upload lists permissive commercial permissions. Trained with Counterfeit (CreativeML OpenRAIL-M)."
+ },
+ {
+  "id": "text_encoder-clip_l-flux",
+  "name": "Clip-L",
+  "license": "MIT",
+  "license_url": "https://github.com/openai/CLIP/blob/main/LICENSE",
+  "restriction": "open",
+  "source": "https://github.com/openai/CLIP ; re-host https://huggingface.co/comfyanonymous/flux_text_encoders (labelled Apache-2.0)",
+  "confidence": "medium",
+  "note": "OpenAI's HF card for clip-vit-large-patch14 has no license field and calls deployed use out of scope; MIT is from OpenAI's CLIP GitHub repo. Both candidate licenses are permissive."
+ },
+ {
+  "id": "text_encoder-t5-flux",
+  "name": "T5-XXL",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "restriction": "open",
+  "source": "https://huggingface.co/google/t5-v1_1-xxl ; GGUF https://huggingface.co/city96/t5-v1_1-xxl-encoder-gguf",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": [
+   "vae-default-flux",
+   "vae-default-zimage"
+  ],
+  "name": "VAE (Flux)",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/black-forest-labs/flux#models",
+  "restriction": "open",
+  "source": "https://github.com/black-forest-labs/flux (README: 'The weights of the autoencoder are also released under apache-2.0') ; re-host https://huggingface.co/Comfy-Org/Lumina_Image_2.0_Repackaged (Apache-2.0)",
+  "confidence": "high",
+  "note": "FLUX.1 autoencoder (ae.safetensors) as repackaged with Lumina Image 2.0."
+ },
+ {
+  "id": [
+   "text_encoder-qwen_3_4b-flux2_4b",
+   "text_encoder-qwen_3_4b-zimage"
+  ],
+  "name": "Qwen 3 4B",
+  "license": "Apache-2.0",
+  "license_url": "https://huggingface.co/Qwen/Qwen3-4B/blob/main/LICENSE",
+  "restriction": "open",
+  "source": "https://huggingface.co/Qwen/Qwen3-4B ; GGUF https://huggingface.co/unsloth/Qwen3-4B-GGUF",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "vae-default-flux2_4b",
+  "name": "VAE (Flux 2)",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/black-forest-labs/flux2#flux2-autoencoder",
+  "restriction": "open",
+  "source": "https://github.com/black-forest-labs/flux2 (README: 'The autoencoder is released under Apache 2.0') ; re-host https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-4b (Apache-2.0)",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "lora-inpaint-flux2_4b",
+  "name": "Outpaint LoRA (Flux 2)",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "restriction": "open",
+  "source": "https://huggingface.co/fal/flux-2-klein-4B-outpaint-lora",
+  "confidence": "high",
+  "note": "Base FLUX.2 [klein] 4B is also Apache-2.0."
+ },
+ {
+  "id": "checkpoint-serenity-sd15",
+  "name": "Serenity (SD1.5 - Photography)",
+  "license": "CreativeML Open RAIL-M",
+  "license_url": "https://huggingface.co/spaces/CompVis/stable-diffusion-license",
+  "restriction": "restricted",
+  "source": "https://civitai.com/models/110426?modelVersionId=360311",
+  "confidence": "high",
+  "note": "Civitai v2.1 (sha256 matches the Acly re-host). Creator permissions allow selling images, generation services, selling the model and merges; credit not required."
+ },
+ {
+  "id": "checkpoint-dreamshaper-sd15",
+  "name": "DreamShaper (SD1.5 - Artwork)",
+  "license": "CreativeML Open RAIL-M",
+  "license_url": "https://huggingface.co/spaces/CompVis/stable-diffusion-license",
+  "restriction": "restricted",
+  "source": "https://civitai.com/models/4384?modelVersionId=128713 ; https://huggingface.co/Lykon/DreamShaper",
+  "confidence": "high",
+  "note": "Civitai license for SD 1.5 models (sha256 matches v8). Permissions allow selling images and generation services, not selling the model or merges. Lykon's HF repo labels it 'other' with no text."
+ },
+ {
+  "id": "checkpoint-realvis-sdxl",
+  "name": "RealVis (SDXL - Photography)",
+  "license": "CreativeML Open RAIL++-M",
+  "license_url": "https://github.com/Stability-AI/generative-models/blob/main/model_licenses/LICENSE-SDXL1.0",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/SG161222/RealVisXL_V5.0 ; https://civitai.com/models/139562?modelVersionId=789646",
+  "confidence": "high",
+  "note": "Civitai permissions: images and generation services allowed, selling the model not allowed, credit required."
+ },
+ {
+  "id": "checkpoint-zavychroma-sdxl",
+  "name": "ZavyChroma (SDXL - Artwork)",
+  "license": "CreativeML Open RAIL++-M + creator commercial-license terms",
+  "license_url": "https://civitai.com/models/119229?modelVersionId=563988",
+  "restriction": "non_commercial",
+  "source": "https://civitai.com/models/119229?modelVersionId=563988",
+  "confidence": "medium",
+  "note": "Base license is Open RAIL++-M, but the creator requires a paid commercial license for generation services other than Civitai and for companies (explicitly incl. photo/video editing apps); only artists selling prints are exempt. No derivatives. The misri HF re-host says 'unknown'."
+ },
+ {
+  "id": "checkpoint-nova-illu",
+  "name": "Nova Anime XL (Illustrious - Anime)",
+  "license": "Fair AI Public License 1.0-SD (Illustrious License)",
+  "license_url": "https://freedevproject.org/faipl-1.0-sd/",
+  "restriction": "restricted",
+  "source": "https://civitai.com/models/376130?modelVersionId=2314354",
+  "confidence": "medium",
+  "note": "Civitai IL v12.5 (sha256 matches); Civitai's license for Illustrious-based models. Creator rules add: generated images may not be used commercially unless edited; selling the model not allowed. Acly re-host repo label (creativeml-openrail-m) does not match."
+ },
+ {
+  "id": "checkpoint-noobai-illu_v",
+  "name": "NoobAI XL (Illustrious - Anime)",
+  "license": "Fair AI Public License 1.0-SD + NoobAI terms (commercial prohibition)",
+  "license_url": "https://huggingface.co/Laxhar/noobai-XL-Vpred-1.0/blob/main/README.md",
+  "restriction": "non_commercial",
+  "source": "https://huggingface.co/Laxhar/noobai-XL-Vpred-1.0 (Model License section) ; https://civitai.com/models/833294",
+  "confidence": "high",
+  "note": "NoobAI terms: 'We prohibit any form of commercialization ... of the model, derivative models, or model-generated products.' Civitai permissions only allow Civitai generation."
+ },
+ {
+  "id": "checkpoint-flux_dev-flux",
+  "name": "Flux Krea",
+  "license": "FLUX.1 [dev] Non-Commercial License",
+  "license_url": "https://huggingface.co/black-forest-labs/FLUX.1-Krea-dev/blob/main/LICENSE.md",
+  "restriction": "non_commercial",
+  "source": "https://huggingface.co/black-forest-labs/FLUX.1-Krea-dev ; re-host https://huggingface.co/Comfy-Org/FLUX.1-Krea-dev_ComfyUI",
+  "confidence": "high",
+  "note": "Outputs may be used commercially; the model itself only for non-commercial purposes."
+ },
+ {
+  "id": "checkpoint-flux_kontext-flux",
+  "name": "Flux Kontext",
+  "license": "FLUX.1 [dev] Non-Commercial License",
+  "license_url": "https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev/blob/main/LICENSE.md",
+  "restriction": "non_commercial",
+  "source": "https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev ; re-host https://huggingface.co/Comfy-Org/flux1-kontext-dev_ComfyUI",
+  "confidence": "high",
+  "note": "Outputs may be used commercially; the model itself only for non-commercial purposes."
+ },
+ {
+  "id": "checkpoint-q6_k-flux2_4b",
+  "name": "Flux 2 Klein 4B [Q6_K]",
+  "license": "Apache-2.0",
+  "license_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/blob/main/LICENSE.md",
+  "restriction": "open",
+  "source": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B ; GGUF https://huggingface.co/unsloth/FLUX.2-klein-4B-GGUF",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "checkpoint-fp8-flux2_4b",
+  "name": "Flux 2 Klein 4B [fp8]",
+  "license": "Apache-2.0",
+  "license_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/blob/main/LICENSE.md",
+  "restriction": "open",
+  "source": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "checkpoint-turbo_fp8-zimage",
+  "name": "Z-Image Turbo [fp8]",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "restriction": "open",
+  "source": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo ; fp8 re-host https://huggingface.co/drbaph/Z-Image-Turbo-FP8",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "upscaler-quality-all",
+  "name": "HAT Super-Resolution (quality)",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/XPixelGroup/HAT/blob/main/LICENSE",
+  "restriction": "open",
+  "source": "https://github.com/XPixelGroup/HAT ; mirror https://huggingface.co/Acly/hat",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "upscaler-sharp-all",
+  "name": "Real HAT GAN Super-Resolution (sharper)",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/XPixelGroup/HAT/blob/main/LICENSE",
+  "restriction": "open",
+  "source": "https://github.com/XPixelGroup/HAT ; mirror https://huggingface.co/Acly/hat",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "controlnet-scribble-sd15",
+  "name": "ControlNet Scribble",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "controlnet-line_art-sd15",
+  "name": "ControlNet Line Art",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "controlnet-soft_edge-sd15",
+  "name": "ControlNet Soft Edge",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "controlnet-canny_edge-sd15",
+  "name": "ControlNet Canny Edge",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "controlnet-depth-sd15",
+  "name": "ControlNet Depth",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "controlnet-normal-sd15",
+  "name": "ControlNet Normal",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "controlnet-pose-sd15",
+  "name": "ControlNet Pose",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "controlnet-segmentation-sd15",
+  "name": "ControlNet Segmentation",
+  "license": "OpenRAIL",
+  "license_url": "https://huggingface.co/lllyasviel/ControlNet-v1-1",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/lllyasviel/ControlNet-v1-1 ; re-host https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors (card: fp16 versions of the ControlNet-v1-1 checkpoints)",
+  "confidence": "high",
+  "note": "lllyasviel tags ControlNet 1.1 'openrail' with no separate LICENSE file; SD 1.5 based, so CreativeML OpenRAIL-M use restrictions apply."
+ },
+ {
+  "id": "controlnet-stencil-sd15",
+  "name": "ControlNet Stencil",
+  "license": "CreativeML Open RAIL++-M",
+  "license_url": "https://huggingface.co/monster-labs/control_v1p_sd15_qrcode_monster",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/monster-labs/control_v1p_sd15_qrcode_monster",
+  "confidence": "high",
+  "note": "Card metadata 'openrail++' (no LICENSE file)."
+ },
+ {
+  "id": "controlnet-universal-sdxl",
+  "name": "ControlNet Universal (XL)",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "restriction": "open",
+  "source": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "controlnet-stencil-sdxl",
+  "name": "ControlNet Stencil (XL)",
+  "license": "CreativeML Open RAIL++-M",
+  "license_url": "https://huggingface.co/monster-labs/control_v1p_sdxl_qrcode_monster",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/monster-labs/control_v1p_sdxl_qrcode_monster",
+  "confidence": "high",
+  "note": "Card metadata 'openrail++' (no LICENSE file)."
+ },
+ {
+  "id": "controlnet-universal-flux",
+  "name": "ControlNet Universal (Flux)",
+  "license": "FLUX.1 [dev] Non-Commercial License",
+  "license_url": "https://huggingface.co/black-forest-labs/FLUX.1-dev/blob/main/LICENSE.md",
+  "restriction": "non_commercial",
+  "source": "https://huggingface.co/Shakker-Labs/FLUX.1-dev-ControlNet-Union-Pro-2.0 ; fp8 re-host https://huggingface.co/ABDALLALSWAITI/FLUX.1-dev-ControlNet-Union-Pro-2.0-fp8",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "controlnet-inpaint-flux",
+  "name": "ControlNet Inpaint (Flux)",
+  "license": "FLUX.1 [dev] Non-Commercial License",
+  "license_url": "https://huggingface.co/black-forest-labs/FLUX.1-dev/blob/main/LICENSE.md",
+  "restriction": "non_commercial",
+  "source": "https://huggingface.co/alimama-creative/FLUX.1-dev-Controlnet-Inpainting-Beta",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "ip_adapter-reference-flux",
+  "name": "Control Reference (Flux)",
+  "license": "FLUX.1 [dev] Non-Commercial License",
+  "license_url": "https://huggingface.co/black-forest-labs/FLUX.1-Redux-dev/blob/main/LICENSE.md",
+  "restriction": "non_commercial",
+  "source": "https://huggingface.co/black-forest-labs/FLUX.1-Redux-dev ; https://huggingface.co/google/siglip-so400m-patch14-384",
+  "confidence": "high",
+  "note": "Most restrictive of two files: flux1-redux-dev = FLUX.1 [dev] Non-Commercial (files.interstice.cloud copy of BFL's FLUX.1-Redux-dev, identified by file name); sigclip_vision_patch14_384 = Apache-2.0 (Google SigLIP via Comfy-Org)."
+ },
+ {
+  "id": "lora-turbo-flux",
+  "name": "Turbo LoRA (Flux)",
+  "license": "FLUX.1 [dev] Non-Commercial License",
+  "license_url": "https://huggingface.co/black-forest-labs/FLUX.1-dev/blob/main/LICENSE.md",
+  "restriction": "non_commercial",
+  "source": "https://huggingface.co/alimama-creative/FLUX.1-Turbo-Alpha",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "controlnet-inpaint-illu",
+  "name": "ControlNet Inpaint (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD",
+  "license_url": "https://freedevproject.org/faipl-1.0-sd/",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/Acly/NoobAI-Inpainting ; original https://civitai.com/models/1376234",
+  "confidence": "medium",
+  "note": "Declared by the re-host; original by Wenaka_ on Civitai (permissions allow all commercial uses) with base model NoobAI, whose terms claim to prohibit commercial use of derivative models."
+ },
+ {
+  "id": "controlnet-scribble-illu",
+  "name": "ControlNet Scribble (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD",
+  "license_url": "https://freedevproject.org/faipl-1.0-sd/",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/Eugeoter/noob-sdxl-controlnet-scribble_pidinet ; https://civitai.com/models/929685",
+  "confidence": "medium",
+  "note": "Publisher declares FAIPL-1.0-SD (commercial use allowed, copyleft, use restrictions). Trained for NoobAI-XL, whose own terms claim to prohibit commercial use of derivative models, and Civitai lists these ControlNets under the NoobAI base license."
+ },
+ {
+  "id": "controlnet-line_art-illu",
+  "name": "ControlNet Line Art (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD",
+  "license_url": "https://freedevproject.org/faipl-1.0-sd/",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/Eugeoter/noob-sdxl-controlnet-lineart_anime ; https://civitai.com/models/929685",
+  "confidence": "medium",
+  "note": "Publisher declares FAIPL-1.0-SD (commercial use allowed, copyleft, use restrictions). Trained for NoobAI-XL, whose own terms claim to prohibit commercial use of derivative models, and Civitai lists these ControlNets under the NoobAI base license."
+ },
+ {
+  "id": "controlnet-soft_edge-illu",
+  "name": "ControlNet Soft Edge (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD",
+  "license_url": "https://freedevproject.org/faipl-1.0-sd/",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/Eugeoter/noob-sdxl-controlnet-softedge_hed ; https://civitai.com/models/929685",
+  "confidence": "medium",
+  "note": "Publisher declares FAIPL-1.0-SD (commercial use allowed, copyleft, use restrictions). Trained for NoobAI-XL, whose own terms claim to prohibit commercial use of derivative models, and Civitai lists these ControlNets under the NoobAI base license."
+ },
+ {
+  "id": "controlnet-canny_edge-illu",
+  "name": "ControlNet Canny (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD",
+  "license_url": "https://freedevproject.org/faipl-1.0-sd/",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/Eugeoter/noob-sdxl-controlnet-canny ; https://civitai.com/models/929685",
+  "confidence": "medium",
+  "note": "Publisher declares FAIPL-1.0-SD (commercial use allowed, copyleft, use restrictions). Trained for NoobAI-XL, whose own terms claim to prohibit commercial use of derivative models, and Civitai lists these ControlNets under the NoobAI base license."
+ },
+ {
+  "id": "controlnet-depth-illu",
+  "name": "ControlNet Depth (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD",
+  "license_url": "https://freedevproject.org/faipl-1.0-sd/",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/Eugeoter/noob-sdxl-controlnet-depth_midas-v1-1 ; https://civitai.com/models/929685",
+  "confidence": "medium",
+  "note": "Publisher declares FAIPL-1.0-SD (commercial use allowed, copyleft, use restrictions). Trained for NoobAI-XL, whose own terms claim to prohibit commercial use of derivative models, and Civitai lists these ControlNets under the NoobAI base license."
+ },
+ {
+  "id": "controlnet-normal-illu",
+  "name": "ControlNet Normal (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD",
+  "license_url": "https://freedevproject.org/faipl-1.0-sd/",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/Eugeoter/noob-sdxl-controlnet-normal ; https://civitai.com/models/929685",
+  "confidence": "medium",
+  "note": "Publisher declares FAIPL-1.0-SD (commercial use allowed, copyleft, use restrictions). Trained for NoobAI-XL, whose own terms claim to prohibit commercial use of derivative models, and Civitai lists these ControlNets under the NoobAI base license."
+ },
+ {
+  "id": "controlnet-pose-illu",
+  "name": "ControlNet Pose (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD (NoobAI terms)",
+  "license_url": "https://huggingface.co/Laxhar/noobai-XL-Vpred-1.0/blob/main/README.md",
+  "restriction": "non_commercial",
+  "source": "https://civitai.com/models/962537 (sha256 matches) ; https://huggingface.co/Laxhar/noob_openpose",
+  "confidence": "low",
+  "note": "HF repo states no license. The Civitai page (NoobAI base) shows the NoobAI license, which prohibits commercial use, yet the same author's Civitai permission toggles allow selling. Conflicting; classified conservatively."
+ },
+ {
+  "id": "controlnet-blur-illu",
+  "name": "ControlNet Unblur (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD",
+  "license_url": "https://freedevproject.org/faipl-1.0-sd/",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/Eugeoter/noob-sdxl-controlnet-tile ; https://civitai.com/models/929685",
+  "confidence": "medium",
+  "note": "Publisher declares FAIPL-1.0-SD (commercial use allowed, copyleft, use restrictions). Trained for NoobAI-XL, whose own terms claim to prohibit commercial use of derivative models, and Civitai lists these ControlNets under the NoobAI base license."
+ },
+ {
+  "id": "clip_vision-ip_adapter-illu",
+  "name": "CLIP Vision G (for IP-Adapter)",
+  "license": "MIT",
+  "license_url": "https://huggingface.co/laion/CLIP-ViT-bigG-14-laion2B-39B-b160k",
+  "restriction": "open",
+  "source": "https://huggingface.co/h94/IP-Adapter (sdxl image_encoder = OpenCLIP ViT-bigG-14) ; https://huggingface.co/laion/CLIP-ViT-bigG-14-laion2B-39B-b160k",
+  "confidence": "high",
+  "note": "Original weights are LAION's OpenCLIP ViT-bigG-14 (MIT); the h94/IP-Adapter host repo is Apache-2.0."
+ },
+ {
+  "id": "ip_adapter-reference-illu",
+  "name": "IP-Adapter (Illustrious)",
+  "license": "Fair AI Public License 1.0-SD (NoobAI terms)",
+  "license_url": "https://huggingface.co/Laxhar/noobai-XL-Vpred-1.0/blob/main/README.md",
+  "restriction": "non_commercial",
+  "source": "https://civitai.com/models/1000401 (NOOB-IPA-MARK1 by L_A_X; sha256 matches) ; re-host https://huggingface.co/r3gm/noob-ipa",
+  "confidence": "low",
+  "note": "Re-host states no license. The Civitai page (NoobAI base) shows the NoobAI license, which prohibits commercial use, yet the author's Civitai permission toggles allow selling. Conflicting; classified conservatively."
+ },
+ {
+  "id": "model_patch-universal-zimage",
+  "name": "ControlNet Universal (Z-Image)",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "restriction": "open",
+  "source": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "model_patch-blur-zimage",
+  "name": "ControlNet Unblur (Z-Image)",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "restriction": "open",
+  "source": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1",
+  "confidence": "high",
+  "note": ""
+ },
+ {
+  "id": "preprocessor-scribble-all",
+  "name": "Scribble Preprocessor",
+  "license": "MIT with research-only notice (PiDiNet)",
+  "license_url": "https://github.com/hellozhuo/pidinet/blob/master/LICENSE",
+  "restriction": "non_commercial",
+  "source": "https://github.com/hellozhuo/pidinet/blob/master/LICENSE ; https://github.com/lllyasviel/ControlNet-v1-1-nightly/blob/main/annotator/pidinet/LICENSE",
+  "confidence": "medium",
+  "note": "License text is MIT but prefixed 'It is just for research purpose, and commercial use should be contacted with authors first.' lllyasviel/Annotators labels the repo 'other'."
+ },
+ {
+  "id": "preprocessor-line_art-all",
+  "name": "Line Art Preprocessor",
+  "license": "MIT",
+  "license_url": "https://github.com/lllyasviel/ControlNet-v1-1-nightly/blob/main/annotator/lineart/LICENSE",
+  "restriction": "open",
+  "source": "https://github.com/lllyasviel/ControlNet-v1-1-nightly/tree/main/annotator/lineart ; https://github.com/carolineec/informative-drawings",
+  "confidence": "medium",
+  "note": "sk_model.pth and sk_model2.pth are the ControlNet 1.1 lineart annotator models; that folder carries the informative-drawings MIT license (Caroline Chan). The HF host lllyasviel/Annotators labels the whole repo 'other'."
+ },
+ {
+  "id": "preprocessor-soft_edge-all",
+  "name": "Soft Edge Preprocessor",
+  "license": "CreativeML Open RAIL++-M",
+  "license_url": "https://huggingface.co/TheMistoAI/MistoLine/blob/main/LICENSE.md",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/TheMistoAI/MistoLine (hosts Anyline/MTEED.pth) ; https://github.com/TheMistoAI/ComfyUI-Anyline",
+  "confidence": "medium",
+  "note": "MTEED weights are hosted in the MistoLine repo (Open RAIL++-M); the Anyline code repo that downloads them is MIT; neither names a license for MTEED.pth specifically. Based on TEED (MIT)."
+ },
+ {
+  "id": "preprocessor-depth-all",
+  "name": "Depth Preprocessor",
+  "license": "CC-BY-NC-4.0",
+  "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+  "restriction": "non_commercial",
+  "source": "https://huggingface.co/depth-anything/Depth-Anything-V2-Base",
+  "confidence": "high",
+  "note": "Only Depth-Anything-V2-Small is Apache-2.0; Base and Large are CC-BY-NC-4.0."
+ },
+ {
+  "id": "preprocessor-pose-all",
+  "name": "Pose Preprocessor",
+  "license": "YOLO-NAS License (Deci)",
+  "license_url": "https://github.com/Deci-AI/super-gradients/blob/master/LICENSE.YOLONAS.md",
+  "restriction": "non_commercial",
+  "source": "https://github.com/Deci-AI/super-gradients/blob/master/LICENSE.YOLONAS.md ; https://github.com/IDEA-Research/DWPose",
+  "confidence": "high",
+  "note": "Most restrictive of two files: yolo_nas_l_fp16.onnx = Deci YOLO-NAS weights (no commercial use, no redistribution without consent; the hr16 re-host's Apache-2.0 label is wrong); dw-ll_ucoco_384.onnx = DWPose, Apache-2.0."
+ },
+ {
+  "id": "preprocessor-safetychecker-all",
+  "name": "NSFW Filter",
+  "license": "CreativeML Open RAIL-M",
+  "license_url": "https://huggingface.co/spaces/CompVis/stable-diffusion-license",
+  "restriction": "restricted",
+  "source": "https://huggingface.co/CompVis/stable-diffusion-v1-4 (safety_checker/model.fp16.safetensors has the same sha256 as the pr/41 file)",
+  "confidence": "medium",
+  "note": "CompVis/stable-diffusion-safety-checker card says 'License: More information needed'; the byte-identical file ships in CompVis/stable-diffusion-v1-4, licensed CreativeML OpenRAIL-M."
+ }
+]

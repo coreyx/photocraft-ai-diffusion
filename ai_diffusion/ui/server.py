@@ -4,6 +4,7 @@ from collections.abc import Iterable
 from copy import copy
 from dataclasses import dataclass
 from enum import Enum
+from html import escape
 from pathlib import Path
 
 from krita import Krita
@@ -58,6 +59,20 @@ class PackageItem:
     status: QLabel | QCheckBox
     package: str | ModelResource | CustomNode
     state: PackageState
+
+
+def license_text(model: ModelResource | None) -> str:
+    """PhotoCraft: the license shown with a model before it is downloaded: a link to it, and a
+    mark for licenses that don't allow commercial use or attach conditions (REQ-29.0.4)."""
+    if model is None or model.license is None:
+        return ""
+    lic = model.license
+    text = f"<a href='{lic.url}'>{escape(lic.name)}</a>"
+    if lic.restriction == "non_commercial":
+        text += f" <b style='color:{yellow}'>{_('Non-commercial')}</b>"
+    elif lic.restriction == "restricted":
+        text += f" <b style='color:{yellow}'>{_('Use restrictions apply')}</b>"
+    return text
 
 
 class PackageGroupWidget(QWidget):
@@ -135,6 +150,10 @@ class PackageGroupWidget(QWidget):
             status=QCheckBox(_("Install"), self) if self.is_checkable else QLabel(self),
         )
         item.label.setContentsMargins(20, 0, 0, 0)
+        if isinstance(package, ModelResource) and (license := license_text(package)):
+            item.label.setText(f"{escape(package.name)} &middot; {license}")
+            item.label.setTextFormat(Qt.TextFormat.RichText)
+            item.label.setOpenExternalLinks(True)
         if self.is_checkable:
             assert isinstance(item.status, QCheckBox)
             item.status.setChecked(False)
@@ -142,6 +161,21 @@ class PackageGroupWidget(QWidget):
         self._layout.addWidget(item.label, self._layout.rowCount(), 0)
         self._layout.addWidget(item.status, self._layout.rowCount() - 1, 1)
         return item
+
+    def add_license_notes(self, index: int, models: Iterable[ModelResource]):
+        """PhotoCraft: under an item that installs several models, the licenses among them that
+        don't allow commercial use or attach conditions (REQ-29.0.4)."""
+        notes = [
+            f"{escape(m.name)}: {license_text(m)}"
+            for m in models
+            if m.license is not None and m.license.is_restricted
+        ]
+        if notes:
+            label = self._items[index].label
+            name = escape(self._package_name(self._items[index].package))
+            label.setText(f"{name}<br><small>{'<br>'.join(notes)}</small>")
+            label.setTextFormat(Qt.TextFormat.RichText)
+            label.setOpenExternalLinks(True)
 
     @property
     def is_checkable(self):
@@ -345,6 +379,13 @@ class CustomPackageTab(QWidget):
         )
         self._workload_group.changed.connect(self._change_workload)
         layout.addWidget(self._workload_group)
+
+        def required(arch: Arch):
+            return [m for m in resources.required_models if m.arch is arch]
+
+        self._required_group.add_license_notes(3, required(Arch.all))
+        for index, arch in enumerate(self.workloads):
+            self._workload_group.add_license_notes(index, required(arch))
 
         optional_models = resources.default_checkpoints + resources.optional_models
         self._packages: dict[str, PackageGroupWidget] = {
@@ -559,6 +600,15 @@ class ModelCheckBox:
 
         layout.addWidget(self.widget)
         self.widget.toggled.connect(self._update_state)
+
+        ids = (model_ids,) if isinstance(model_ids, str) else model_ids
+        model = next((r for i in ids if (r := resources.find_resource(ResourceId.parse(i)))), None)
+        self.license = QLabel(license_text(model))
+        self.license.setContentsMargins(22, 0, 0, 0)
+        self.license.setTextFormat(Qt.TextFormat.RichText)
+        self.license.setOpenExternalLinks(True)
+        self.license.setVisible(bool(self.license.text()))
+        layout.addWidget(self.license)
 
     def _update_state(self):
         if self.state is PackageState.available and self.widget.isChecked():

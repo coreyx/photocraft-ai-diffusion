@@ -23,6 +23,35 @@ if is_linux:
         return libc.prctl(1, signal.SIGTERM)
 
 
+# PhotoCraft: the plug-in is a process PhotoCraft can end at any time, so on macOS and Linux a
+# managed server runs in its own process group, watched by this script: once the plug-in is gone
+# (the watcher's parent changes), it ends the whole group (REQ-29.0.3). Windows uses a job object.
+_server_watcher = """
+import os, signal, sys, time
+plugin, group = int(sys.argv[1]), int(sys.argv[2])
+while True:
+    time.sleep(1)
+    try:
+        os.killpg(group, 0)
+    except ProcessLookupError:
+        break
+    if os.getppid() != plugin:
+        os.killpg(group, signal.SIGTERM)
+        time.sleep(5)
+        try:
+            os.killpg(group, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        break
+"""
+
+
+def _in_photocraft() -> bool:
+    import krita
+
+    return hasattr(krita, "photocraft_host")
+
+
 async def create_process(
     program: str | Path,
     *args: str,
@@ -36,6 +65,9 @@ async def create_process(
         platform_args["creationflags"] = subprocess.CREATE_NO_WINDOW  # type: ignore
     if is_linux:
         platform_args["preexec_fn"] = set_pdeathsig
+    watch = is_job and not is_windows and _in_photocraft()
+    if watch:
+        platform_args["start_new_session"] = True
 
     env = os.environ.copy()
     if additional_env:
@@ -56,6 +88,18 @@ async def create_process(
             win32.attach_process_to_job(p.pid)
         except Exception:  # noqa
             pass
+    if watch:
+        await asyncio.create_subprocess_exec(
+            sys.executable,
+            "-c",
+            _server_watcher,
+            str(os.getpid()),
+            str(p.pid),  # the server leads its own session, so its pid is the group id
+            start_new_session=True,
+            stdin=asyncio.subprocess.DEVNULL,
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
     return p
 
 

@@ -249,6 +249,22 @@ def main() -> int:
         name for name in changes if _plain(getattr(settings, name)) != _plain(defaults[name])
     ]
 
+    # -- model licenses, shown before downloading (Restore Defaults chose the managed server)
+    from ai_diffusion.ui.server import PackageGroupWidget, WorkloadsTab
+
+    show_page("Connection")
+    workloads = dialog.findChildren(WorkloadsTab)[0]
+    shown = {}
+    for model in workloads._models:
+        node = find_widget(host.dialogs[dialog_id]["tree"], mirror.node_id(model.license)) or {}
+        shown[model.label] = node.get("props", {})
+    results["workload_licenses"] = shown
+    packages = {}
+    for group in dialog.findChildren(PackageGroupWidget):
+        for item in group._items:
+            packages[group._package_name(item.package)] = item.label.text()
+    results["package_licenses"] = packages
+
     # -- recently used document settings apply to the next new document
     model = root.model_for_active_document()
     assert model is not None

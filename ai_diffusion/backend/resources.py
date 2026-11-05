@@ -535,12 +535,26 @@ class ModelFile(NamedTuple):
             return VerificationStatus(VerificationState.error, self, str(e))
 
 
+class ModelLicense(NamedTuple):
+    """PhotoCraft: a model's license, shown before it is downloaded (REQ-29.0.4).
+    ``restriction`` is ``open``, ``restricted`` (use-based conditions) or ``non_commercial``."""
+
+    name: str
+    url: str
+    restriction: str = "open"
+
+    @property
+    def is_restricted(self):
+        return self.restriction != "open"
+
+
 class ModelResource(NamedTuple):
     name: str
     id: ResourceId
     files: list[ModelFile]
     alternatives: list[Path] | None = None  # for backwards compatibility
     requirements: ModelRequirements = ModelRequirements.none
+    license: ModelLicense | None = None
 
     @property
     def filename(self):
@@ -592,6 +606,8 @@ class ModelResource(NamedTuple):
             result["alternatives"] = [str(p.as_posix()) for p in self.alternatives]
         if self.requirements is not ModelRequirements.none:
             result["requirements"] = self.requirements.name
+        if self.license is not None:
+            result["license"] = self.license._asdict()
         return result
 
     @staticmethod
@@ -624,7 +640,8 @@ class ModelResource(NamedTuple):
                 if "requirements" in data
                 else ModelRequirements.none
             )
-            yield ModelResource(data["name"], id, files, alternatives, requirements)
+            license = ModelLicense(**data["license"]) if "license" in data else None
+            yield ModelResource(data["name"], id, files, alternatives, requirements, license)
 
     @staticmethod
     def from_list(data: list[dict[str, Any]]):

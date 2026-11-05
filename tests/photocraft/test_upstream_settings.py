@@ -154,3 +154,31 @@ def test_restore_defaults(results: dict):
 def test_recent_document_settings_apply_to_a_new_document(results: dict):
     assert results["document_defaults"] == 3
     assert results["new_document_batch_count"] == 3
+
+
+#: Package items that are not one model: core components and workloads.
+BUNDLES = {"Python", "ComfyUI", "Custom nodes", "Required models", "Stable Diffusion 1.5"}
+BUNDLES |= {"Stable Diffusion XL", "Flux", "Flux 2", "Z-Image"}
+
+
+def test_model_licenses_are_shown_before_downloading(results: dict):
+    """REQ-29.0.4: each model's license, linked, with a mark when it restricts use."""
+    workloads = results["workload_licenses"]
+    assert workloads and all(
+        "<a href=" in props.get("text", "") and props.get("format") == "rich"
+        for props in workloads.values()
+    )
+    krea = next(
+        props["text"] for label, props in workloads.items() if label.startswith("Flux Krea")
+    )
+    assert "FLUX.1 [dev] Non-Commercial License" in krea and "Non-commercial" in krea
+    zimage = next(
+        props["text"] for label, props in workloads.items() if label.startswith("Z-Image")
+    )
+    assert "Apache-2.0" in zimage and "Non-commercial" not in zimage
+
+    packages = results["package_licenses"]
+    models = {name: text for name, text in packages.items() if name not in BUNDLES}
+    assert models and all("<a href=" in text for text in models.values())
+    assert "MAT Inpaint" in packages["Required models"], "what a bundle installs is listed"
+    assert "Non-commercial" in packages["Required models"]
