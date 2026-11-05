@@ -41,7 +41,7 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
 - [x] **TASK-3:** `font_family_count() -> int`, for the start-up log line.
 
 #### [MODIFY] `photocraft_host/main.py`
-- [ ] **TASK-4:** In `main()`, call `configure_fonts(os.environ)` before the `QApplication` is created, and `use_platform_tls()` right after, before `install_krita_shim()`. Log one line: `Qt: TLS <backend>, <n> font families`.
+- [x] **TASK-4:** In `main()`, call `configure_fonts(os.environ)` before the `QApplication` is created, and `use_platform_tls()` right after, before `install_krita_shim()`. Log one line: `Qt: TLS <backend>, <n> font families`.
 
 ### Upstream adaptations
 

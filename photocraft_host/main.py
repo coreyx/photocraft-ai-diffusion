@@ -190,12 +190,17 @@ def main(streams=None, welcome: Welcome | None = None, first_id: int = 1) -> int
     if not logging.getLogger().handlers:
         setup_logging()
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from photocraft_host import qt_setup
+
+    qt_setup.configure_fonts(os.environ)  # read when the QApplication is created
     from PyQt6.QtWidgets import QApplication
 
     from photocraft_host import transport as transport_module
 
     reader, writer = streams or transport_module.stdio_streams()
     app = QApplication(sys.argv[:1])
+    tls = qt_setup.use_platform_tls()  # before upstream makes any request
+    log.info("Qt: TLS %s, %d font families", tls, qt_setup.font_family_count())
     install_krita_shim()
     transport = transport_module.Transport(reader, writer, first_id=first_id)
     # Upstream stops its managed server when the application closes.
