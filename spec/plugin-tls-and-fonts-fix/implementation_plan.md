@@ -61,10 +61,11 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
   - Windows with no setting: the folder is set;
   - an existing setting is kept;
   - macOS and Linux: nothing is set.
-- [ ] **TASK-9:** Windows-only test in a child process, the crash's preconditions without the 30-second wait:
+- [ ] **TASK-9:** Windows-only slow test in a child process, the crash's preconditions:
   - Put a foreign OpenSSL folder at the front of `PATH`: Git for Windows' `mingw64\bin`, found on `PATH` or at its default install folder. The test is skipped when there isn't one.
-  - Run `import ssl`, create a `QCoreApplication`, call `use_platform_tls()`, and probe the backends as the plug-in does.
-  - Assert that the active backend is `schannel`, and that no OpenSSL library from that folder is loaded in the process (its module list, by full path).
+  - Run `import ssl`, create a `QCoreApplication` and call `use_platform_tls()`.
+  - Assert that the active backend is `schannel` and that Qt reports Secure Channel as its TLS library. Qt still loads the foreign OpenSSL when it loads its backends, but never uses it; the test checks for the crash itself instead.
+  - Make an HTTPS request through `QNetworkAccessManager` to a local HTTPS server (Python's `ssl`, a certificate made for the test, its errors ignored for this request), then keep the event loop running past 40 s. Assert that the process exits normally. Before the fix, the same sequence crashed between 30 and 35 s.
 - [ ] **TASK-10:** A started plug-in process logs `Qt: TLS …, <n> font families` with `n > 0` (an assertion added to `test_transport.py`'s headless process test). It runs in CI on all three platforms, so CI shows whether macOS and Linux need a font setting too.
 
 #### [MODIFY] `tests/photocraft/test_updates_diagnostics.py`
