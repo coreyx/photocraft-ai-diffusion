@@ -1,0 +1,151 @@
+{
+ "kind": "column",
+ "qt": "CustomWorkflowWidget",
+ "children": [
+  {
+   "kind": "row",
+   "children": [
+    {
+     "kind": "toolButton",
+     "qt": "WorkspaceSelectWidget",
+     "picture": true
+    },
+    {
+     "kind": "row",
+     "qt": "QWidget",
+     "children": [
+      {
+       "kind": "combo",
+       "qt": "QComboBox",
+       "items": []
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "picture": true
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "picture": true
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "picture": true
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "picture": true
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "picture": true
+      }
+     ]
+    },
+    {
+     "kind": "row",
+     "qt": "QWidget",
+     "visible": false
+    }
+   ]
+  },
+  {
+   "kind": "row",
+   "qt": "StyleSelectWidget",
+   "visible": false
+  },
+  {
+   "kind": "column",
+   "qt": "ActiveRegionWidget",
+   "visible": false
+  },
+  {
+   "kind": "splitter",
+   "qt": "QSplitter",
+   "orientation": "vertical",
+   "children": [
+    {
+     "kind": "scroll",
+     "qt": "QScrollArea"
+    },
+    {
+     "kind": "column",
+     "qt": "QWidget",
+     "children": [
+      {
+       "kind": "row",
+       "children": [
+        {
+         "kind": "button",
+         "qt": "GenerateButton",
+         "text": "",
+         "picture": true
+        },
+        {
+         "kind": "toolButton",
+         "qt": "QToolButton",
+         "visible": false,
+         "enabled": false,
+         "picture": true
+        },
+        {
+         "kind": "toolButton",
+         "qt": "QToolButton",
+         "text": ""
+        },
+        {
+         "kind": "spacer"
+        },
+        {
+         "kind": "toolButton",
+         "qt": "QueueButton",
+         "text": "0 ",
+         "picture": true
+        }
+       ]
+      },
+      {
+       "kind": "progress",
+       "qt": "ProgressBar"
+      },
+      {
+       "kind": "row",
+       "qt": "ErrorBox",
+       "visible": false
+      },
+      {
+       "kind": "column",
+       "qt": "WorkflowOutputsWidget",
+       "children": [
+        {
+         "kind": "toolButton",
+         "qt": "ExpanderButton",
+         "text": " Text Output",
+         "checkable": true
+        },
+        {
+         "kind": "scroll",
+         "qt": "QScrollArea"
+        }
+       ]
+      },
+      {
+       "kind": "column",
+       "qt": "HistoryWidget"
+      },
+      {
+       "kind": "label",
+       "qt": "LivePreviewArea",
+       "text": "",
+       "visible": false
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -16,6 +16,7 @@ conversion, compositing beyond "top visible pixel wins" and file formats are lef
 
 from __future__ import annotations
 
+import copy
 import itertools
 import os
 import re
@@ -137,6 +138,76 @@ class MockDocument:
         raise _Refused("notFound", f"no layer '{uid}'")
 
 
+def find_widget(root: dict, node_id: str) -> dict | None:
+    """The node ``node_id`` in a widget tree, or ``None``."""
+    if root["id"] == node_id:
+        return root
+    for child in root.get("children", []):
+        if (hit := find_widget(child, node_id)) is not None:
+            return hit
+    return None
+
+
+def _take_widget(root: dict, node_id: str) -> dict | None:
+    children = root.get("children", [])
+    for i, child in enumerate(children):
+        if child["id"] == node_id:
+            return children.pop(i)
+        if (hit := _take_widget(child, node_id)) is not None:
+            return hit
+    return None
+
+
+def _check_ids(root: dict):
+    seen: set[str] = set()
+    stack = [root]
+    while stack:
+        n = stack.pop()
+        if n["id"] in seen:
+            raise _Refused("invalid", f"duplicate widget id '{n['id']}'")
+        seen.add(n["id"])
+        stack.extend(n.get("children", []))
+
+
+def apply_patches(root: dict, ops: list[dict]) -> dict:
+    """Apply ``panel.patch`` operations as PhotoCraft does: all of them or none."""
+    root = copy.deepcopy(root)
+    for op in ops:
+        kind = op["op"]
+        if kind == "replace":
+            root = copy.deepcopy(op["node"])
+        elif kind == "set":
+            target = find_widget(root, op["id"])
+            if target is None:
+                raise _Refused("invalid", f"no widget '{op['id']}'")
+            props = target.setdefault("props", {})
+            for key, value in op["props"].items():
+                if value is None:
+                    props.pop(key, None)
+                else:
+                    props[key] = value
+        elif kind == "insert":
+            parent = find_widget(root, op["parent"])
+            if parent is None:
+                raise _Refused("invalid", f"no widget '{op['parent']}'")
+            children = parent.setdefault("children", [])
+            children.insert(min(op["index"], len(children)), copy.deepcopy(op["node"]))
+        elif kind == "remove":
+            if root["id"] == op["id"] or _take_widget(root, op["id"]) is None:
+                raise _Refused("invalid", f"can't remove '{op['id']}'")
+        elif kind == "move":
+            moved = _take_widget(root, op["id"])
+            parent = find_widget(root, op["parent"])
+            if moved is None or parent is None:
+                raise _Refused("invalid", f"can't move '{op['id']}' into '{op['parent']}'")
+            children = parent.setdefault("children", [])
+            children.insert(min(op["index"], len(children)), moved)
+        else:
+            raise _Refused("invalid", f"unknown patch '{kind}'")
+    _check_ids(root)
+    return root
+
+
 class _Refused(Exception):
     def __init__(self, code: str, message: str):
         super().__init__(message)
@@ -175,6 +246,8 @@ class MockHost:
         self.panels: dict[str, dict] = {}
         self.actions: dict[str, dict] = {}
         self.notices: list[dict] = []
+        #: URLs the plug-in asked PhotoCraft to open (``open.url``).
+        self.opened: list[str] = []
         self.progress: dict[str, dict] = {}
         self.dialogs: dict[str, dict] = {}
         self.images: dict[str, bytes] = {}
@@ -231,6 +304,7 @@ class MockHost:
         for registry in (self.panels, self.actions, self.progress, self.dialogs, self.images):
             registry.clear()
         self.notices.clear()
+        self.opened.clear()
         self.subscriptions.clear()
         self.preview = None
 
@@ -609,7 +683,9 @@ class MockHost:
     def _m_panel_patch(self, p, _):
         if p["panelId"] not in self.panels:
             raise _Refused("notFound", f"no panel '{p['panelId']}'")
-        self.panels[p["panelId"]].setdefault("patches", []).append(p["ops"])
+        panel = self.panels[p["panelId"]]
+        panel["tree"] = apply_patches(panel["tree"], p["ops"])
+        panel.setdefault("patches", []).append(p["ops"])
 
     def _m_panel_unregister(self, p, _):
         self.panels.pop(p["panelId"], None)
@@ -636,6 +712,9 @@ class MockHost:
 
     def _m_notice_show(self, p, _):
         self.notices.append(p)
+
+    def _m_open_url(self, p, _):
+        self.opened.append(str(p["url"]))
 
     def _m_progress_set(self, p, _):
         self.progress[p["taskId"]] = p

@@ -1,0 +1,183 @@
+{
+ "kind": "column",
+ "qt": "UpscaleWidget",
+ "children": [
+  {
+   "kind": "row",
+   "children": [
+    {
+     "kind": "toolButton",
+     "qt": "WorkspaceSelectWidget",
+     "picture": true
+    },
+    {
+     "kind": "combo",
+     "qt": "QComboBox",
+     "items": []
+    }
+   ]
+  },
+  {
+   "kind": "column",
+   "qt": "FactorWidget",
+   "children": [
+    {
+     "kind": "row",
+     "children": [
+      {
+       "kind": "slider",
+       "qt": "QSlider"
+      },
+      {
+       "kind": "spin",
+       "qt": "QDoubleSpinBox"
+      }
+     ]
+    },
+    {
+     "kind": "label",
+     "qt": "QLabel",
+     "text": ""
+    }
+   ]
+  },
+  {
+   "kind": "group",
+   "qt": "QGroupBox",
+   "title": "Refine upscaled image",
+   "checkable": true,
+   "children": [
+    {
+     "kind": "column",
+     "children": [
+      {
+       "kind": "row",
+       "qt": "StyleSelectWidget",
+       "children": [
+        {
+         "kind": "combo",
+         "qt": "QComboBox",
+         "items": []
+        },
+        {
+         "kind": "toolButton",
+         "qt": "QToolButton",
+         "picture": true
+        }
+       ]
+      },
+      {
+       "kind": "row",
+       "children": [
+        {
+         "kind": "label",
+         "qt": "QLabel",
+         "text": "Strength"
+        },
+        {
+         "kind": "spin",
+         "qt": "QDoubleSpinBox"
+        }
+       ]
+      },
+      {
+       "kind": "row",
+       "children": [
+        {
+         "kind": "label",
+         "qt": "QLabel",
+         "text": "Image guidance"
+        },
+        {
+         "kind": "spin",
+         "qt": "QDoubleSpinBox"
+        }
+       ]
+      },
+      {
+       "kind": "row",
+       "children": [
+        {
+         "kind": "label",
+         "qt": "QLabel",
+         "text": "Tile Overlap"
+        },
+        {
+         "kind": "combo",
+         "qt": "QComboBox",
+         "items": [
+          "Automatic",
+          "Custom"
+         ]
+        },
+        {
+         "kind": "spin",
+         "qt": "QSpinBox",
+         "enabled": false
+        }
+       ]
+      },
+      {
+       "kind": "row",
+       "children": [
+        {
+         "kind": "label",
+         "qt": "QLabel",
+         "text": "Use Prompt"
+        },
+        {
+         "kind": "label",
+         "qt": "QLabel",
+         "text": ""
+        },
+        {
+         "kind": "image",
+         "qt": "WarningIcon",
+         "visible": false,
+         "picture": true
+        },
+        {
+         "kind": "label",
+         "qt": "QLabel",
+         "text": "Off"
+        },
+        {
+         "kind": "column",
+         "qt": "SwitchWidget"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "row",
+   "children": [
+    {
+     "kind": "button",
+     "qt": "GenerateButton",
+     "text": ""
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QueueButton",
+     "text": "0 ",
+     "picture": true
+    }
+   ]
+  },
+  {
+   "kind": "progress",
+   "qt": "QProgressBar"
+  },
+  {
+   "kind": "row",
+   "qt": "ErrorBox",
+   "visible": false
+  },
+  {
+   "kind": "spacer"
+  }
+ ]
+}

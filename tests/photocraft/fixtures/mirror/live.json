@@ -1,0 +1,176 @@
+{
+ "kind": "column",
+ "qt": "LiveWidget",
+ "children": [
+  {
+   "kind": "row",
+   "children": [
+    {
+     "kind": "toolButton",
+     "qt": "WorkspaceSelectWidget",
+     "picture": true
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QToolButton",
+     "picture": true
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QToolButton",
+     "picture": true
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QToolButton",
+     "enabled": false,
+     "picture": true
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QToolButton",
+     "enabled": false,
+     "picture": true
+    },
+    {
+     "kind": "row",
+     "qt": "StyleSelectWidget",
+     "children": [
+      {
+       "kind": "combo",
+       "qt": "QComboBox",
+       "items": []
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "picture": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "row",
+   "children": [
+    {
+     "kind": "spin",
+     "qt": "QDoubleSpinBox"
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QToolButton",
+     "text": ""
+    },
+    {
+     "kind": "spin",
+     "qt": "QDoubleSpinBox"
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QToolButton",
+     "picture": true
+    }
+   ]
+  },
+  {
+   "kind": "row",
+   "children": [
+    {
+     "kind": "column",
+     "children": [
+      {
+       "kind": "column",
+       "qt": "ActiveRegionWidget",
+       "children": [
+        {
+         "kind": "row",
+         "children": [
+          {
+           "kind": "image",
+           "qt": "RegionThumbnailWidget",
+           "picture": true
+          },
+          {
+           "kind": "column",
+           "qt": "TextPromptWidget"
+          }
+         ]
+        },
+        {
+         "kind": "column",
+         "qt": "TextPromptWidget",
+         "visible": false
+        },
+        {
+         "kind": "row",
+         "qt": "QWidget",
+         "visible": false
+        }
+       ]
+      },
+      {
+       "kind": "column",
+       "qt": "ActiveRegionWidget",
+       "children": [
+        {
+         "kind": "row",
+         "children": [
+          {
+           "kind": "image",
+           "qt": "RegionThumbnailWidget",
+           "picture": true
+          },
+          {
+           "kind": "column",
+           "qt": "TextPromptWidget"
+          }
+         ]
+        },
+        {
+         "kind": "column",
+         "qt": "TextPromptWidget",
+         "visible": false
+        },
+        {
+         "kind": "row",
+         "qt": "QWidget",
+         "visible": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "kind": "column",
+     "children": [
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "picture": true
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "picture": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "column",
+   "qt": "ControlListWidget"
+  },
+  {
+   "kind": "row",
+   "qt": "ErrorBox",
+   "visible": false
+  },
+  {
+   "kind": "label",
+   "qt": "LivePreviewArea",
+   "text": ""
+  }
+ ]
+}

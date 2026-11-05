@@ -240,7 +240,7 @@ The upstream plug-in starts in its own process, talks to the host through the sh
     3. Fix `persistence.py` so `JobParams.from_dict` restores enum fields as enums. Make the localization default follow the host locale.
     4. Record each change in `UPSTREAM-CHANGES.md`. Add tests that write nothing under Krita AI Diffusion's data folder, cover the colour notes and refusal, round-trip persistence enums, and default the locale to Japanese.
 
-- [ ] **TASK-25: Qt mirror core**
+- [x] **TASK-25: Qt mirror core**
   - **Associated Acceptance Criteria**: `14.1`
   - **Concrete Steps**:
     1. Implement `qt_mirror/mirror.py` (tree walk, node ids, mapping layouts to containers) and `tracker.py` (event filter, signal hooks, dirty set, one `panel.patch` per 16 ms).

@@ -1,0 +1,154 @@
+{
+ "kind": "column",
+ "qt": "GenerationWidget",
+ "children": [
+  {
+   "kind": "row",
+   "children": [
+    {
+     "kind": "toolButton",
+     "qt": "WorkspaceSelectWidget",
+     "picture": true
+    },
+    {
+     "kind": "row",
+     "qt": "StyleSelectWidget",
+     "children": [
+      {
+       "kind": "combo",
+       "qt": "QComboBox",
+       "items": []
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "picture": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "column",
+   "qt": "RegionPromptWidget",
+   "children": [
+    {
+     "kind": "column"
+    },
+    {
+     "kind": "column",
+     "qt": "ActiveRegionWidget",
+     "children": [
+      {
+       "kind": "row",
+       "qt": "QWidget",
+       "visible": false
+      },
+      {
+       "kind": "column",
+       "qt": "TextPromptWidget"
+      },
+      {
+       "kind": "column",
+       "qt": "TextPromptWidget",
+       "visible": false
+      },
+      {
+       "kind": "row",
+       "qt": "QWidget",
+       "visible": false
+      }
+     ]
+    },
+    {
+     "kind": "column"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "column",
+     "qt": "ControlListWidget"
+    }
+   ]
+  },
+  {
+   "kind": "row",
+   "children": [
+    {
+     "kind": "spin",
+     "qt": "QDoubleSpinBox"
+    },
+    {
+     "kind": "row",
+     "qt": "LayerCountWidget",
+     "visible": false
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QToolButton",
+     "picture": true
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QToolButton",
+     "picture": true
+    }
+   ]
+  },
+  {
+   "kind": "row",
+   "qt": "CustomInpaintWidget",
+   "visible": false
+  },
+  {
+   "kind": "row",
+   "children": [
+    {
+     "kind": "row",
+     "children": [
+      {
+       "kind": "button",
+       "qt": "GenerateButton",
+       "text": "",
+       "picture": true
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "text": "",
+       "visible": false
+      },
+      {
+       "kind": "toolButton",
+       "qt": "QToolButton",
+       "checkable": true,
+       "visible": false,
+       "enabled": false,
+       "picture": true
+      }
+     ]
+    },
+    {
+     "kind": "toolButton",
+     "qt": "QueueButton",
+     "text": "0 ",
+     "picture": true
+    }
+   ]
+  },
+  {
+   "kind": "progress",
+   "qt": "ProgressBar"
+  },
+  {
+   "kind": "row",
+   "qt": "ErrorBox",
+   "visible": false
+  },
+  {
+   "kind": "column",
+   "qt": "HistoryWidget"
+  }
+ ]
+}
