@@ -48,7 +48,9 @@ from PyQt6.QtWidgets import (
     QWidgetAction,
 )
 
+from .. import util
 from ..backend.client import filter_supported_styles, resolve_arch
+from ..backend.cloud_client import CloudClient
 from ..backend.workflow import apply_strength, snap_to_percent
 from ..localization import translate as _
 from ..model.connection import ConnectionState
@@ -940,7 +942,7 @@ class GenerateButton(QPushButton):
         self._operation = _("Generate")
         self._kind = kind
         self._cost = 0
-        self._cost_icon = theme.icon("interstice")
+        self._cost_icon = theme.cloud_icon()
         self._seed_icon = theme.icon("seed")
         self._resolution_icon = theme.icon("resolution-multiplier")
         self.setAttribute(Qt.WidgetAttribute.WA_Hover)
@@ -1056,7 +1058,7 @@ class ErrorBox(QFrame):
         self._recharge_button = QToolButton(self)
         self._recharge_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self._recharge_button.setText(_("Charge"))
-        self._recharge_button.setIcon(theme.icon("interstice"))
+        self._recharge_button.setIcon(theme.cloud_icon())
         self._recharge_button.clicked.connect(self._recharge)
 
         layout = QHBoxLayout(self)
@@ -1119,7 +1121,7 @@ class ErrorBox(QFrame):
                 _(
                     "Selected LoRA model could not be applied. Please make sure it is compatible with the checkpoint base model you are using."
                 )
-                + " <a href='https://docs.interstice.cloud/base-models'>"
+                + f" <a href='{util.docs_page('base-models')}'>"
                 + _("Learn more")
                 + "</a>"
             )
@@ -1144,7 +1146,7 @@ class ErrorBox(QFrame):
             clipboard.setText(self._original_error)
 
     def _recharge(self):
-        QDesktopServices.openUrl(QUrl("https://www.interstice.cloud/user"))
+        QDesktopServices.openUrl(QUrl(CloudClient.default_web_url + "/user"))
 
 
 def create_wide_tool_button(icon_name: str, text: str, parent=None):

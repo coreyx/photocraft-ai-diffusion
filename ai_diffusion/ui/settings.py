@@ -46,7 +46,14 @@ from ..model.connection import ConnectionState, apply_performance_preset
 from ..model.properties import Binding
 from ..model.root import collect_diagnostics, root
 from ..model.updates import UpdateState
-from ..settings import ImageFileFormat, PerformancePreset, ServerMode, Settings, settings
+from ..settings import (
+    ImageFileFormat,
+    PerformancePreset,
+    ServerMode,
+    Settings,
+    cloud_enabled,
+    settings,
+)
 from ..style import Style
 from .server import ServerWidget
 from .settings_widgets import (
@@ -97,17 +104,23 @@ class InitialSetupWidget(QWidget):
             layout.addWidget(button)
             layout.addSpacing(16)
 
+        # PhotoCraft: the online service only with the cloud module, named after its site
+        # (REQ-32.0.2, REQ-32.0.3); the options are numbered as they are shown.
+        number = 1
+        if cloud_enabled():
+            site = CloudClient.default_web_url
+            add_option(
+                _("Option {number}", number=number) + ": " + _("Online Service"),
+                _(
+                    "Generate images via {link}. Create an account to get started. No local installation or powerful hardware needed.",
+                    link=f"<a href='{site}'>{QUrl(site).host()}</a>",
+                ),
+                _("Login or Sign up"),
+                ServerMode.cloud,
+            )
+            number += 1
         add_option(
-            _("Option {number}", number=1) + ": " + _("Online Service"),
-            _(
-                "Generate images via {link}. Create an account to get started. No local installation or powerful hardware needed.",
-                link="<a href='https://www.interstice.cloud'>interstice.cloud</a>",
-            ),
-            _("Login or Sign up"),
-            ServerMode.cloud,
-        )
-        add_option(
-            _("Option {number}", number=2) + ": " + _("Local Managed Server"),
+            _("Option {number}", number=number) + ": " + _("Local Managed Server"),
             _(
                 "Install and run a local ComfyUI server on your machine. Installation and updates are performed automatically by the plugin. Requires a compatible GPU (NVIDIA with at least 6GB VRAM recommended)."
             ),
@@ -115,11 +128,11 @@ class InitialSetupWidget(QWidget):
             ServerMode.managed,
         )
         add_option(
-            _("Option {number}", number=3) + ": " + _("Custom ComfyUI"),
+            _("Option {number}", number=number + 1) + ": " + _("Custom ComfyUI"),
             _(
                 "Connect to an existing installation of ComfyUI. It can be on the same machine, or a remote machine over the network. You are responsible to setup ComfyUI and install required custom nodes and models."
             )
-            + "<br><a href='https://docs.interstice.cloud/comfyui-setup'>ComfyUI Setup Guide</a>",
+            + f"<br><a href='{util.docs_page('comfyui-setup')}'>ComfyUI Setup Guide</a>",
             _("Connect via URL"),
             ServerMode.external,
         )
@@ -427,6 +440,7 @@ class ServerModeSelect(QWidget):
         layout.addWidget(self._managed_button)
         layout.addWidget(self._external_button)
         layout.addStretch()
+        self._cloud_button.setVisible(cloud_enabled())  # PhotoCraft (REQ-32.0.2)
 
     def _change_mode(self, mode: ServerMode):
         self.mode = mode
@@ -663,7 +677,7 @@ class ConnectionSettings(SettingsTab):
                 text += "</li>"
             text += "</ul>"
 
-        link = "<a href='https://docs.interstice.cloud/comfyui-setup'>Custom ComfyUI Setup</a>"
+        link = f"<a href='{util.docs_page('comfyui-setup')}'>Custom ComfyUI Setup</a>"
         text += _(
             "See {link} for required models.<br>Check the client.log file for more details.",
             link=link,
@@ -1134,16 +1148,17 @@ class AboutSettings(SettingsTab):
         QDesktopServices.openUrl(QUrl.fromLocalFile(str(util.log_dir)))
 
 
-_links_text = """
-<a href='https://www.interstice.cloud'>Website</a><br><br>
-<a href='https://docs.interstice.cloud'>Handbook: Guides and Tips</a><br><br>
-<a href='https://github.com/Acly/krita-ai-diffusion'>GitHub</a>
+# PhotoCraft: this project's documentation and support (REQ-36.0.1), and the project it is
+# based on.
+_links_text = f"""
+<a href='{util.project_url}'>Website</a><br><br>
+<a href='{util.docs_page()}'>Handbook: Guides and Tips</a><br><br>
+<a href='https://github.com/Acly/krita-ai-diffusion'>Based on Krita AI Diffusion</a>
 """
 
-_contact_text = """
-<a href='https://github.com/Acly/krita-ai-diffusion/issues'>Issues</a><br><br>
-<a href='https://github.com/Acly/krita-ai-diffusion/discussions'>Discussions</a><br><br>
-<a href='https://discord.gg/pWyzHfHHhU'>Discord</a>
+_contact_text = f"""
+<a href='{util.project_url}/issues'>Issues</a><br><br>
+<a href='{util.project_url}/discussions'>Discussions</a>
 """
 
 

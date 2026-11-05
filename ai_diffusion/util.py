@@ -97,6 +97,17 @@ log_dir = _get_log_dir()
 client_logger = create_logger("krita.ai_diffusion.client", log_dir / "client.log")
 server_logger = create_logger("krita.ai_diffusion.server", log_dir / "server.log")
 
+#: PhotoCraft: this project, for documentation and support links (REQ-32.0.4, REQ-36.0.1).
+project_url = "https://github.com/coreyx/photocraft-ai-diffusion"
+#: Its copy of the handbook (``docs/``), which upstream links on the online service's site; all
+#: documentation links go through ``docs_page``.
+docs_url = f"{project_url}/blob/main/docs/src/content/docs"
+
+
+def docs_page(page: str = "index") -> str:
+    """The address of a handbook page, by its file name in ``docs/src/content/docs``."""
+    return f"{docs_url}/{page}.mdx"
+
 
 def log_error(error: Exception):
     message = str(error)

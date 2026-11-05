@@ -345,7 +345,7 @@ The plug-in configures and connects to managed, custom and reused ComfyUI server
     1. Confirm upstream's `comfy_client.py` runs unchanged under the shim's event loop.
     2. Test against a stub ComfyUI server: the workload report, refusal when tooling nodes are missing (pack named), probing 8188 and 8000 in undefined mode, and reconnecting while keeping the queue.
 
-- [ ] **TASK-39: Cloud module boundary and feature flag**
+- [x] **TASK-39: Cloud module boundary and feature flag**
   - **Associated Acceptance Criteria**: `32.1`, `32.2`, `32.3`, `32.4`
   - **Concrete Steps**:
     1. Implement `photocraft_host/cloud.py` (flag plus import of `ai_diffusion_cloud`, otherwise the `CloudUnavailable` stub). Gate `cloud_client.py`, the cloud widgets and the Interstice update and news calls.

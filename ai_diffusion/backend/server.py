@@ -13,7 +13,7 @@ from typing import NamedTuple
 
 from PyQt6.QtNetwork import QNetworkAccessManager
 
-from .. import eventloop
+from .. import eventloop, util
 from ..localization import translate as _
 from ..platform_tools import (
     ZipFile,
@@ -905,7 +905,7 @@ def parse_common_errors(output: str, return_code: int | None = None):
         return (
             _("Could not bind on address")
             + f" {message_part}. "
-            + "<a href='https://docs.interstice.cloud/common-issues#bind-address'>More information...</a>"
+            + f"<a href='{util.docs_page('common-issues')}'>More information...</a>"
         )
 
     nvidia_driver = "Found no NVIDIA driver on your system"

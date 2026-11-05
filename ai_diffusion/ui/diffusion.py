@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from .. import eventloop
+from .. import eventloop, util
 from ..backend.server import Server, ServerState
 from ..document import KritaDocument
 from ..localization import translate as _
@@ -238,10 +238,9 @@ class WelcomeWidget(QWidget):
         self._news_widget.accepted.connect(self.accepted)
         self._connection_widget = ConnectionWidget(server, self)
 
-        info = QLabel(
-            "<a href='https://www.interstice.cloud'>Interstice.cloud</a> | "
-            + "<a href='https://github.com/Acly/krita-ai-diffusion'>GitHub Project</a> | "
-            + "<a href='https://discord.gg/pWyzHfHHhU'>Discord</a>",
+        info = QLabel(  # PhotoCraft: this project, and the one it is based on (REQ-36.0.1)
+            f"<a href='{util.project_url}'>GitHub Project</a> | "
+            + "<a href='https://github.com/Acly/krita-ai-diffusion'>Krita AI Diffusion</a>",
             self,
         )
         info.setOpenExternalLinks(True)

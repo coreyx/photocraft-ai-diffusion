@@ -580,6 +580,8 @@ class Settings(QObject):
                 if setting is not None:
                     if isinstance(setting.default, Enum):
                         self._values[k] = setting.str_to_enum(v)
+                        if self._values[k] is ServerMode.cloud and not cloud_enabled():
+                            self._values[k] = ServerMode.undefined  # PhotoCraft (REQ-32.0.2)
                     elif isinstance(setting.default, type(v)):
                         self._values[k] = v
                     else:

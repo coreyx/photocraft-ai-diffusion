@@ -17,7 +17,7 @@ from ai_diffusion.backend.api import (
     WorkflowKind,
 )
 from ai_diffusion.backend.client import Client, ClientEvent
-from ai_diffusion.backend.cloud_client import CloudClient, apply_limits, enumerate_features
+from ai_diffusion_cloud.cloud_client import CloudClient, apply_limits, enumerate_features
 from ai_diffusion.backend.resources import Arch, ControlMode
 from ai_diffusion.image import Bounds, Extent, Image, ImageCollection
 from ai_diffusion.util import ensure

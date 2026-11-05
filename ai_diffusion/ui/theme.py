@@ -10,7 +10,7 @@ from ..backend.client import Client
 from ..files import FileFormat
 from ..localization import translate as _
 from ..platform_tools import is_windows
-from ..settings import Setting
+from ..settings import Setting, cloud_enabled
 from ..style import Arch
 from ..util import client_logger as log
 
@@ -51,6 +51,18 @@ def icon(name: str):
         log.error(f"Icon {name} not found for theme {theme}")
         return QIcon()
     return QIcon(str(path))
+
+
+def cloud_icon():
+    """PhotoCraft: the online service's icon, which its module supplies (REQ-32.0.3); none
+    without the cloud module."""
+    if not cloud_enabled():
+        return QIcon()
+    from photocraft_host import cloud
+
+    return QIcon(
+        str(cloud.module_dir() / "icons" / f"service-{'dark' if is_dark else 'light'}.svg")
+    )
 
 
 def checkpoint_icon(arch: Arch, format: FileFormat | None = None, client: Client | None = None):

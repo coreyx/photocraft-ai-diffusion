@@ -9,6 +9,7 @@ from typing import Any, NamedTuple
 
 from PyQt6.QtCore import QObject, pyqtSignal
 
+from . import util
 from .backend.api import CheckpointInput, LoraInput
 from .backend.resources import Arch
 from .localization import translate as _
@@ -414,7 +415,9 @@ class SamplerPresets:
     def write_stub(self):
         if not self._user_preset_file.exists():
             self._user_preset_file.parent.mkdir(parents=True, exist_ok=True)
-            self._user_preset_file.write_text(_sampler_presets_stub)
+            self._user_preset_file.write_text(
+                _sampler_presets_stub.replace("{samplers_docs}", util.docs_page("samplers"))
+            )
         return self._user_preset_file
 
     def __len__(self):
@@ -481,7 +484,7 @@ _scheduler_map = {
     "Euler a": "normal",
 }
 _sampler_presets_stub = """// Custom sampler presets - add your own sampler presets here!
-// https://docs.interstice.cloud/samplers
+// {samplers_docs}
 //
 // *** You have to restart Krita for the changes to take effect! ***
 {

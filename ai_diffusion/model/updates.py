@@ -34,7 +34,9 @@ class UpdatePackage(NamedTuple):
 
 
 class AutoUpdate(QObject, ObservableProperties):
-    default_api_url = os.getenv("INTERSTICE_URL", "https://api.interstice.cloud")
+    # PhotoCraft: upstream checks the online service; this project's releases take its place
+    # (TASK-43). Until then there is no update source, so checking sends no request.
+    default_api_url = os.getenv("AI_DIFFUSION_UPDATE_URL", "")
 
     state = Property(UpdateState.unknown)
     latest_version = Property("")
@@ -59,6 +61,9 @@ class AutoUpdate(QObject, ObservableProperties):
         self._request_manager: RequestManager | None = None
 
     def check(self):
+        if not self.api_url:
+            log.info("No plugin update source configured")
+            return None
         return eventloop.run(
             self._handle_errors(
                 self._check, UpdateState.failed_check, "Failed to check for new plugin version"

@@ -370,7 +370,7 @@ class CustomPackageTab(QWidget):
             [_("Stable Diffusion 1.5"), _("Stable Diffusion XL"), "Flux", "Flux 2", "Z-Image"],
             description=(
                 _("Choose a Diffusion base model to install its basic requirements.")
-                + " <a href='https://docs.interstice.cloud/base-models'>"
+                + f" <a href='{util.docs_page('base-models')}'>"
                 + _("Read more about workloads.")
                 + "</a>"
             ),
