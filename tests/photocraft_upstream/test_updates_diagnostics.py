@@ -13,7 +13,9 @@ upstream's own mock the module is skipped.
 from __future__ import annotations
 
 import hashlib
+import http.server
 import logging.handlers
+import threading
 from pathlib import Path
 
 import krita
@@ -154,3 +156,57 @@ def test_logs_rotate_at_10_mb_with_4_backups():
             h for h in logger.handlers if isinstance(h, logging.handlers.RotatingFileHandler)
         ]
         assert (handler.maxBytes, handler.backupCount) == (10 * 1024 * 1024, 4)
+
+
+class _Records(logging.Handler):
+    """Keeps the client log's records for a test."""
+
+    def __init__(self):
+        super().__init__(logging.DEBUG)
+        self.records: list[logging.LogRecord] = []
+
+    def emit(self, record: logging.LogRecord):
+        self.records.append(record)
+
+
+@qtapp
+async def test_no_release_yet_is_no_update_and_no_error():
+    """GitHub answers 404 while no release is published (spec plugin-tls-and-fonts-fix): one
+    info line, no traceback; other failures still fail the check."""
+
+    class Releases(http.server.BaseHTTPRequestHandler):
+        status = 404
+
+        def do_GET(self):
+            body = b'{"message": "Not Found"}'
+            self.send_response(Releases.status)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, format, *args):
+            pass
+
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Releases)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    records = _Records()
+    util.client_logger.addHandler(records)
+    try:
+        url = f"http://127.0.0.1:{server.server_port}/releases/latest"
+        update = AutoUpdate(current_version="1.0.0", api_url=url)
+        await _check(update)
+        assert update.state is UpdateState.latest
+        assert update.error == ""
+        assert [r.getMessage() for r in records.records if r.levelno >= logging.INFO][-1] == (
+            "No release of the plug-in is published yet"
+        )
+        assert not [r for r in records.records if r.exc_info or r.levelno >= logging.ERROR]
+
+        Releases.status = 500
+        failing = AutoUpdate(current_version="1.0.0", api_url=url)
+        await _check(failing)
+        assert failing.state is UpdateState.failed_check
+    finally:
+        util.client_logger.removeHandler(records)
+        server.shutdown()

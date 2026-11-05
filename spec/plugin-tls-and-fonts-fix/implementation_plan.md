@@ -69,7 +69,7 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
 - [x] **TASK-10:** A started plug-in process logs `Qt: TLS …, <n> font families` with `n > 0` (an assertion added to `test_transport.py`'s headless process test). It runs in CI on all three platforms, so CI shows whether macOS and Linux need a font setting too.
 
 #### [MODIFY] `tests/photocraft/test_updates_diagnostics.py`
-- [ ] **TASK-11:** A local HTTP server answers the release URL with 404 (`AI_DIFFUSION_UPDATE_URL`). The check ends as `latest`, and its log has the info line and no traceback.
+- [x] **TASK-11:** A local HTTP server answers the release URL with 404 (`AI_DIFFUSION_UPDATE_URL`). The check ends as `latest`, and its log has the info line and no traceback.
 
 ### Records
 
