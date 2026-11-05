@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import io
 import os
+import re
 import struct
 import subprocess
 import sys
@@ -373,6 +374,13 @@ def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path, tmp_
         log_file.close()
     stderr = log_path.read_text(errors="replace")
     assert "connected to PhotoCraft test" in stderr, stderr[-4000:]
+    # Qt's TLS backend and fonts (spec plugin-tls-and-fonts-fix): without fonts, every text Qt
+    # draws (widgets the mirror sends as images) comes out as empty boxes.
+    qt_line = re.search(r"Qt: TLS (\S+), (\d+) font families", stderr)
+    assert qt_line, stderr[-4000:]
+    assert int(qt_line.group(2)) > 0, "Qt found no fonts"
+    if sys.platform == "win32":
+        assert qt_line.group(1) == "schannel"
     actions = {p["id"]: p for m, p in seen if m == "action.register"}
     assert len(actions) == 15, sorted(actions)
     assert actions["ai_diffusion_generate"]["label"] == "Generate image"
