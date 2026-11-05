@@ -283,7 +283,7 @@ Every in-scope workspace produces the same ComfyUI requests and layers as upstre
     3. Test Create Region behavior and two-way active-region/active-layer sync.
     4. Test each control mode's label and error text, the Depth+Reference graph parity, from-image `[Control] Canny Edge`, and removal on source deletion.
 
-- [ ] **TASK-30: Pose control editing**
+- [x] **TASK-30: Pose control editing**
   - **Associated Acceptance Criteria**: `20.1`, `20.2`, `20.3`
   - **Concrete Steps**:
     1. Map the shim's `VectorLayer`/`Shape` onto `vector.*` groups (D3), so upstream `pose.py` runs unchanged.
