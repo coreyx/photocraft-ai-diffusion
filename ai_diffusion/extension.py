@@ -35,7 +35,10 @@ class AIToolsExtension(Extension):
                 pass
 
         pykrita_dir = extension_dir.parent
-        if pykrita_dir.name != "pykrita" and not (pykrita_dir / ".git").exists():
+        # PhotoCraft installs plug-ins in a folder of its own: no pykrita there.
+        in_photocraft = hasattr(sys.modules.get("krita"), "photocraft_host")
+        in_pykrita = pykrita_dir.name == "pykrita" or (pykrita_dir / ".git").exists()
+        if not in_photocraft and not in_pykrita:
             log.warning(
                 "Plugin is not installed in a 'pykrita' directory, this may break user files "
                 f"and settings. Detected installation path is: {pykrita_dir}"

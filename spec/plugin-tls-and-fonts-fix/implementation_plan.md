@@ -49,7 +49,7 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
 - [x] **TASK-5:** In `_check_release`, a `NetworkError` with status 404 means no release is published yet. Log it at info level ("No release of the plug-in is published yet"), with no traceback, and set the state to `UpdateState.latest`. Other errors keep going through `_handle_errors`.
 
 #### [MODIFY] `ai_diffusion/extension.py`
-- [ ] **TASK-6:** Skip the "not installed in a 'pykrita' directory" warning when `krita` is the PhotoCraft stand-in (`hasattr(krita, "photocraft_host")`, as the other PhotoCraft branches check). In PhotoCraft, the install folder is PhotoCraft's.
+- [x] **TASK-6:** Skip the "not installed in a 'pykrita' directory" warning when `krita` is the PhotoCraft stand-in (`hasattr(krita, "photocraft_host")`, as the other PhotoCraft branches check). In PhotoCraft, the install folder is PhotoCraft's.
 
 #### [MODIFY] `UPSTREAM-CHANGES.md`
 - [ ] **TASK-7:** Add the `extension.py` row, and extend `updates.py`'s row with the 404 case. `tests/photocraft/upstream_changes.py` must still pass.
