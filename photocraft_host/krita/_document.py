@@ -22,6 +22,7 @@ Where Krita and PhotoCraft differ:
 
 from __future__ import annotations
 
+import json
 import re
 import uuid
 from typing import TYPE_CHECKING, Any
@@ -48,6 +49,27 @@ _VECTOR_GROUP_KEY = "vector.group"
 #: PhotoCraft's colour modes and depths as Krita's names.
 _COLOR_MODELS = {"rgb": "RGBA", "grayscale": "GRAYA", "cmyk": "CMYKA", "lab": "LABA"}
 _COLOR_DEPTHS = {"u8": "U8", "u16": "U16", "f32": "F32"}
+
+
+#: Requests that only read the document. Any other request may change its pixels or selection,
+#: so sending one clears the document's read cache.
+_READS = frozenset({
+    "pixels.read",
+    "mask.read",
+    "selection.read",
+    "selection.bounds",
+    "layer.tree",
+    "layer.active",
+    "layer.thumbnail",
+    "layerData.get",
+    "blob.get",
+    "blob.list",
+    "vector.shapes",
+    "doc.info",
+})
+#: Most pixel reads kept per document (upstream reads the same few areas on every poll).
+_CACHE_ENTRIES = 16
+_UNREAD = object()
 
 
 def _bytes(value: QByteArray | bytes | bytearray | memoryview) -> bytes:
@@ -250,7 +272,7 @@ class Node(QObject):
         doc = self._doc_or_fail()
         if self._is_mask:
             parent = self._parent._uid if self._parent else None
-            _, data = doc.call_with_payload(
+            data = doc.read_pixels(
                 "mask.read", {"uid": parent, "which": "layerMask", "rect": _rect(x, y, w, h)}
             )
             return QByteArray(data)
@@ -258,7 +280,7 @@ class Node(QObject):
             "kind": "group" if self._type in ("grouplayer", "vectorlayer") else "layer",
             "uid": self._uid,
         }
-        _, data = doc.call_with_payload(
+        data = doc.read_pixels(
             "pixels.read", {"source": source, "rect": _rect(x, y, w, h), "format": "bgra8"}
         )
         return QByteArray(data)
@@ -473,16 +495,43 @@ class Document(QObject):
         self._plain_groups: set[str] = set()
         self._visibility_pending: set[str] = set()
         self._loaded = False
+        self._pixel_cache: dict[str, bytes] = {}
+        self._selection_cache: Any = _UNREAD
 
     # -- talking to PhotoCraft
 
     def call(self, method: str, params: dict[str, Any], payload: bytes = b"") -> Any:
-        return self._host.call(method, {"doc": self._id, **params}, payload)[0]
+        return self.call_with_payload(method, params, payload)[0]
 
     def call_with_payload(
         self, method: str, params: dict[str, Any], payload: bytes = b""
     ) -> tuple[Any, bytes]:
+        if method not in _READS:
+            self.invalidate()
         return self._host.call(method, {"doc": self._id, **params}, payload)
+
+    def invalidate(self, selection: bool = True):
+        """Forget cached pixels (and the selection): the document changed, or may have.
+
+        Upstream reads the same areas many times a second (the live workspace polls every
+        100 ms); between changes those reads are answered here. PhotoCraft's change events
+        (``pixels.changed``, ``layers.changed``, ``selection.changed``) and every request that
+        may change the document clear the cache.
+        """
+        self._pixel_cache.clear()
+        if selection:
+            self._selection_cache = _UNREAD
+
+    def read_pixels(self, method: str, params: dict[str, Any]) -> bytes:
+        """The payload of a pixel read, from the cache while nothing changed."""
+        key = method + json.dumps(params, sort_keys=True)
+        data = self._pixel_cache.get(key)
+        if data is None:
+            data = self.call_with_payload(method, params)[1]
+            if len(self._pixel_cache) >= _CACHE_ENTRIES:
+                self._pixel_cache.clear()
+            self._pixel_cache[key] = data
+        return data
 
     def _ensure(self):
         if not self._loaded:
@@ -671,6 +720,13 @@ class Document(QObject):
         return node
 
     def selection(self) -> Selection | None:
+        """A copy of the selection (read once until it changes)."""
+        if self._selection_cache is _UNREAD:
+            self._selection_cache = self._read_selection()
+        cached = self._selection_cache
+        return cached.duplicate() if cached is not None else None
+
+    def _read_selection(self) -> Selection | None:
         bounds = (self.call("selection.bounds", {}) or {}).get("bounds")
         if not bounds:
             return None
@@ -710,8 +766,7 @@ class Document(QObject):
         }
         if exclude:
             params["exclude"] = exclude
-        _, data = self.call_with_payload("pixels.read", params)
-        return QByteArray(data)
+        return QByteArray(self.read_pixels("pixels.read", params))
 
     def showPreview(self, data: QByteArray | bytes, x: int, y: int, w: int, h: int, label: str):
         """Show a preview image over the document without adding it to the document (no layer,

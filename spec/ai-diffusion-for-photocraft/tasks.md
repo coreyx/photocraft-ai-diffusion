@@ -302,7 +302,7 @@ Every in-scope workspace produces the same ComfyUI requests and layers as upstre
     1. Route the `[Preview]` layer through `preview.show`/`preview.hide` in the shim (D4), replacing upstream's locked-layer creation with the smallest possible diff.
     2. Test each apply behavior and region behavior (with layer masks standing in for transparency masks), naming, history pruning, no undo steps from previewing, and the Save Image file naming.
 
-- [ ] **TASK-33: Live workspace**
+- [x] **TASK-33: Live workspace**
   - **Associated Acceptance Criteria**: `24.1`, `24.2`, `24.3`
   - **Concrete Steps**:
     1. Drive upstream's live scheduler from host `pixels.changed` events through the shim cache, and show the live preview with the hatch.

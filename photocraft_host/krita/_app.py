@@ -28,6 +28,8 @@ TOPICS = [
     "document.activated",
     "layers.changed",
     "layer.activated",
+    "pixels.changed",
+    "selection.changed",
 ]
 
 
@@ -133,7 +135,16 @@ class _Host:
     def _on_layers_changed(self, data: dict, _payload: bytes):
         doc = self.docs.get(str(data["doc"]))
         if doc is not None:
+            doc.invalidate(selection=False)
             doc.update_tree(data.get("tree") or [])
+
+    def _on_pixels_changed(self, data: dict, _payload: bytes):
+        if (doc := self.docs.get(str(data["doc"]))) is not None:
+            doc.invalidate(selection=False)
+
+    def _on_selection_changed(self, data: dict, _payload: bytes):
+        if (doc := self.docs.get(str(data["doc"]))) is not None:
+            doc.invalidate()
 
     def _on_layer_activated(self, data: dict, _payload: bytes):
         doc = self.docs.get(str(data["doc"]))
