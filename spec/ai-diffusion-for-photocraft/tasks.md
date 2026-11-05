@@ -353,7 +353,7 @@ The plug-in configures and connects to managed, custom and reused ComfyUI server
     3. Add a build check that fails on `interstice` in the package, and a stub cloud module for the flag-on test.
     4. Test: Connection-page contents, no cloud hosts in a network capture (mocked), loading a stored cloud mode, and the stub routing.
 
-- [ ] **TASK-40: Detect Krita AI Diffusion configurations**
+- [x] **TASK-40: Detect Krita AI Diffusion configurations**
   - **Associated Acceptance Criteria**: `31.1`, `31.8`
   - **Concrete Steps**:
     1. Implement `krita_reuse.detect()`. It searches the per-OS, Flatpak, MSIX, fallback and portable locations, and reads `settings.json` and `.version` read-only.

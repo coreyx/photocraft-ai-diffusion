@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import cast
 
+import krita
 from krita import Krita
 from PyQt6.QtCore import QMetaObject, QSize, Qt, QUrl, pyqtSignal
 from PyQt6.QtGui import (
@@ -554,6 +555,11 @@ class ConnectionSettings(SettingsTab):
         connection_layout.addWidget(self._supported_workloads)
         connection_layout.addStretch()
 
+        if hasattr(krita, "photocraft_host"):  # PhotoCraft: Krita AI Diffusion found here (REQ-31)
+            from photocraft_host.krita_reuse_widget import KritaReuseWidget
+
+            self.krita_reuse = KritaReuseWidget(self)
+            self._layout.addWidget(self.krita_reuse)
         self._layout.addWidget(self._server_mode)
         self._layout.addWidget(self._server_stack)
 

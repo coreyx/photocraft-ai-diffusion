@@ -146,6 +146,11 @@ def start(transport, welcome: Welcome) -> list:
 
     import ai_diffusion
 
+    from . import krita_reuse
+
+    for config in krita_reuse.detect():  # read-only; the Connection page shows them (REQ-31.0.1)
+        log.info("Krita AI Diffusion found in %s (%s)", config.folder, config.server_mode)
+
     instance = krita.Krita.instance()
     instance.load_action_file(Path(ai_diffusion.__file__).parent / "ai_diffusion.action")
     window = instance.activeWindow()

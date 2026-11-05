@@ -186,3 +186,14 @@ def test_model_licenses_are_shown_before_downloading(results: dict):
     assert models and all("<a href=" in text for text in models.values())
     assert "MAT Inpaint" in packages["Required models"], "what a bundle installs is listed"
     assert "Non-commercial" in packages["Required models"]
+
+
+def test_a_krita_ai_diffusion_managed_install_is_shown(results: dict):
+    """REQ-31.1: the install at Krita AI Diffusion's default path, with its backend, version and
+    model folders, on the Connection page."""
+    reuse = results["krita_reuse"]
+    text = reuse["text"]
+    assert "Server: Local Managed Server" in text
+    assert f"Install folder: {reuse['server']}" in text
+    assert "Backend: cuda" in text and "Version: 1.54.0" in text
+    assert all(folder in text for folder in reuse["models"])

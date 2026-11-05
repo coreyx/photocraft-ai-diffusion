@@ -37,8 +37,28 @@ def _plain(value: Any) -> Any:
     return value
 
 
+def _krita_ai_diffusion(home: Path) -> Path:
+    """A Krita AI Diffusion managed install at its default path, where this OS keeps it, with
+    the places Krita uses pointed into ``home``. Returns its data folder."""
+    os.environ["APPDATA"] = str(home / "Roaming")
+    os.environ["LOCALAPPDATA"] = str(home / "Local")
+    os.environ["XDG_DATA_HOME"] = str(home / "share")
+    if sys.platform == "darwin":
+        os.environ["HOME"] = str(home)
+    from photocraft_host import krita_reuse
+
+    folder = krita_reuse.candidates()[0][0]
+    server = folder / "server"
+    (server / "models" / "checkpoints").mkdir(parents=True)
+    (server / "ComfyUI" / "models").mkdir(parents=True)
+    (server / ".version").write_text("1.54.0 cuda")
+    (folder / "settings.json").write_text(json.dumps({"server_mode": "managed"}))
+    return folder
+
+
 def main() -> int:
     data_dir = Path(sys.argv[1])
+    krita_data = _krita_ai_diffusion(data_dir.parent / "krita-home")
     app = QApplication([])
 
     from photocraft_host import main as plugin_main
@@ -106,6 +126,18 @@ def main() -> int:
     dialog_id = next(iter(host.dialogs))
     mirror = dialogs._open[id(dialog)]
     results["dialog_title"] = host.dialogs[dialog_id].get("title")
+    mirror.flush()
+    reuse = dialog.connection.krita_reuse
+    node = find_widget(host.dialogs[dialog_id]["tree"], mirror.node_id(reuse._summary)) or {}
+    results["krita_reuse"] = {
+        "text": node.get("props", {}).get("text", ""),
+        "folder": str(krita_data),
+        "server": str(krita_data / "server"),
+        "models": [
+            str(krita_data / "server" / "models"),
+            str(krita_data / "server" / "ComfyUI" / "models"),
+        ],
+    }
 
     def send(widget: QWidget, kind: str, value: Any):
         mirror.flush()
