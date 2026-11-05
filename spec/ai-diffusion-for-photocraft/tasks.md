@@ -180,7 +180,7 @@ A plug-in can build a full UI inside PhotoCraft, and the host series is ready to
     2. Implement `panel.register`, `panel.patch` and `panel.unregister`, and a greyed "not responding" overlay with an input queue capped at 256 events.
     3. Add tests: dock, undock, tab, hide, restart persistence, and the hang mode of the echo plug-in.
 
-- [ ] **TASK-19: Plug-in dialogs and pickers**
+- [x] **TASK-19: Plug-in dialogs and pickers**
   - **Associated Acceptance Criteria**: `5.1`
   - **Concrete Steps**:
     1. Implement `dialog.open`, `dialog.patch` and `dialog.close` (modal and modeless windows rendering widget trees), `dialog.message` (standard buttons) and `dialog.file` (open, save and folder with filters) through `Services::file_dialog`.
