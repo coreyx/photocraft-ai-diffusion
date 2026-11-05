@@ -486,7 +486,7 @@ _scheduler_map = {
 _sampler_presets_stub = """// Custom sampler presets - add your own sampler presets here!
 // {samplers_docs}
 //
-// *** You have to restart Krita for the changes to take effect! ***
+// *** Restart the plugin (Preferences > Plug-ins) for the changes to take effect! ***
 {
     "My Custom Sampler - DPM++ 3M": {
         "sampler": "dpmpp_3m_sde",

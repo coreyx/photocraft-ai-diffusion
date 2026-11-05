@@ -203,6 +203,13 @@ def _read_log(log_path: Path, last_n: int = 1000):
         return f"Failed to read log file {log_path}: {e}"
 
 
+def _plugin_version() -> str:
+    """This plug-in's own version, from its manifest."""
+    from photocraft_host.main import identity
+
+    return identity()[1]
+
+
 def _redact_more(text: str) -> str:
     """PhotoCraft: also hide the plug-in data folder, the home folder, the user name, the launch
     nonce, and any token value wherever it appears (REQ-36.0.3). Unchanged in Krita."""
@@ -239,10 +246,10 @@ def collect_diagnostics(redact_user=True):
     except Exception:
         krita_version = "Unknown"
 
-    out = "Krita AI Diffusion Plugin Diagnostics\n"
+    out = "AI Diffusion for PhotoCraft Diagnostics\n"
     out += "-------------------------------------\n"
-    out += f"Plugin Version: {__version__}\n"
-    out += f"Krita Version: {krita_version}\n"
+    out += f"Plugin Version: {_plugin_version()}, based on Krita AI Diffusion {__version__}\n"
+    out += f"Host Version: {krita_version}\n"
     out += f"Python Version: {sys.version}\n"
     out += "-------------------------------------\n"
     out += "System Information:\n"

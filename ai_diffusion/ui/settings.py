@@ -79,7 +79,7 @@ class InitialSetupWidget(QWidget):
         layout.setContentsMargins(12, 12, 12, 0)
         self.setLayout(layout)
 
-        label_title = QLabel("<b>" + _("Welcome to Image Generation in Krita") + "</b>", self)
+        label_title = QLabel("<b>" + _("Welcome to Image Generation in PhotoCraft") + "</b>", self)
         label_sub = QLabel(
             _(
                 "To create images, the plugin needs to connect to a backend server. Please choose one of the options below (you can always switch later)."
@@ -1000,7 +1000,7 @@ class AboutSettings(SettingsTab):
         font_height = QFontMetrics(extra_large).height() + 4
         header_logo.setPixmap(logo().scaled(font_height * 2, font_height * 2))
         header_logo.setMaximumSize(font_height * 2, font_height * 2)
-        header_text = QLabel("Generative AI\nfor Krita", self)
+        header_text = QLabel("Generative AI\nfor PhotoCraft", self)
         header_text.setFont(extra_large)
         header_layout.addWidget(header_logo)
         header_layout.addWidget(header_text)
@@ -1119,7 +1119,7 @@ class AboutSettings(SettingsTab):
                 self._update_button.setEnabled(True)
             case UpdateState.restart_required:
                 self._latest_version_value.setText(
-                    _("Please restart Krita to complete the update!")
+                    _("Installing the update: PhotoCraft restarts the plugin when it is done.")
                 )
 
     def _check_updates(self):

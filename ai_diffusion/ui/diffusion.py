@@ -84,7 +84,7 @@ class AutoUpdateWidget(QWidget):
                 self._update_error.setText(au.error)
                 self._update_button.setEnabled(True)
             case UpdateState.restart_required:
-                self._update_status.setText(_("Please restart Krita to complete the update!"))
+                self._update_status.setText(_("Installing the update: PhotoCraft restarts the plugin when it is done."))
                 self._update_button.setEnabled(False)
 
         self.setVisible(self.is_visible)

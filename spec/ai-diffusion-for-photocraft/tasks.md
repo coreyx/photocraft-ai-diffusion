@@ -387,7 +387,7 @@ The plug-in installs from a release package, updates itself, and passes the full
     2. Extend diagnostics redaction to the plug-in data paths, home paths, the nonce and tokens. Confirm rotated client and server logs.
     3. Test: a newer release detected (mocked API), a tampered package rejected, and diagnostics free of secrets.
 
-- [ ] **TASK-44: Localization and naming**
+- [x] **TASK-44: Localization and naming**
   - **Associated Acceptance Criteria**: `34.1`, `34.2`, `38.3`
   - **Concrete Steps**:
     1. Adapt Krita-specific strings to PhotoCraft in the English source and all 14 catalogs, keeping nominative uses ("Import from Krita AI Diffusion"). Set the plug-in name to "AI Diffusion for PhotoCraft".
