@@ -28,7 +28,7 @@ None at this time.
 ### Tests
 
 #### [MODIFY] `tests/photocraft/test_transport.py`
-- [ ] **TASK-2:** A process test, following `test_the_plugin_process_starts_headless_and_shuts_down`:
+- [x] **TASK-2:** A process test, following `test_the_plugin_process_starts_headless_and_shuts_down`:
   - Start the plug-in as PhotoCraft does, and answer its requests.
   - Send the `action.triggered` event for `ai_diffusion_settings`, and wait for its `dialog.open` request.
   - Send `dialog.closed` for that dialog.

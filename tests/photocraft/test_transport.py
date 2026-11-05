@@ -317,9 +317,9 @@ def _serve_until(proc: subprocess.Popen, request_id: int, seen: list[tuple[str, 
             return frame
 
 
-def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path, tmp_path: Path):
-    """REQ-13.2: the plug-in runs with no display, against a host on its stdin/stdout; it
-    starts upstream, registers its actions and docker panel, and stops on ``shutdown``."""
+def _start_plugin(repo_root: Path, tmp_path: Path):
+    """Start the plug-in process as PhotoCraft does, with no network in its settings. Returns the
+    process, its data folder, its log file (open) and the log's path."""
     data_dir = tmp_path / "data"
     data_dir.mkdir()
     (data_dir / "settings.json").write_text('{"auto_update": false}')  # no network in tests
@@ -342,6 +342,24 @@ def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path, tmp_
         stdout=subprocess.PIPE,
         stderr=log_file,
     )
+    return proc, data_dir, log_file, log_path
+
+
+def _welcome(data_dir: Path) -> dict:
+    return {
+        "hostVersion": "test",
+        "protocol": 1,
+        "locale": "en",
+        "dataDir": str(data_dir),
+        "logDir": "",
+        "theme": {"dark": False},
+    }
+
+
+def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path, tmp_path: Path):
+    """REQ-13.2: the plug-in runs with no display, against a host on its stdin/stdout; it
+    starts upstream, registers its actions and docker panel, and stops on ``shutdown``."""
+    proc, data_dir, log_file, log_path = _start_plugin(repo_root, tmp_path)
     assert proc.stdin is not None and proc.stdout is not None
     seen: list[tuple[str, dict]] = []
     try:
@@ -350,14 +368,7 @@ def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path, tmp_
         assert hello.header["method"] == "hello"
         assert hello.header["params"]["nonce"] == "n0nce"
         assert hello.header["params"]["protocol"] == 1
-        welcome = {
-            "hostVersion": "test",
-            "protocol": 1,
-            "locale": "en",
-            "dataDir": str(data_dir),
-            "logDir": "",
-            "theme": {"dark": False},
-        }
+        welcome = _welcome(data_dir)
         proc.stdin.write(encode({"type": "response", "id": hello.header["id"], "result": welcome}))
         proc.stdin.write(encode({"type": "request", "id": 100, "method": "ping", "params": {}}))
         proc.stdin.flush()
@@ -388,3 +399,64 @@ def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path, tmp_
     panels = [p for m, p in seen if m == "panel.register"]
     assert [p["panelId"] for p in panels] == ["imageDiffusion"]
     assert (data_dir / "settings.json").exists() and (data_dir / "logs").is_dir()
+
+
+def _serve_until_asked(proc: subprocess.Popen, method: str, seen: list[tuple[str, dict]]) -> dict:
+    """Answer the plug-in's requests until it asks ``method``; that request's params."""
+    assert proc.stdin is not None and proc.stdout is not None
+    while True:
+        frame = read_frame(proc.stdout)
+        assert frame is not None, "the plug-in closed the connection"
+        header = frame.header
+        if header["type"] == "request":
+            params = header.get("params") or {}
+            seen.append((header["method"], params))
+            result: object = [] if header["method"] == "doc.list" else {}
+            proc.stdin.write(encode({"type": "response", "id": header["id"], "result": result}))
+            proc.stdin.flush()
+            if header["method"] == method:
+                return params
+
+
+@pytest.mark.timeout(120)
+def test_closing_the_settings_dialog_keeps_the_plugin_running(repo_root: Path, tmp_path: Path):
+    """Spec plugin-dialog-close-exit-fix: Qt quits when its last window closes, and a dialog
+    is the only window the plug-in shows. Closing it used to end the plug-in (exit code 0)."""
+    proc, data_dir, log_file, _log = _start_plugin(repo_root, tmp_path)
+    assert proc.stdin is not None and proc.stdout is not None
+    seen: list[tuple[str, dict]] = []
+    try:
+        hello = read_frame(proc.stdout)
+        assert hello is not None
+        reply = {"type": "response", "id": hello.header["id"], "result": _welcome(data_dir)}
+        proc.stdin.write(encode(reply))
+        proc.stdin.write(encode({"type": "request", "id": 100, "method": "ping", "params": {}}))
+        proc.stdin.flush()
+        _serve_until(proc, 100, seen)  # started
+
+        settings = {"type": "event", "topic": "action.triggered"}
+        proc.stdin.write(encode({**settings, "data": {"id": "ai_diffusion_settings"}}))
+        proc.stdin.flush()
+        dialog = _serve_until_asked(proc, "dialog.open", seen)
+        closed = {
+            "type": "event",
+            "topic": "dialog.closed",
+            "data": {"dialogId": dialog["dialogId"]},
+        }
+        proc.stdin.write(encode(closed))
+        proc.stdin.flush()
+        time.sleep(1)  # time for Qt to act on the closed dialog
+        assert proc.poll() is None, f"the plug-in ended (exit code {proc.returncode})"
+
+        proc.stdin.write(encode({"type": "request", "id": 101, "method": "ping", "params": {}}))
+        proc.stdin.flush()
+        pong = _serve_until(proc, 101, seen)
+        assert pong.header == {"type": "response", "id": 101, "result": {}}
+        proc.stdin.write(encode({"type": "request", "id": 102, "method": "shutdown", "params": {}}))
+        proc.stdin.flush()
+        _serve_until(proc, 102, seen)
+        assert proc.wait(timeout=30) == 0
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+        log_file.close()
