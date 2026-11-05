@@ -165,7 +165,7 @@ Every document capability the AI plug-in needs works through the protocol.
 
 A plug-in can build a full UI inside PhotoCraft, and the host series is ready to propose upstream.
 
-- [ ] **TASK-17: Widget-tree store and renderer**
+- [x] **TASK-17: Widget-tree store and renderer**
   - **Associated Acceptance Criteria**: `5.1`, `5.4`, `5.5`
   - **Concrete Steps**:
     1. Implement `plugin_ui::PanelStore` (applying full trees and patches, plus the `image.put` cache by hash) and `render.rs` for every widget kind in design.md, using craft-ui widgets and `theme::Tokens`.
