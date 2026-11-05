@@ -105,7 +105,7 @@ Every document capability the AI plug-in needs works through the protocol.
     2. Persist it in `.pcraft` (with a format version bump and an updated reader and writer) and in PSD, PSB and TIFF through the layer XMP `pcpp:uid`. Missing uids get fresh ones on load.
     3. Add round-trip tests for `.pcraft`, PSD and TIFF, and run the PSD corpus regression tests.
 
-- [ ] **TASK-10: Plug-in broker: documents, layers and undo groups**
+- [x] **TASK-10: Plug-in broker: documents, layers and undo groups**
   - **Associated Acceptance Criteria**: `2.1`, `2.3`, `2.4`, `2.5`
   - **Concrete Steps**:
     1. Create `crates/engine/src/process_plugin/` with `PluginBroker`. Implement `doc.*`, `layer.*` (including `addMask` and `thumbnail`) and `undo.begin`/`undo.end` through `Session::edit` with the plug-in's labels.
