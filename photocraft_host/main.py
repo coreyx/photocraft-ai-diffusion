@@ -199,6 +199,9 @@ def main(streams=None, welcome: Welcome | None = None, first_id: int = 1) -> int
 
     reader, writer = streams or transport_module.stdio_streams()
     app = QApplication(sys.argv[:1])
+    # Dialogs are the only windows the plug-in shows (its panels are mirrored, never shown), so
+    # Qt's default would end the plug-in when one closes. It ends on shutdown or a closed link.
+    app.setQuitOnLastWindowClosed(False)
     tls = qt_setup.use_platform_tls()  # before upstream makes any request
     log.info("Qt: TLS %s, %d font families", tls, qt_setup.font_family_count())
     install_krita_shim()

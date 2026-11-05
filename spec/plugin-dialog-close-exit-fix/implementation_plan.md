@@ -23,7 +23,7 @@ None at this time.
 ### Plug-in process
 
 #### [MODIFY] `photocraft_host/main.py`
-- [ ] **TASK-1:** In `main()`, right after the `QApplication` is created, call `app.setQuitOnLastWindowClosed(False)`, with a comment saying why: dialogs are the only windows the plug-in shows.
+- [x] **TASK-1:** In `main()`, right after the `QApplication` is created, call `app.setQuitOnLastWindowClosed(False)`, with a comment saying why: dialogs are the only windows the plug-in shows.
 
 ### Tests
 
