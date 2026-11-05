@@ -86,7 +86,7 @@ PhotoCraft discovers, launches, talks to and survives a test plug-in.
     1. Create `examples/process-plugin-echo`, a Rust binary. Its modes are conformance, crash-on-command, invalid-frame, oversize-frame, wrong-nonce, hang, and a widget gallery.
     2. Add host integration tests that drive the manager against each mode and assert the outcomes in criteria 1.1 and 1.3–1.5.
 
-- [ ] **TASK-8: Plug-ins preferences page and plug-in installation**
+- [x] **TASK-8: Plug-ins preferences page and plug-in installation**
   - **Associated Acceptance Criteria**: `1.2`, `1.6`
   - **Concrete Steps**:
     1. Add an Edit › Preferences › Plug-ins section listing process plug-ins (name, version, status, compatible or not) next to the WASM plug-ins.
