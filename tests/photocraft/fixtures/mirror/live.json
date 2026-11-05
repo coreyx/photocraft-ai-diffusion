@@ -18,6 +18,7 @@
     {
      "kind": "toolButton",
      "qt": "QToolButton",
+     "visible": false,
      "picture": true
     },
     {

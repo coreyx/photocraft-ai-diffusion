@@ -299,8 +299,29 @@ def test_the_identity_comes_from_the_manifest(tmp_path: Path):
 # -- the process, headless
 
 
-def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path):
-    """REQ-13.2: the plug-in runs with no display, against a host on its stdin/stdout."""
+def _serve_until(proc: subprocess.Popen, request_id: int, seen: list[tuple[str, dict]]) -> Frame:
+    """Answer the plug-in's requests as a minimal PhotoCraft (no documents open) until the
+    answer to our own request ``request_id`` arrives; record what the plug-in asked for."""
+    assert proc.stdin is not None and proc.stdout is not None
+    while True:
+        frame = read_frame(proc.stdout)
+        assert frame is not None, "the plug-in closed the connection"
+        header = frame.header
+        if header["type"] == "request":
+            seen.append((header["method"], header.get("params") or {}))
+            result: object = [] if header["method"] == "doc.list" else {}
+            proc.stdin.write(encode({"type": "response", "id": header["id"], "result": result}))
+            proc.stdin.flush()
+        elif header.get("id") == request_id:
+            return frame
+
+
+def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path, tmp_path: Path):
+    """REQ-13.2: the plug-in runs with no display, against a host on its stdin/stdout; it
+    starts upstream, registers its actions and docker panel, and stops on ``shutdown``."""
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    (data_dir / "settings.json").write_text('{"auto_update": false}')  # no network in tests
     env = {
         **os.environ,
         "QT_QPA_PLATFORM": "offscreen",
@@ -309,15 +330,19 @@ def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path):
     }
     env.pop("DISPLAY", None)
     env.pop("WAYLAND_DISPLAY", None)
+    log_path = tmp_path / "plugin.log"
+    # The log goes to a file: upstream logs enough to fill a pipe nobody reads meanwhile.
+    log_file = log_path.open("wb")
     proc = subprocess.Popen(
         [sys.executable, "-m", "photocraft_host.main"],
         cwd=repo_root,
         env=env,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stderr=log_file,
     )
     assert proc.stdin is not None and proc.stdout is not None
+    seen: list[tuple[str, dict]] = []
     try:
         hello = read_frame(proc.stdout)
         assert hello is not None
@@ -328,22 +353,30 @@ def test_the_plugin_process_starts_headless_and_shuts_down(repo_root: Path):
             "hostVersion": "test",
             "protocol": 1,
             "locale": "en",
-            "dataDir": "",
+            "dataDir": str(data_dir),
             "logDir": "",
             "theme": {"dark": False},
         }
         proc.stdin.write(encode({"type": "response", "id": hello.header["id"], "result": welcome}))
         proc.stdin.write(encode({"type": "request", "id": 100, "method": "ping", "params": {}}))
         proc.stdin.flush()
-        pong = read_frame(proc.stdout)
-        assert pong is not None and pong.header == {"type": "response", "id": 100, "result": {}}
+        pong = _serve_until(proc, 100, seen)
+        assert pong.header == {"type": "response", "id": 100, "result": {}}
         proc.stdin.write(encode({"type": "request", "id": 101, "method": "shutdown", "params": {}}))
         proc.stdin.flush()
-        bye = read_frame(proc.stdout)
-        assert bye is not None and bye.header["id"] == 101
-        assert proc.wait(timeout=20) == 0
+        bye = _serve_until(proc, 101, seen)
+        assert bye.header["id"] == 101
+        assert proc.wait(timeout=30) == 0
     finally:
         if proc.poll() is None:
             proc.kill()
-        stderr = proc.stderr.read().decode(errors="replace") if proc.stderr else ""
-    assert "connected to PhotoCraft test" in stderr, stderr
+        log_file.close()
+    stderr = log_path.read_text(errors="replace")
+    assert "connected to PhotoCraft test" in stderr, stderr[-4000:]
+    actions = {p["id"]: p for m, p in seen if m == "action.register"}
+    assert len(actions) == 15, sorted(actions)
+    assert actions["ai_diffusion_generate"]["label"] == "Generate image"
+    assert not any("shortcut" in a for a in actions.values()), "no default shortcuts"
+    panels = [p for m, p in seen if m == "panel.register"]
+    assert [p["panelId"] for p in panels] == ["imageDiffusion"]
+    assert (data_dir / "settings.json").exists() and (data_dir / "logs").is_dir()

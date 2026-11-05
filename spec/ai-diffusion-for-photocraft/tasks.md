@@ -257,7 +257,7 @@ The upstream plug-in starts in its own process, talks to the host through the sh
     4. Add `dialogs.py`, which routes `QMessageBox`/`QFileDialog`/`QInputDialog` to host dialogs, and mirror the settings `QDialog`.
     5. Test prompt weighting, autocomplete and the fallback widgets through the mock host.
 
-- [ ] **TASK-27: Docker, actions and workspace gating**
+- [x] **TASK-27: Docker, actions and workspace gating**
   - **Associated Acceptance Criteria**: `14.1`, `14.3`, `35.1`, `35.2`
   - **Concrete Steps**:
     1. Route upstream's `Extension.setup`/`createActions` and docker factory through the shim to `panel.register` and `action.register` (15 actions, no default shortcuts).

@@ -1,5 +1,6 @@
 from ..model.model import Workspace
 from ..model.root import root
+from . import ANIMATION_ENABLED
 
 
 def generate():
@@ -67,8 +68,9 @@ def set_workspace(workspace: Workspace):
 
 def toggle_workspace():
     if model := root.model_for_active_document():
-        l = list(Workspace)
-        next = l[(l.index(model.workspace) + 1) % len(l)]
+        l = [w for w in Workspace if ANIMATION_ENABLED or w is not Workspace.animation]
+        at = l.index(model.workspace) if model.workspace in l else -1
+        next = l[(at + 1) % len(l)]
         model.workspace = next
 
 

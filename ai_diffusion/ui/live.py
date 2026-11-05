@@ -17,7 +17,7 @@ from ..localization import translate as _
 from ..model.model import DocumentModel
 from ..model.properties import Bind, Binding, bind
 from ..model.root import root
-from . import theme
+from . import ANIMATION_ENABLED, theme
 from .control import ControlListWidget
 from .region import ActiveRegionWidget, PromptHeader
 from .widget import (
@@ -135,6 +135,7 @@ class LiveWidget(QWidget):
             _("Start live generation and insert images as keyframes into an animation")
         )
         self.record_button.clicked.connect(self.toggle_record)
+        self.record_button.setVisible(ANIMATION_ENABLED)
 
         self.apply_button = QToolButton(self)
         self.apply_button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)

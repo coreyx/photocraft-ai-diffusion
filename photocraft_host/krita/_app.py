@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from xml.etree import ElementTree
 
 from PyQt6.QtCore import QObject, Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
@@ -68,7 +69,22 @@ class _Host:
             self._add(info)
         for topic in TOPICS:
             self.transport.on(topic, getattr(self, "_on_" + topic.replace(".", "_")))
+        self.transport.on("action.triggered", self._on_action_triggered)
         self.transport.call("events.subscribe", {"topics": TOPICS})
+
+    def _on_action_triggered(self, data: dict, _payload: bytes):
+        """The user chose one of the plug-in's actions in PhotoCraft (a menu or a shortcut)."""
+        if data.get("doc") is not None and str(data["doc"]) in self.docs:
+            self.active = str(data["doc"])
+        action = Krita.instance().action(str(data.get("id", "")))
+        if action is not None:
+            action.trigger()
+
+    def _canvas_changed(self):
+        """Tell the dockers the active document changed, as Krita does when a view activates."""
+        canvas = Canvas(View()) if self.active is not None else None
+        for dock in Krita.instance()._docks:
+            dock.canvasChanged(canvas)
 
     def _add(self, info: dict[str, Any]) -> Document:
         doc = self.docs.get(str(info["doc"]))
@@ -85,6 +101,7 @@ class _Host:
         info, _ = self.call("doc.info", {"doc": data["doc"]})
         self._add(info)
         Krita.instance().notifier().imageCreated.emit(self.docs[str(data["doc"])])
+        self._canvas_changed()
 
     def _on_document_closed(self, data: dict, _payload: bytes):
         doc = self.docs.pop(str(data["doc"]), None)
@@ -92,6 +109,7 @@ class _Host:
             self.active = None
         if doc is not None:
             Krita.instance().notifier().imageClosed.emit(doc.fileName())
+        self._canvas_changed()
 
     def _on_document_saved(self, data: dict, _payload: bytes):
         self._on_document_renamed(data, _payload)
@@ -110,6 +128,7 @@ class _Host:
 
     def _on_document_activated(self, data: dict, _payload: bytes):
         self.active = str(data["doc"])
+        self._canvas_changed()
 
     def _on_layers_changed(self, data: dict, _payload: bytes):
         doc = self.docs.get(str(data["doc"]))
@@ -143,7 +162,7 @@ class Action(QObject):
     def __init__(self, name: str = "", text: str = "", menu: str = ""):
         super().__init__()
         self._name = name
-        self._text = text or name
+        self._text = text
         self._menu = menu
         self._enabled = True
         self._registered = False
@@ -152,7 +171,8 @@ class Action(QObject):
         return self._name
 
     def text(self) -> str:
-        return self._text
+        """The action's text: its own, else the plug-in's ``.action`` file's, as in Krita."""
+        return self._text or Krita.instance()._action_texts.get(self._name, "")
 
     def setText(self, text: str):
         self._text = text
@@ -174,7 +194,9 @@ class Action(QObject):
         host = Krita.instance()._host
         if host is None or self._registered or not self._name:
             return
-        params: dict[str, Any] = {"id": self._name, "label": self._text}
+        # Upstream creates its actions without text; Krita takes it from the plug-in's
+        # .action file (Krita.load_action_file). PhotoCraft gets no default shortcut (REQ-35).
+        params: dict[str, Any] = {"id": self._name, "label": self.text() or self._name}
         if self._menu:
             params["menu"] = self._menu
         host.call("action.register", params)
@@ -247,7 +269,7 @@ class Extension(QObject):
 class DockWidget(QDockWidget):
     """Base class of a docker; PhotoCraft draws its widget through the Qt mirror."""
 
-    def canvasChanged(self, canvas: Canvas):
+    def canvasChanged(self, canvas: Canvas | None):
         """Called when the active document changes; overridden by dockers."""
 
 
@@ -293,6 +315,8 @@ class Krita(QObject):
         self._actions: dict[str, Action] = {}
         self._extensions: list[Extension] = []
         self._dock_factories: list[DockWidgetFactory] = []
+        self._docks: list[DockWidget] = []
+        self._action_texts: dict[str, str] = {}
         self._window = Window()
 
     @staticmethod
@@ -330,6 +354,24 @@ class Krita(QObject):
 
     def addDockWidgetFactory(self, factory: DockWidgetFactory):
         self._dock_factories.append(factory)
+
+    def load_action_file(self, path: Path):
+        """Read action texts from a Krita ``.action`` file, as Krita does for a plug-in's."""
+        try:
+            tree = ElementTree.parse(path)
+        except (OSError, ElementTree.ParseError):
+            return
+        for action in tree.iter("Action"):
+            text = action.findtext("text")
+            if action.get("name") and text:
+                self._action_texts[str(action.get("name"))] = text
+
+    def create_dock(self, factory: DockWidgetFactory) -> DockWidget:
+        """Create a docker from its factory and keep it, so it hears of document changes."""
+        dock = factory.create()
+        assert isinstance(dock, DockWidget)
+        self._docks.append(dock)
+        return dock
 
     def dockWidgetFactories(self) -> list[DockWidgetFactory]:
         return list(self._dock_factories)

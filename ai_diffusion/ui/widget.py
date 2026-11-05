@@ -80,7 +80,7 @@ from ..text import (
     str_index_to_char16_index,
 )
 from ..util import ensure
-from . import actions, theme
+from . import ANIMATION_ENABLED, actions, theme
 from .autocomplete import PromptAutoComplete
 from .theme import SignalBlocker
 
@@ -891,7 +891,8 @@ class WorkspaceSelectWidget(QToolButton):
         menu.addAction(self._create_action(_("Generate"), Workspace.generation))
         menu.addAction(self._create_action(_("Upscale"), Workspace.upscaling))
         menu.addAction(self._create_action(_("Live"), Workspace.live))
-        menu.addAction(self._create_action(_("Animation"), Workspace.animation))
+        if ANIMATION_ENABLED:
+            menu.addAction(self._create_action(_("Animation"), Workspace.animation))
         menu.addAction(self._create_action(_("Graph"), Workspace.custom))
 
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)

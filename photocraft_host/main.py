@@ -39,8 +39,9 @@ class Welcome:
     host_version: str
     protocol: int
     locale: str
-    data_dir: Path
-    log_dir: Path
+    #: The plug-in's own data folder; ``None`` if PhotoCraft gave none.
+    data_dir: Path | None
+    log_dir: Path | None
     dark_theme: bool
 
     @staticmethod
@@ -50,8 +51,8 @@ class Welcome:
             host_version=str(result.get("hostVersion", "")),
             protocol=int(result.get("protocol", 0)),
             locale=str(result.get("locale", "en")),
-            data_dir=Path(str(result.get("dataDir", ""))),
-            log_dir=Path(str(result.get("logDir", ""))),
+            data_dir=Path(str(result["dataDir"])) if result.get("dataDir") else None,
+            log_dir=Path(str(result["logDir"])) if result.get("logDir") else None,
             dark_theme=bool(theme.get("dark", True)),
         )
 
@@ -118,15 +119,56 @@ def serve_session(transport, app, on_shutdown: Callable[[], None] | None = None)
     transport.closed.connect(lambda reason: (log.info("connection closed: %s", reason), app.quit()))
 
 
-def start(transport, welcome: Welcome):
-    """Start the plug-in proper once connected. Upstream's extension and docker are set up
-    here once the shim and the Qt mirror carry them (TASK-27)."""
+def start(transport, welcome: Welcome) -> list:
+    """Start the plug-in proper once connected, as Krita starts a Python plug-in: import
+    upstream (which registers its extension and docker with the ``krita`` stand-in), set the
+    extension up and let it create its actions, then create the docker and mirror it into a
+    PhotoCraft panel. Returns the mirrors, which must stay alive."""
     log.info(
         "connected to PhotoCraft %s (protocol %s, locale %s)",
         welcome.host_version,
         welcome.protocol,
         welcome.locale,
     )
+    if welcome.data_dir is None:
+        # Upstream would otherwise fall back to a folder of its own choosing (REQ-13.3).
+        raise RuntimeError("PhotoCraft gave the plug-in no data folder")
+    # The stand-in, installed as ``krita`` (install_krita_shim), used here by its own name.
+    from photocraft_host import krita, qt_mirror
+
+    krita.attach(transport, welcome.host_version, locale=welcome.locale, data_dir=welcome.data_dir)
+    qt_mirror.install(transport)
+    if os.environ.get("PHOTOCRAFT_PLUGIN_DEBUG") != "1":
+        # Upstream opens a debugger port (debugpy, 127.0.0.1:5678) whenever its debugpy
+        # checkout is present. A plug-in PhotoCraft runs must not accept code from a port
+        # unasked, so the import fails and upstream skips it (it catches ImportError).
+        sys.modules["debugpy"] = None  # type: ignore[assignment]
+
+    import ai_diffusion
+
+    instance = krita.Krita.instance()
+    instance.load_action_file(Path(ai_diffusion.__file__).parent / "ai_diffusion.action")
+    window = instance.activeWindow()
+    for extension in instance.extensions():
+        extension.setup()
+        extension.createActions(window)
+    mirrors = []
+    for factory in instance.dockWidgetFactories():
+        dock = instance.create_dock(factory)
+        content = dock.widget()
+        if content is None:
+            continue
+        mirror = qt_mirror.Mirror(content, transport, factory.id(), dock.windowTitle())
+        mirror.start()
+        mirrors.append(mirror)
+        dock.canvasChanged(krita.Canvas(krita.View()) if instance.activeDocument() else None)
+    return mirrors
+
+
+def _application_closing():
+    krita = sys.modules.get("krita")
+    if krita is not None and hasattr(krita, "attach"):
+        krita.Krita.instance().notifier().applicationClosing.emit()
 
 
 def main() -> int:
@@ -141,7 +183,8 @@ def main() -> int:
     app = QApplication(sys.argv[:1])
     install_krita_shim()
     transport = transport_module.Transport(reader, writer)
-    serve_session(transport, app)
+    # Upstream stops its managed server when the application closes.
+    serve_session(transport, app, on_shutdown=_application_closing)
     transport.start()
     plugin_id, version = identity()
     try:
@@ -151,9 +194,20 @@ def main() -> int:
     except (transport_module.RemoteError, TimeoutError, ConnectionError) as e:
         log.error("PhotoCraft refused the connection: %s", e)
         return 2
-    start(transport, welcome)
+    try:
+        _running = start(transport, welcome)
+    except Exception:
+        log.exception("the plug-in failed to start")
+        return 3
     return app.exec()
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    code = main()
+    # Leave without Python's teardown: it would destroy upstream's widgets after the
+    # QApplication, which crashes Qt. Everything that must happen on exit (upstream stopping
+    # its server, the answer to shutdown) has happened by now.
+    logging.shutdown()
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(code)

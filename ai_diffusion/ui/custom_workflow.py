@@ -45,7 +45,7 @@ from ..model.root import root
 from ..settings import settings
 from ..style import Styles
 from ..util import base_type_match, clamp, ensure
-from . import theme
+from . import ANIMATION_ENABLED, theme
 from .generation import GenerateButton, HistoryWidget, ProgressBar, QueueButton
 from .live import LivePreviewArea
 from .region import ActiveRegionWidget, PromptHeader
@@ -791,11 +791,12 @@ class CustomWorkflowWidget(QWidget):
         menu.addAction(
             self._mk_action(CustomGenerationMode.live, _("Generate Live"), "workspace-live")
         )
-        menu.addAction(
-            self._mk_action(
-                CustomGenerationMode.animation, _("Generate Animation"), "workspace-animation"
+        if ANIMATION_ENABLED:
+            menu.addAction(
+                self._mk_action(
+                    CustomGenerationMode.animation, _("Generate Animation"), "workspace-animation"
+                )
             )
-        )
         self._generate_menu = menu
 
         self._queue_button = QueueButton(parent=self._bottom)
