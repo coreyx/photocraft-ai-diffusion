@@ -296,7 +296,7 @@ Every in-scope workspace produces the same ComfyUI requests and layers as upstre
     2. Test metadata import from PNG on document open, and translation badge behavior with a mocked translate route.
     3. Test the 20 built-in styles, saving and reloading a user style, the steps/strength maths, and hiding styles whose model is missing.
 
-- [ ] **TASK-32: History, preview, apply and save**
+- [x] **TASK-32: History, preview, apply and save**
   - **Associated Acceptance Criteria**: `23.1`, `23.2`, `23.3`, `23.4`, `23.5`
   - **Concrete Steps**:
     1. Route the `[Preview]` layer through `preview.show`/`preview.hide` in the shim (D4), replacing upstream's locked-layer creation with the smallest possible diff.

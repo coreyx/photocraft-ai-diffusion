@@ -713,6 +713,19 @@ class Document(QObject):
         _, data = self.call_with_payload("pixels.read", params)
         return QByteArray(data)
 
+    def showPreview(self, data: QByteArray | bytes, x: int, y: int, w: int, h: int, label: str):
+        """Show a preview image over the document without adding it to the document (no layer,
+        no undo step, never saved): PhotoCraft's transient preview (design D4). Not in Krita's
+        API; upstream calls it where Krita would create a locked ``[Preview]`` layer."""
+        self.call(
+            "preview.show",
+            {"label": label, "rect": _rect(x, y, w, h), "format": "bgra8"},
+            _bytes(data),
+        )
+
+    def hidePreview(self):
+        self.call("preview.hide", {})
+
     def refreshProjection(self):
         """Nothing to do: PhotoCraft composites by itself."""
 

@@ -169,6 +169,9 @@ class DocumentModel(QObject, ObservableProperties):
         self._doc = document
         self._connection = connection
         self._layer: Layer | None = None
+        # PhotoCraft: a preview shown outside the document (REQ-7) instead of a locked layer.
+        # Exists from first shown until a result is applied, as Krita's preview layer does.
+        self._transient_preview = False
         self.generate_seed()
         self.jobs = JobQueue()
         self.regions = RootRegion(self)
@@ -709,7 +712,8 @@ class DocumentModel(QObject, ObservableProperties):
 
             if job.id and job.kind in [JobKind.diffusion, JobKind.animation]:
                 action = settings.generation_finished_action
-                if action is GenerationFinishedAction.preview and self._layer is None:
+                no_preview = self._layer is None and not self._transient_preview
+                if action is GenerationFinishedAction.preview and no_preview:
                     self.jobs.select(job.id, 0)
                 elif action is GenerationFinishedAction.apply:
                     self.apply_generated_result(job.id, 0)
@@ -732,6 +736,10 @@ class DocumentModel(QObject, ObservableProperties):
         name = f"[{name_prefix}] {trim_text(job.params.name, 77)}"
         image = job.results[index]
         bounds = Bounds(*job.params.bounds.offset, *image.extent)
+        if self._doc.supports_transient_preview:
+            self._doc.show_preview(image, bounds, name)
+            self._transient_preview = True
+            return
         if self._layer and self._layer.was_removed:
             self._layer = None  # layer was removed by user
         if self._layer is not None:
@@ -743,6 +751,9 @@ class DocumentModel(QObject, ObservableProperties):
             self._layer.is_locked = True
 
     def hide_preview(self, delete_layer=False):
+        if self._transient_preview:
+            self._doc.hide_preview()
+            self._transient_preview = not delete_layer
         if self._layer is not None:
             if delete_layer:
                 self._layer.remove()
@@ -864,6 +875,9 @@ class DocumentModel(QObject, ObservableProperties):
         if self._layer:
             self._layer.remove()
             self._layer = None
+        if self._transient_preview:  # gone once applied, as Krita's preview layer is
+            self._doc.hide_preview()
+            self._transient_preview = False
         self.jobs.selection = []
         self.jobs.notify_used(job_id, index)
 

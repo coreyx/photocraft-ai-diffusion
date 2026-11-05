@@ -60,6 +60,13 @@ MOCK_ONLY = {
     ),
 }
 
+#: Upstream tests of behaviour PhotoCraft deliberately changes, each recorded in
+#: UPSTREAM-CHANGES.md or the design and tested by this project's own tests instead.
+PHOTOCRAFT_DIFFERS = {
+    "test_show_preview": "previews are shown outside the document, not as a locked layer (D4; test_history_apply.py)",
+    "test_apply_preview": "previews are shown outside the document, not as a locked layer (D4; test_history_apply.py)",
+}
+
 _host = MockHost()
 _transport = Transport(_host.plugin_reader, _host.plugin_writer)
 _transport.start()
@@ -133,6 +140,7 @@ def photocraft_connection(reset_krita_state):
 
 def pytest_collection_modifyitems(config, items):
     for item in items:
-        reason = MOCK_ONLY.get(item.name)
-        if reason:
+        if reason := MOCK_ONLY.get(item.name):
             item.add_marker(pytest.mark.skip(reason=f"upstream mock only: {reason}"))
+        elif (reason := PHOTOCRAFT_DIFFERS.get(item.name)) and item.path.parent.name == "tests":
+            item.add_marker(pytest.mark.skip(reason=f"differs in PhotoCraft: {reason}"))

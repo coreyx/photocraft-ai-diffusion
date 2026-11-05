@@ -65,6 +65,17 @@ class Document(QObject):
         """A note for documents whose pixels are converted for generation (PhotoCraft)."""
         return None
 
+    @property
+    def supports_transient_preview(self) -> bool:
+        """Whether previews are shown outside the document rather than as a layer (PhotoCraft)."""
+        return False
+
+    def show_preview(self, image: Image, bounds: Bounds, name: str):
+        pass
+
+    def hide_preview(self):
+        pass
+
     def create_mask_from_selection(
         self, mod: SelectionModifiers
     ) -> tuple[Mask, Bounds] | tuple[None, None]:
@@ -221,6 +232,16 @@ class KritaDocument(Document):
         if depth != "U8":
             return False, msg_fmt.format("depth", "8-bit integer", depth)
         return True, None
+
+    @property
+    def supports_transient_preview(self):
+        return _is_photocraft()
+
+    def show_preview(self, image: Image, bounds: Bounds, name: str):
+        self._doc.showPreview(image.data, *bounds, name)  # pyright: ignore[reportAttributeAccessIssue] (PhotoCraft's krita stand-in)
+
+    def hide_preview(self):
+        self._doc.hidePreview()  # pyright: ignore[reportAttributeAccessIssue]
 
     @property
     def color_conversion_note(self) -> str | None:
