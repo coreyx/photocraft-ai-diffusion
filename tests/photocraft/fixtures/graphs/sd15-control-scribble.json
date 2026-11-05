@@ -238,6 +238,7 @@
   ],
   "id": "sd15-control-scribble",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

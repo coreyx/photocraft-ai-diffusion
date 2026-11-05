@@ -313,6 +313,7 @@
   "controls": [],
   "id": "zimage-refine-region",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

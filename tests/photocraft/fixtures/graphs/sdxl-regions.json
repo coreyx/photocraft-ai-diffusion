@@ -502,6 +502,7 @@
   "controls": [],
   "id": "sdxl-regions",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [
    {
     "color": [

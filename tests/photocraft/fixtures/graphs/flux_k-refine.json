@@ -255,6 +255,7 @@
   "controls": [],
   "id": "flux_k-refine",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

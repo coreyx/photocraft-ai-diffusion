@@ -72,6 +72,7 @@
   ],
   "id": "sdxl-control-image-line_art",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

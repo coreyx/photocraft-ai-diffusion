@@ -430,6 +430,7 @@
   "controls": [],
   "id": "flux-inpaint-replace_background",
   "inpaint_mode": "replace_background",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

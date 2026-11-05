@@ -538,6 +538,7 @@
   "controls": [],
   "id": "sdxl-regions-refine",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [
    {
     "color": [

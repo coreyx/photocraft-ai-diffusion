@@ -27,7 +27,6 @@ from ai_diffusion.model.jobs import JobKind
 from ai_diffusion.pose import BoneIndex, JointIndex, Pose, parse_id
 
 from ..conftest import qtapp
-from ..photocraft import upstream_shim
 from ..test_model import _model_env
 
 if not hasattr(krita, "attach"):
@@ -102,6 +101,10 @@ async def test_a_pose_from_an_image_keeps_its_joints(tmp_path: Path):
 
 def _move_joint(layer, joint: JointIndex, dx: float, dy: float):
     """Move a joint shape in the mock PhotoCraft, as dragging it in the canvas does."""
+    # Imported here: importing the harness installs the stand-in as ``krita``, which must not
+    # happen when this module is merely collected under upstream's own mock.
+    from ..photocraft import upstream_shim
+
     host = upstream_shim._host
     doc = next(iter(host.docs.values()))
     group = doc.find(layer.id.toString().strip("{}"))

@@ -364,6 +364,7 @@
   "controls": [],
   "id": "sd15-upscale-tiled",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

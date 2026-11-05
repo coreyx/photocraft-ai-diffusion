@@ -201,6 +201,7 @@
   "controls": [],
   "id": "flux2_4b-refine",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

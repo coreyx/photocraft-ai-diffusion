@@ -188,6 +188,7 @@
   "controls": [],
   "id": "illu-generate",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

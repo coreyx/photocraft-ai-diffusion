@@ -227,6 +227,7 @@
   ],
   "id": "sd15-control-depth",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

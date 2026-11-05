@@ -419,6 +419,7 @@
   "controls": [],
   "id": "sd15-inpaint-fill",
   "inpaint_mode": "fill",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

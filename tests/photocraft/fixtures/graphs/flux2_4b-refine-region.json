@@ -308,6 +308,7 @@
   "controls": [],
   "id": "flux2_4b-refine-region",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

@@ -422,6 +422,7 @@
   "controls": [],
   "id": "zimage-inpaint-remove_object",
   "inpaint_mode": "remove_object",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

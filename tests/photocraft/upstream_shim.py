@@ -3,7 +3,8 @@
 Load as a pytest plugin before upstream's conftest imports ``ai_diffusion``:
 
     python -m pytest -p tests.photocraft.upstream_shim tests/test_layer.py tests/test_document.py
-        tests/test_persistence.py tests/test_model.py tests/photocraft_upstream
+        tests/test_persistence.py tests/test_model.py tests/test_text.py tests/test_pose.py
+        tests/photocraft_upstream
 
 (one command, wrapped here). ``tests/photocraft_upstream`` holds this project's tests of
 upstream's code on the stand-in.

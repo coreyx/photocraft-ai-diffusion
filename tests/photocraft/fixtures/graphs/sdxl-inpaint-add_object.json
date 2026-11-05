@@ -474,6 +474,7 @@
   "controls": [],
   "id": "sdxl-inpaint-add_object",
   "inpaint_mode": "add_object",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

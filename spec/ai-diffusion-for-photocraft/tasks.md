@@ -289,7 +289,7 @@ Every in-scope workspace produces the same ComfyUI requests and layers as upstre
     1. Map the shim's `VectorLayer`/`Shape` onto `vector.*` groups (D3), so upstream `pose.py` runs unchanged.
     2. Test pose-from-image joint positions against upstream's output (±1 px), bone regeneration within 1 s after moving a joint, and Add Skeleton.
 
-- [ ] **TASK-31: Prompt features, styles and sampler presets**
+- [x] **TASK-31: Prompt features, styles and sampler presets**
   - **Associated Acceptance Criteria**: `21.1`, `21.2`, `21.3`, `21.4`, `22.1`, `22.2`, `22.3`, `22.4`
   - **Concrete Steps**:
     1. Run the prompt-processing fixture suite against upstream `text.py` outputs (comments, wildcards, LoRA, layer references, trigger words, merging).

@@ -393,6 +393,7 @@
   "controls": [],
   "id": "sd15-regions-refine",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [
    {
     "color": [

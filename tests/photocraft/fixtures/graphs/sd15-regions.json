@@ -360,6 +360,7 @@
   "controls": [],
   "id": "sd15-regions",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [
    {
     "color": [

@@ -500,6 +500,7 @@
   "controls": [],
   "id": "illu-inpaint-automatic",
   "inpaint_mode": "automatic",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

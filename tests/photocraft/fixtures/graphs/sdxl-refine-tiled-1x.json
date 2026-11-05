@@ -350,6 +350,7 @@
   "controls": [],
   "id": "sdxl-refine-tiled-1x",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

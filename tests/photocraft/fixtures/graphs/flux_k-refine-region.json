@@ -363,6 +363,7 @@
   "controls": [],
   "id": "flux_k-refine-region",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

@@ -303,6 +303,7 @@
   ],
   "id": "sd15-control-depth-reference",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

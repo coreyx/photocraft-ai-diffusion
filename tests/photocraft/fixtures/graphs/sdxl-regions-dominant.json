@@ -188,6 +188,7 @@
   "controls": [],
   "id": "sdxl-regions-dominant",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [
    {
     "color": [

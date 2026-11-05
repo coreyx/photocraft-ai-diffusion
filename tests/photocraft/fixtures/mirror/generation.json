@@ -61,6 +61,23 @@
        "kind": "row",
        "qt": "QWidget",
        "visible": false
+      },
+      {
+       "kind": "row",
+       "children": [
+        {
+         "kind": "toolButton",
+         "qt": "QToolButton",
+         "text": "",
+         "visible": false
+        },
+        {
+         "kind": "image",
+         "qt": "QLabel",
+         "visible": false,
+         "picture": true
+        }
+       ]
       }
      ]
     },

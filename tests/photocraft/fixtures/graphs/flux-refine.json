@@ -228,6 +228,7 @@
   "controls": [],
   "id": "flux-refine",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

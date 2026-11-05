@@ -1,0 +1,231 @@
+{
+ "input": {
+  "batch_count": 4,
+  "color_match": 1.0,
+  "conditioning": {
+   "control": [
+    {
+     "image": "image:403ccb73b70d233412d82b31",
+     "mode": "reference"
+    }
+   ],
+   "positive": "a lighthouse on a cliff at dusk, in the style of image 1",
+   "regions": []
+  },
+  "images": {
+   "extent": {
+    "desired": [
+     512,
+     512
+    ],
+    "initial": [
+     512,
+     512
+    ],
+    "input": [
+     512,
+     512
+    ],
+    "target": [
+     512,
+     512
+    ]
+   }
+  },
+  "kind": "generate",
+  "models": {
+   "checkpoint": "flux-2-klein-4b-Q6_K.gguf",
+   "loras": [],
+   "vae": "Checkpoint Default",
+   "version": "flux2_4b"
+  },
+  "sampling": {
+   "cfg_scale": 1.0,
+   "sampler": "euler",
+   "scheduler": "flux2",
+   "seed": 1234,
+   "total_steps": 5
+  }
+ },
+ "prompt": {
+  "1": {
+   "class_type": "UnetLoaderGGUF",
+   "inputs": {
+    "unet_name": "flux-2-klein-4b-Q6_K.gguf"
+   }
+  },
+  "10": {
+   "class_type": "BasicGuider",
+   "inputs": {
+    "conditioning": [
+     "8",
+     0
+    ],
+    "model": [
+     "1",
+     0
+    ]
+   }
+  },
+  "11": {
+   "class_type": "Flux2Scheduler",
+   "inputs": {
+    "height": 512,
+    "steps": 5,
+    "width": 512
+   }
+  },
+  "12": {
+   "class_type": "RandomNoise",
+   "inputs": {
+    "noise_seed": 1234
+   }
+  },
+  "13": {
+   "class_type": "KSamplerSelect",
+   "inputs": {
+    "sampler_name": "euler"
+   }
+  },
+  "14": {
+   "class_type": "SamplerCustomAdvanced",
+   "inputs": {
+    "guider": [
+     "10",
+     0
+    ],
+    "latent_image": [
+     "4",
+     0
+    ],
+    "noise": [
+     "12",
+     0
+    ],
+    "sampler": [
+     "13",
+     0
+    ],
+    "sigmas": [
+     "11",
+     0
+    ]
+   }
+  },
+  "15": {
+   "class_type": "VAEDecode",
+   "inputs": {
+    "samples": [
+     "14",
+     1
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "16": {
+   "class_type": "ETN_SaveImageCache",
+   "inputs": {
+    "format": "PNG",
+    "images": [
+     "15",
+     0
+    ]
+   }
+  },
+  "2": {
+   "class_type": "CLIPLoaderGGUF",
+   "inputs": {
+    "clip_name": "Qwen3-4B-Q4_K_M.gguf",
+    "type": "flux2"
+   }
+  },
+  "3": {
+   "class_type": "VAELoader",
+   "inputs": {
+    "vae_name": "flux2-vae.safetensors"
+   }
+  },
+  "4": {
+   "class_type": "EmptyFlux2LatentImage",
+   "inputs": {
+    "batch_size": 4,
+    "height": 512,
+    "width": 512
+   }
+  },
+  "5": {
+   "class_type": "ETN_LoadImageCache",
+   "inputs": {
+    "id": "image-bytes:47b408470ba866f8f5019580"
+   }
+  },
+  "6": {
+   "class_type": "CLIPTextEncode",
+   "inputs": {
+    "clip": [
+     "2",
+     0
+    ],
+    "text": "a lighthouse on a cliff at dusk, in the style of image 1"
+   }
+  },
+  "7": {
+   "class_type": "VAEEncode",
+   "inputs": {
+    "pixels": [
+     "5",
+     0
+    ],
+    "vae": [
+     "3",
+     0
+    ]
+   }
+  },
+  "8": {
+   "class_type": "ReferenceLatent",
+   "inputs": {
+    "conditioning": [
+     "6",
+     0
+    ],
+    "latent": [
+     "7",
+     0
+    ]
+   }
+  },
+  "9": {
+   "class_type": "ReferenceLatent",
+   "inputs": {
+    "conditioning": [
+     "6",
+     0
+    ],
+    "latent": [
+     "7",
+     0
+    ]
+   }
+  }
+ },
+ "scenario": {
+  "action": "generate",
+  "arch": "flux2_4b",
+  "controls": [],
+  "id": "flux2_4b-layer-reference",
+  "inpaint_mode": null,
+  "layer_reference": true,
+  "regions": [],
+  "selection": null,
+  "size": [
+   512,
+   512
+  ],
+  "strength": 1.0,
+  "upscale": {}
+ }
+}

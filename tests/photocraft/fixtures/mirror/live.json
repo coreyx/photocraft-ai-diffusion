@@ -111,6 +111,28 @@
          "kind": "row",
          "qt": "QWidget",
          "visible": false
+        },
+        {
+         "kind": "row",
+         "children": [
+          {
+           "kind": "row",
+           "qt": "QWidget",
+           "visible": false
+          },
+          {
+           "kind": "toolButton",
+           "qt": "QToolButton",
+           "text": "",
+           "visible": false
+          },
+          {
+           "kind": "image",
+           "qt": "QLabel",
+           "visible": false,
+           "picture": true
+          }
+         ]
         }
        ]
       },
@@ -145,6 +167,28 @@
          "kind": "row",
          "qt": "QWidget",
          "visible": false
+        },
+        {
+         "kind": "row",
+         "children": [
+          {
+           "kind": "row",
+           "qt": "QWidget",
+           "visible": false
+          },
+          {
+           "kind": "toolButton",
+           "qt": "QToolButton",
+           "text": "",
+           "visible": false
+          },
+          {
+           "kind": "image",
+           "qt": "QLabel",
+           "visible": false,
+           "picture": true
+          }
+         ]
         }
        ]
       }

@@ -63,6 +63,7 @@
   ],
   "id": "sdxl-control-image-depth",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

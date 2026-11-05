@@ -82,6 +82,7 @@
   "controls": [],
   "id": "sdxl-upscale-simple",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

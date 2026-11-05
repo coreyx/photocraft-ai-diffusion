@@ -434,6 +434,7 @@
   "controls": [],
   "id": "sd15-inpaint-expand",
   "inpaint_mode": "expand",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

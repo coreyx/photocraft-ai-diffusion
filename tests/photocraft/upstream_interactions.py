@@ -53,6 +53,7 @@ def main() -> int:
     settings.load()
     settings.auto_update = False
     settings.tag_files = ["Danbooru"]
+    settings.prompt_translation = "fr"
     root.init()
     model = root.model_for_active_document()
     assert model is not None
@@ -118,6 +119,18 @@ def main() -> int:
     send(mirror.node_id(button), "pointer", {"x": 10, "y": 10, "button": "left", "action": "click"})
     results["generate_clicked"] = bool(clicks)
     results["error"] = model.error.message if model.error else ""
+
+    # The prompt's translation badge: shows the language, and clicking it switches translation off.
+    from PyQt6.QtWidgets import QToolButton
+
+    badge = next(b for b in widget.findChildren(QToolButton) if b.text() == "FR" and b.isVisible())
+    badge_node = find_widget(host.panels["generate"]["tree"], mirror.node_id(badge)) or {}
+    results["badge"] = badge_node.get("props", {}).get("text")
+    results["language_before"] = model.prompt_translation_language
+    send(mirror.node_id(badge), "click", 1)
+    badge_node = find_widget(host.panels["generate"]["tree"], mirror.node_id(badge)) or {}
+    results["badge_after"] = badge_node.get("props", {}).get("text")
+    results["language_after"] = model.prompt_translation_language
 
     print(json.dumps(results), flush=True)
     mirror.stop()

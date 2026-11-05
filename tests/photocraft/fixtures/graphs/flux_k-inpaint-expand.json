@@ -352,6 +352,7 @@
   "controls": [],
   "id": "flux_k-inpaint-expand",
   "inpaint_mode": "expand",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

@@ -395,6 +395,7 @@
   "controls": [],
   "id": "flux-upscale-tiled",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

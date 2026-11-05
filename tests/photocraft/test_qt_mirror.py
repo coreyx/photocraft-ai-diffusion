@@ -9,7 +9,7 @@ from collections.abc import Callable, Iterator
 from typing import Any
 
 import pytest
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QCoreApplication, QEvent, Qt
 from PyQt6.QtGui import QColor, QIcon, QPixmap
 from PyQt6.QtWidgets import (
     QApplication,
@@ -547,6 +547,7 @@ def test_structure_changes_are_patched(mirror):
     layout.insertWidget(0, c)
     layout.removeWidget(a)
     a.deleteLater()
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete.value)
     panel.flush()
     assert [n["props"]["text"] for n in panel.tree["children"]] == ["c", "b"]
     ops = panel.host.panels[PANEL]["patches"][-1]

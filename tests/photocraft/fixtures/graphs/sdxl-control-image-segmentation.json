@@ -62,6 +62,7 @@
   ],
   "id": "sdxl-control-image-segmentation",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

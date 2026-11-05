@@ -267,6 +267,7 @@
   ],
   "id": "flux-control-canny",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

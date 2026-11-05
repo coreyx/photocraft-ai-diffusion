@@ -384,6 +384,7 @@
   "controls": [],
   "id": "sdxl-upscale-tiled",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

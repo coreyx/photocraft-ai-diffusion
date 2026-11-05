@@ -427,6 +427,7 @@
   "controls": [],
   "id": "flux2_4b-inpaint-automatic",
   "inpaint_mode": "automatic",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

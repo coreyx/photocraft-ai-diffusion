@@ -25,6 +25,7 @@ from PyQt6.QtWidgets import QLayout, QMenu, QWidget
 from . import menus, tracker
 from .adapters import Input, adapter_for
 from .adapters.base import might_be_rich
+from .adapters.display import FrameAdapter
 from .images import ImageCache
 from .layouts import layout_items, layout_kind, layout_node, layout_props
 from .tree import Node, diff, node, wire
@@ -57,6 +58,33 @@ _SURFACES = {
         "input": "dialog.input",
     },
 }
+
+
+def _managed(layout: QLayout) -> set[int]:
+    """Ids of the widgets a layout (and the layouts nested in it) places."""
+    found: set[int] = set()
+    for i in range(layout.count()):
+        item = layout.itemAt(i)
+        if item is None:
+            continue
+        if (w := item.widget()) is not None:
+            found.add(id(w))
+        elif (inner := item.layout()) is not None:
+            found |= _managed(inner)
+    return found
+
+
+def unmanaged_children(widget: QWidget, layout: QLayout) -> list[QWidget]:
+    """Child widgets of ``widget`` its layout doesn't place: widgets upstream moves over it."""
+    managed = _managed(layout)
+    return [
+        child
+        for child in widget.children()
+        if isinstance(child, QWidget)
+        and id(child) not in managed
+        and not child.isWindow()
+        and not child.objectName().startswith("qt_")
+    ]
 
 
 def _tooltip(widget: QWidget) -> str | None:
@@ -243,6 +271,11 @@ class Mirror(QObject):
             children = layout_items(layout, self)
         else:
             children = []
+        if layout is not None and (adapter is None or isinstance(adapter, FrameAdapter)):
+            if extra := unmanaged_children(widget, layout):
+                # Placed over the container rather than in its layout (a prompt's translation
+                # badge): sent in a row after the layout's content.
+                children.append(node(f"{nid}.overlay", "row", {}, [self.build(w) for w in extra]))
         return node(nid, kind, props, children)
 
     def layout_node(self, layout: QLayout) -> Node:

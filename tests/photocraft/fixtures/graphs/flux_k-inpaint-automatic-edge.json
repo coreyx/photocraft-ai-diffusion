@@ -352,6 +352,7 @@
   "controls": [],
   "id": "flux_k-inpaint-automatic-edge",
   "inpaint_mode": "automatic",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "rect",

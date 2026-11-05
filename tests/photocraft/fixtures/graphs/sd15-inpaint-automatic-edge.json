@@ -434,6 +434,7 @@
   "controls": [],
   "id": "sd15-inpaint-automatic-edge",
   "inpaint_mode": "automatic",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "rect",

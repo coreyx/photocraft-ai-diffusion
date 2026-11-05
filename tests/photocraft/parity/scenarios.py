@@ -56,6 +56,8 @@ class Scenario:
     controls: list[dict[str, Any]] = field(default_factory=list)
     upscale: dict[str, Any] = field(default_factory=dict)
     size: tuple[int, int] = DOC_SIZE
+    #: A layer named ``Sketch`` that the prompt references (``<layer:Sketch>``).
+    layer_reference: bool = False
 
     def describe(self) -> dict[str, Any]:
         """Return the scenario's parameters as plain JSON data, stored next to its fixture."""
@@ -70,6 +72,7 @@ class Scenario:
             "controls": self.controls,
             "upscale": self.upscale,
             "size": list(self.size),
+            "layer_reference": self.layer_reference,
         }
 
 
@@ -189,6 +192,14 @@ def setup_model(scenario: Scenario, model: Any, style: Any, api: Any):
     model.seed = SEED
     model.strength = scenario.strength
     model.regions.positive = PROMPT
+    if scenario.layer_reference:
+        sketch = model.layers.create("Sketch")
+        image = api.Image(
+            blob_image(width, height, QRect(140, 100, 220, 300), QColor(240, 180, 40))
+        )
+        sketch.write_pixels(image, api.Bounds(0, 0, width, height))
+        model.layers.active = model.layers.root.child_layers[0]
+        model.regions.positive = PROMPT + ", in the style of <layer:Sketch>"
     model.regions.negative = "blurry"
     if scenario.inpaint_mode:
         model.inpaint.mode = api.InpaintMode[scenario.inpaint_mode]
@@ -262,6 +273,11 @@ def _matrix() -> list[Scenario]:
         ))
     dominant = [{"prompt": "a calm sea", "ellipse": (-200, -200, 912, 912), "color": (9, 9, 9)}]
     result.append(Scenario("sdxl-regions-dominant", "sdxl", regions=dominant))
+    # A prompt referencing a layer: an IP-Adapter reference, and an edit model's input picture.
+    result.extend((
+        Scenario("sdxl-layer-reference", "sdxl", layer_reference=True),
+        Scenario("flux2_4b-layer-reference", "flux2_4b", layer_reference=True),
+    ))
 
     control_sets: dict[str, list[dict[str, Any]]] = {
         "depth": [{"mode": "depth"}],

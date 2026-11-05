@@ -202,6 +202,7 @@
   ],
   "id": "flux-control-style-composition",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": null,
   "size": [

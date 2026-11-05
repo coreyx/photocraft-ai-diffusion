@@ -351,6 +351,7 @@
   "controls": [],
   "id": "flux_k-inpaint-remove_object",
   "inpaint_mode": "remove_object",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

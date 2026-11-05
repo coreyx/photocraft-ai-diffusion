@@ -418,6 +418,7 @@
   "controls": [],
   "id": "sd15-inpaint-custom",
   "inpaint_mode": "custom",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

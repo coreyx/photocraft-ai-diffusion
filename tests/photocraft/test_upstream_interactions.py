@@ -42,6 +42,13 @@ def test_tags_autocomplete(results: dict):
     assert results["completed"] == "a (cat:1.1), 1girl"
 
 
+def test_the_translation_badge(results: dict):
+    """REQ-21: with a translation language set, the prompt shows its badge; clicking it switches
+    to the original input (and the badge to EN)."""
+    assert (results["badge"], results["language_before"]) == ("FR", "fr")
+    assert (results["badge_after"], results["language_after"]) == ("EN", "")
+
+
 def test_the_generate_button_is_an_image_that_clicks(results: dict):
     assert results["button_kind"] == "image"
     assert results["generate_clicked"]

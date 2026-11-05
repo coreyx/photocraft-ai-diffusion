@@ -421,6 +421,7 @@
   "controls": [],
   "id": "sd15-refine-region",
   "inpaint_mode": null,
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",

@@ -352,6 +352,7 @@
   "controls": [],
   "id": "flux_k-inpaint-fill",
   "inpaint_mode": "fill",
+  "layer_reference": false,
   "regions": [],
   "selection": [
    "ellipse",
