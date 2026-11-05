@@ -324,7 +324,7 @@ Every in-scope workspace produces the same ComfyUI requests and layers as upstre
 
 The plug-in configures and connects to managed, custom and reused ComfyUI servers, with cloud mode switched off.
 
-- [ ] **TASK-36: Settings parity and the plug-in data folder**
+- [x] **TASK-36: Settings parity and the plug-in data folder**
   - **Associated Acceptance Criteria**: `28.1`, `28.2`, `28.3`, `28.4`
   - **Concrete Steps**:
     1. Drop `last_news` and gate cloud keys in `settings.py`. Confirm the full set of keys and defaults is written on first run.

@@ -715,7 +715,10 @@ class MockHost:
         self.dialogs[p["dialogId"]] = p
 
     def _m_dialog_patch(self, p, _):
-        self.dialogs.setdefault(p["dialogId"], {}).setdefault("patches", []).append(p["ops"])
+        dialog = self.dialogs.setdefault(p["dialogId"], {})
+        if "tree" in dialog:
+            dialog["tree"] = apply_patches(dialog["tree"], p["ops"])
+        dialog.setdefault("patches", []).append(p["ops"])
 
     def _m_dialog_close(self, p, _):
         self.dialogs.pop(p["dialogId"], None)

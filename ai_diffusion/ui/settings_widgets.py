@@ -275,7 +275,8 @@ class SliderSetting(SettingWidget):
 
     @property
     def value(self):
-        return self._spin.value()
+        # An int setting must be stored as an int: loading drops a value of the wrong type.
+        return self._spin.value() if self._is_float else round(self._spin.value())
 
     @value.setter
     def value(self, v: float):

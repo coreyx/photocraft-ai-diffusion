@@ -5,6 +5,9 @@ from PyQt6.QtCore import QTimer
 
 _loop = asyncio.new_event_loop()
 _timer = QTimer()
+# The loop holds tasks only weakly: a task nobody else keeps can be garbage collected while
+# it waits (e.g. Connection.connect's), so tasks started by run() are kept until they finish.
+_running: set[asyncio.Task] = set()
 
 
 def process_python_events():
@@ -34,6 +37,8 @@ def run(future):
     else:
         task = _loop.create_task(future)
     assert task, "Task was not scheduled"
+    _running.add(task)
+    task.add_done_callback(_running.discard)
     return task
 
 

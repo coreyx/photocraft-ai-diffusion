@@ -140,6 +140,23 @@ class PerformanceSettings:
     tiled_vae: bool = False
 
 
+def cloud_enabled() -> bool:
+    """Whether the online service is available: always in Krita; in PhotoCraft only while the
+    optional cloud module is enabled (REQ-32)."""
+    import krita
+
+    if not hasattr(krita, "photocraft_host"):
+        return True
+    from photocraft_host import cloud
+
+    return cloud.enabled()
+
+
+#: PhotoCraft: settings kept only while the cloud module is enabled (REQ-28.0.1). News comes
+#: only from the online service, so ``last_news`` is one of them.
+cloud_only_settings = ("access_token", "last_news")
+
+
 class Setting:
     def __init__(self, name: str, default, desc="", help="", items=None):
         self.name = name
@@ -541,6 +558,8 @@ class Settings(QObject):
         # In Krita the default is "en", which loading restores the same.
         if values.get("language") == Settings._language.default:
             values = {k: v for k, v in values.items() if k != "language"}
+        if not cloud_enabled():
+            values = {k: v for k, v in values.items() if k not in cloud_only_settings}
         with open(path, "w") as file:
             file.write(json.dumps(values, default=encode_json, indent=4))
 
@@ -554,6 +573,8 @@ class Settings(QObject):
         log.info(f"Loading settings from {path}")
         try:
             contents = read_json_with_comments(path)
+            if not cloud_enabled():
+                contents = {k: v for k, v in contents.items() if k not in cloud_only_settings}
             for k, v in contents.items():
                 setting: Setting | None = getattr(Settings, f"_{k}", None)
                 if setting is not None:

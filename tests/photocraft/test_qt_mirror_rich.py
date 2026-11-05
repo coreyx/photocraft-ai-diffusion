@@ -342,6 +342,25 @@ def test_history_list(mirror):
     wait_for(panel.app, lambda: sorted(history.discarded) == ["blue", "red"])
 
 
+def test_selecting_a_list_item_makes_it_current(mirror):
+    """As a click does; the settings dialog switches pages on ``currentRowChanged``."""
+    pages = QListWidget()
+    for text in ("Connection", "Styles", "Diffusion"):
+        pages.addItem(text)
+    pages.setCurrentRow(0)
+    rows: list[int] = []
+    pages.currentRowChanged.connect(rows.append)
+    panel = mirror(column(pages))
+    node = panel.node(pages)
+    diffusion = next(i["id"] for i in node["props"]["items"] if i["text"] == "Diffusion")
+    panel.host.send_event(
+        "panel.input",
+        {"owner": PANEL, "nodeId": node["id"], "kind": "select", "value": [diffusion]},
+    )
+    wait_for(panel.app, lambda: rows == [2])
+    assert pages.currentRow() == 2
+
+
 def test_context_menus_pop_up_in_photocraft(mirror):
     history = History()
     item = QListWidgetItem(thumb("red"), "")

@@ -169,8 +169,10 @@ class ListWidgetAdapter(Adapter):
     def _select(widget: QListWidget, ids: list[Any]):
         """Select the items as a click does: one ``itemSelectionChanged`` (upstream shows the
         selected result's preview on it, so intermediate states would flicker), and
-        ``itemClicked`` for a single item."""
+        ``itemClicked`` for a single item. The current item follows, with its signals (the
+        settings dialog switches pages on ``currentRowChanged``)."""
         chosen = [item for wanted in ids if (item := _find(widget, wanted)) is not None]
+        previous = widget.currentItem()
         widget.blockSignals(True)
         try:
             widget.clearSelection()
@@ -181,6 +183,11 @@ class ListWidgetAdapter(Adapter):
         finally:
             widget.blockSignals(False)
         widget.itemSelectionChanged.emit()
+        current = widget.currentItem()
+        if current is not None and current is not previous:
+            widget.currentItemChanged.emit(current, previous)
+            widget.currentRowChanged.emit(widget.row(current))
+            widget.currentTextChanged.emit(current.text())
         if len(chosen) == 1:
             widget.itemClicked.emit(chosen[0])
 
