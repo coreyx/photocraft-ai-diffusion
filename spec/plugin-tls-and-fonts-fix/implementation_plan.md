@@ -52,7 +52,7 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
 - [x] **TASK-6:** Skip the "not installed in a 'pykrita' directory" warning when `krita` is the PhotoCraft stand-in (`hasattr(krita, "photocraft_host")`, as the other PhotoCraft branches check). In PhotoCraft, the install folder is PhotoCraft's.
 
 #### [MODIFY] `UPSTREAM-CHANGES.md`
-- [ ] **TASK-7:** Add the `extension.py` row, and extend `updates.py`'s row with the 404 case. `tests/photocraft/upstream_changes.py` must still pass.
+- [x] **TASK-7:** Add the `extension.py` row, and extend `updates.py`'s row with the 404 case. `tests/photocraft/upstream_changes.py` must still pass.
 
 ### Tests
 
