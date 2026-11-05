@@ -314,7 +314,7 @@ Every in-scope workspace produces the same ComfyUI requests and layers as upstre
     1. Map upstream's canvas resize to `doc.resizeCanvas`. Test the 2× upscale result layer, tiled graph parity, and the disabled Unblur state.
     2. Test custom workflow import (6 input node types, widget order and groups), running with canvas, selection, layer and style inputs, live re-runs only on changes, and text outputs.
 
-- [ ] **TASK-35: Per-document persistence round trip**
+- [x] **TASK-35: Per-document persistence round trip**
   - **Associated Acceptance Criteria**: `33.1`, `33.2`
   - **Concrete Steps**:
     1. Map upstream's annotations (`document_id`, `ui.json`, `result<N>.webp`) to plug-in blobs through the shim.

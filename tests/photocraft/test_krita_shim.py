@@ -422,6 +422,23 @@ def test_annotations_are_stored_in_the_document(host: MockHost, connect):
     assert mock.blobs == {}
 
 
+def test_annotations_on_a_closed_document_are_ignored(
+    host: MockHost, connect, qt_app: QApplication
+):
+    """As in Krita: upstream saves its state a moment after a change, maybe after closing."""
+    mock = host.add_document("A", 4, 4)
+    krita = connect()
+    doc = only_doc(krita)
+    del host.docs[mock.id]  # closed in PhotoCraft, before the plug-in hears of it
+    doc.setAnnotation("ai_diffusion/ui.json", "state", QByteArray(b"{}"))
+    assert doc.annotation("ai_diffusion/ui.json").size() == 0
+    host.send_event("document.closed", {"doc": mock.id})
+    wait_for(qt_app, lambda: not krita.documents())
+    calls = len(host.calls)
+    doc.removeAnnotation("ai_diffusion/ui.json")
+    assert host.calls[calls:] == [], "no requests once the plug-in knows it closed"
+
+
 def test_document_basics(host: MockHost, connect):
     host.add_document("A", 4, 4)
     doc = only_doc(connect())

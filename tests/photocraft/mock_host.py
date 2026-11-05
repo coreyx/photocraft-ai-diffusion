@@ -297,6 +297,24 @@ class MockHost:
         self.active_doc = doc_id
         return doc
 
+    def save_and_reopen(self, doc: MockDocument) -> MockDocument:
+        """Save ``doc``, close it and open the saved file again, as a new document.
+
+        What comes back is what PhotoCraft keeps through ``.pcraft``, PSD and PSB, which the
+        fork's own tests check byte for byte (``storage_tests.rs``
+        ``blobs_survive_pcraft_and_psd_byte_for_byte``, ``roundtrip.rs``
+        ``layer_uids_survive_a_native_round_trip``): pixels, masks, layer uids and values, and
+        the plug-in's blobs. Nothing else carries over: the reopened document has a new id.
+        """
+        reopened = copy.deepcopy(doc)
+        reopened.id = str(next(self._doc_ids))
+        del self.docs[doc.id]
+        self.send_event("document.closed", {"doc": doc.id})
+        self.docs[reopened.id] = reopened
+        self.active_doc = reopened.id
+        self.send_event("document.opened", {"doc": reopened.id})
+        return reopened
+
     def reset(self):
         """Close every document, and forget what plug-ins registered, as a fresh PhotoCraft has."""
         self.docs.clear()

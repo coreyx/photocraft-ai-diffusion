@@ -459,7 +459,11 @@ class CustomWorkspace(QObject, ObservableProperties):
                 id, graph = self._embedded_workflow
                 self._embedded_workflow = None
                 self._workflows.add_from_document(id, graph)
-                self.workflow_id = id
+                if self.workflow_id == id:
+                    # A reopened document's embedded workflow keeps its id: load the graph.
+                    self._update_workflow(self._workflows.find_index(id), QModelIndex())
+                else:
+                    self.workflow_id = id
 
     def _update_workflow(self, idx: QModelIndex, _: QModelIndex):
         wf = self._workflows[idx.row()]

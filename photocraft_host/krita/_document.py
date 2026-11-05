@@ -30,6 +30,8 @@ from typing import TYPE_CHECKING, Any
 from PyQt6.QtCore import QByteArray, QObject, QPointF, QRect, QTimer, QUuid
 from PyQt6.QtGui import QImage
 
+from ..transport import RemoteError
+
 if TYPE_CHECKING:
     from ._app import _Host
 
@@ -797,14 +799,28 @@ class Document(QObject):
         return True
 
     def annotation(self, key: str) -> QByteArray:
-        result, data = self.call_with_payload("blob.get", {"name": key})
+        result, data = self._annotation_call("blob.get", {"name": key})
         return QByteArray(data) if result and result.get("found") else QByteArray()
 
     def setAnnotation(self, key: str, _description: str, data: QByteArray | bytes):
-        self.call("blob.set", {"name": key}, _bytes(data))
+        self._annotation_call("blob.set", {"name": key}, _bytes(data))
 
     def removeAnnotation(self, key: str):
-        self.call("blob.delete", {"name": key})
+        self._annotation_call("blob.delete", {"name": key})
+
+    def _annotation_call(
+        self, method: str, params: dict[str, Any], payload: bytes = b""
+    ) -> tuple[Any, bytes]:
+        # Krita ignores annotation calls on a closed document, and upstream relies on that: it
+        # saves its state a moment after each change, which can be after the document closed.
+        if self._id not in self._host.docs:
+            return None, b""
+        try:
+            return self.call_with_payload(method, params, payload)
+        except RemoteError as error:
+            if error.code == "notFound":  # closed, and the event saying so is still on its way
+                return None, b""
+            raise
 
     # Animation is deferred (design D2): one frame, no timeline.
     def currentTime(self) -> int:
