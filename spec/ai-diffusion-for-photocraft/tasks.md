@@ -113,7 +113,7 @@ Every document capability the AI plug-in needs works through the protocol.
     3. Wire the broker to the manager's queues on the UI thread.
     4. Add unit tests against a test PSD, undo-revert tests, and `panic_hunt` coverage for every broker method.
 
-- [ ] **TASK-11: Pixel, selection and mask transfer with colour conversion**
+- [x] **TASK-11: Pixel, selection and mask transfer with colour conversion**
   - **Associated Acceptance Criteria**: `3.1`, `3.2`, `3.3`, `3.4`, `3.5`, `3.6`
   - **Concrete Steps**:
     1. Implement `pixels.read` (layer, group, or composite with exclusions and `includePreview`), `pixels.write` and `pixels.createLayer` in the bgra8, rgba8, rgba16 and rgba32f formats.
