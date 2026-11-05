@@ -72,8 +72,9 @@ jobs:
           cache: pip
       - name: Dependencies
         run: pip install -r requirements-photocraft.txt
+      # Both suites run under coverage (.coveragerc), the plug-in processes they start included.
       - name: Plug-in tests
-        run: python -m pytest tests/photocraft -v --cov=photocraft_host --cov-branch --cov-report=term-missing
+        run: python -m coverage run -m pytest tests/photocraft -v
       - name: Upstream unit tests
         if: ${{ !cancelled() }}
         shell: bash
@@ -83,7 +84,17 @@ jobs:
         if: ${{ !cancelled() }}
         shell: bash
         run: >-
-          python -m pytest -p tests.photocraft.upstream_shim tests/test_layer.py
+          python -m coverage run -m pytest -p tests.photocraft.upstream_shim tests/test_layer.py
           tests/test_document.py tests/test_persistence.py tests/test_model.py tests/test_text.py
           tests/test_pose.py tests/test_custom_workflow.py tests/test_resolution.py
           tests/photocraft_upstream -q --timeout 120
+      # REQ-39.0.4: 80% of lines and 70% of branches overall; 90% of lines for the krita stand-in
+      # (with the persistence mapping) and the Krita AI Diffusion reuse.
+      - name: Coverage
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          python -m coverage combine
+          python -m coverage report
+          python -m coverage json -o coverage.json
+          python tests/photocraft/coverage_gate.py coverage.json

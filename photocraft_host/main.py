@@ -219,11 +219,6 @@ def main(streams=None, welcome: Welcome | None = None, first_id: int = 1) -> int
 
 
 if __name__ == "__main__":
-    code = main()
-    # Leave without Python's teardown: it would destroy upstream's widgets after the
-    # QApplication, which crashes Qt. Everything that must happen on exit (upstream stopping
-    # its server, the answer to shutdown) has happened by now.
-    logging.shutdown()
-    sys.stdout.flush()
-    sys.stderr.flush()
-    os._exit(code)
+    from photocraft_host import framing
+
+    framing.leave(main())

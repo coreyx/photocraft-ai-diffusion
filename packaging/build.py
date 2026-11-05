@@ -252,6 +252,15 @@ def write_sums(packages: list[Path], out: Path) -> Path:
     return sums
 
 
+def ignore_in_git(folder: Path) -> None:
+    """Make ``folder`` (packages or downloads made in the checkout) ignore itself in git, so
+    upstream's ``.gitignore`` stays as upstream has it (UPSTREAM-CHANGES.md)."""
+    folder.mkdir(parents=True, exist_ok=True)
+    marker = folder / ".gitignore"
+    if not marker.exists():
+        marker.write_text("*\n", encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build the plug-in's packages.")
     parser.add_argument("--version", default="0.0.0-dev")
@@ -259,6 +268,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cache", type=Path, default=ROOT / ".cache" / "packaging")
     parser.add_argument("--platform", action="append", choices=sorted(PLATFORMS))
     args = parser.parse_args(argv)
+    for folder in (args.out, args.cache):
+        if folder.resolve().is_relative_to(ROOT):
+            # The folder directly under the checkout: .cache rather than .cache/packaging.
+            ignore_in_git(ROOT / folder.resolve().relative_to(ROOT).parts[0])
     packages = [
         build(name, args.version, args.out, args.cache)
         for name in args.platform or sorted(PLATFORMS)

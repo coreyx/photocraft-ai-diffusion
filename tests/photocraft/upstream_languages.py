@@ -90,4 +90,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     code = main()
-    os._exit(code)  # see workspace_snapshots.py: no interpreter teardown
+    from photocraft_host import framing
+
+    framing.leave(code)  # no interpreter teardown; saves a coverage measurement

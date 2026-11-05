@@ -141,3 +141,17 @@ def test_sha256sums_lists_every_package(downloads: dict[str, bytes], tmp_path: P
     ]
     sums = build.write_sums(packages, out).read_text().splitlines()
     assert sums == [f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}" for p in packages]
+
+
+def test_build_output_in_the_checkout_ignores_itself(tmp_path: Path, monkeypatch):
+    """Upstream's .gitignore stays unchanged: the folders the build makes ignore themselves."""
+    monkeypatch.setattr(build, "ROOT", tmp_path)
+    monkeypatch.setattr(build, "build", lambda *_args: tmp_path / "dist" / "package.zip")
+    monkeypatch.setattr(build, "write_sums", lambda _packages, out: out / "SHA256SUMS")
+    elsewhere = tmp_path.parent / f"{tmp_path.name}-elsewhere"
+    assert build.main(["--platform", "linux-x64"]) == 0
+    assert (tmp_path / "dist" / ".gitignore").read_text() == "*\n"
+    assert (tmp_path / ".cache" / ".gitignore").read_text() == "*\n"
+    assert not (tmp_path / ".cache" / "packaging" / ".gitignore").exists()
+    assert build.main(["--platform", "linux-x64", "--out", str(elsewhere)]) == 0
+    assert not (elsewhere / ".gitignore").exists(), "only folders in the checkout"

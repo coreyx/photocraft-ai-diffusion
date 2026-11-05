@@ -138,6 +138,12 @@ def photocraft_connection(reset_krita_state):
     yield
 
 
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "gpu: needs a real ComfyUI with models (test_e2e_gpu.py, PHOTOCRAFT_E2E_COMFYUI)"
+    )
+
+
 def pytest_collection_modifyitems(config, items):
     for item in items:
         if reason := MOCK_ONLY.get(item.name):

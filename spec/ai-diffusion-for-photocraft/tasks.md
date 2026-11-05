@@ -394,7 +394,7 @@ The plug-in installs from a release package, updates itself, and passes the full
     2. Test the panel and settings in each language, and the host-locale default.
     3. Add a string audit test that allows "Krita" only in import, detection and attribution contexts.
 
-- [ ] **TASK-45: Coverage, secret and network audits, and the end-to-end suite**
+- [x] **TASK-45: Coverage, secret and network audits, and the end-to-end suite**
   - **Associated Acceptance Criteria**: `39.1`, `39.3`, `39.4`, `39.5`
   - **Concrete Steps**:
     1. Enforce coverage in CI: ≥ 80% line and ≥ 70% branch overall, and ≥ 90% for `photocraft_host/krita`, the persistence mapping and `krita_reuse`.

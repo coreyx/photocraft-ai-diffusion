@@ -1,0 +1,16 @@
+# Coverage of this project's own code (TASK-45, REQ-39): the host side of the plug-in and the
+# packaging. Upstream's ai_diffusion is measured by upstream's tests, not here. Many tests start
+# the plug-in in a child process, so those are measured too. Run from the repository's root.
+[run]
+branch = True
+# Directories, not module names: PyPI's packaging module would otherwise be measured.
+source_dirs =
+    photocraft_host
+    packaging
+parallel = True
+patch = subprocess
+concurrency = thread
+
+[report]
+show_missing = True
+skip_covered = True

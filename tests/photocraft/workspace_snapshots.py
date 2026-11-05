@@ -106,4 +106,6 @@ if __name__ == "__main__":
     code = main()
     # Skip interpreter teardown: Python would destroy upstream's widgets after the
     # QApplication, which crashes Qt. Everything worth keeping has been printed.
-    os._exit(code)
+    from photocraft_host import framing
+
+    framing.leave(code)  # no interpreter teardown; saves a coverage measurement

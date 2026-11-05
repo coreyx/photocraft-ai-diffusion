@@ -26,6 +26,3 @@ venv
 bin
 lib
 pyvenv.cfg
-# PhotoCraft packages (packaging/build.py) and its download cache
-/dist
-/.cache

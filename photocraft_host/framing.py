@@ -9,6 +9,7 @@ the plug-in's connection on it.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import struct
 import sys
@@ -104,3 +105,22 @@ def stdio_streams() -> tuple[IO[bytes], IO[bytes]]:
     sys.stdout = sys.stderr
     frames_in = os.fdopen(os.dup(0), "rb", buffering=0)
     return frames_in, frames_out
+
+
+def leave(code: int):
+    """End the plug-in process at once with ``code``, skipping Python's teardown.
+
+    The teardown would destroy upstream's widgets after the ``QApplication``, which crashes Qt;
+    everything that must happen on exit has happened by the time this is called. Exit handlers
+    are skipped too, so a coverage measurement running in this process (the tests measure the
+    plug-in's own processes) is saved here, or it would be lost.
+    """
+    logging.shutdown()
+    coverage = sys.modules.get("coverage")
+    measurement = coverage.Coverage.current() if coverage else None
+    if measurement is not None:
+        measurement.stop()
+        measurement.save()
+    for stream in (sys.stdout, sys.stderr):
+        stream.flush()
+    os._exit(code)

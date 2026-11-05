@@ -330,7 +330,7 @@ def main() -> int:
     )
     reader, writer = framing.stdio_streams()
     session = Session(reader, writer)
-    session.on_shutdown = lambda: os._exit(0)
+    session.on_shutdown = lambda: framing.leave(0)
     try:
         welcome = hello(session)
     except (RuntimeError, TimeoutError) as e:
@@ -360,8 +360,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    code = main()
-    # As photocraft_host.main: leave without Python's teardown, which would crash Qt.
-    logging.shutdown()
-    sys.stderr.flush()
-    os._exit(code)
+    framing.leave(main())
