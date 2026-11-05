@@ -380,7 +380,7 @@ The plug-in installs from a release package, updates itself, and passes the full
     3. Add a GitHub Actions release workflow that builds the packages and publishes `SHA256SUMS`.
     4. On a clean VM with PhotoCraft from the fork: install the package, start PhotoCraft, and confirm the panel shows the Connection setup.
 
-- [ ] **TASK-43: Updates and diagnostics**
+- [x] **TASK-43: Updates and diagnostics**
   - **Associated Acceptance Criteria**: `36.1`, `36.2`, `36.3`
   - **Concrete Steps**:
     1. Point `model/updates.py` at the GitHub Releases API. Download and Install verifies SHA-256, installs, then restarts the plug-in through the host.

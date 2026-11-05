@@ -248,6 +248,8 @@ class MockHost:
         self.notices: list[dict] = []
         #: URLs the plug-in asked PhotoCraft to open (``open.url``).
         self.opened: list[str] = []
+        #: Packages the plug-in asked PhotoCraft to update it to (plugin.update).
+        self.updates: list[str] = []
         self.progress: dict[str, dict] = {}
         self.dialogs: dict[str, dict] = {}
         self.images: dict[str, bytes] = {}
@@ -323,6 +325,7 @@ class MockHost:
             registry.clear()
         self.notices.clear()
         self.opened.clear()
+        self.updates.clear()
         self.subscriptions.clear()
         self.preview = None
 
@@ -739,6 +742,10 @@ class MockHost:
 
     def _m_open_path(self, p, _):
         self.opened.append(str(p["path"]))
+
+    def _m_plugin_update(self, p, _):
+        # PhotoCraft installs the package and restarts the plug-in after answering.
+        self.updates.append(str(p["path"]))
 
     def _m_progress_set(self, p, _):
         self.progress[p["taskId"]] = p

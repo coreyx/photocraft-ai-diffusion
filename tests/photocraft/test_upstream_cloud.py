@@ -28,6 +28,9 @@ class CloudClient:
 def _run(work: Path, *args: str, flag: bool) -> dict:
     env = {**os.environ, "QT_QPA_PLATFORM": "offscreen"}
     env.pop("PHOTOCRAFT_AI_CLOUD", None)
+    # The update check asks this project's releases on GitHub; here a closed local port stands
+    # in, so the test sees the request without the network.
+    env["AI_DIFFUSION_UPDATE_URL"] = "http://127.0.0.1:9/releases/latest"
     if flag:
         env["PHOTOCRAFT_AI_CLOUD"] = "1"
     run = subprocess.run(
@@ -74,7 +77,8 @@ def test_the_connection_page_offers_only_local_and_custom_servers(off: dict):
 
 
 def test_startup_and_generation_ask_no_host_but_the_server(off: dict):
-    """REQ-32.1: the update check, connecting and generating reach only the ComfyUI server."""
+    """REQ-32.1: the update check (this project's releases, here on a local port),
+    connecting and generating reach no host but those."""
     assert (off["connection"], off["prompts"]) == ("connected", 1)
     assert off["hosts"] == [off["stub_host"]]
     assert off["cloud_client"] == "CloudUnavailable"

@@ -203,6 +203,30 @@ def _read_log(log_path: Path, last_n: int = 1000):
         return f"Failed to read log file {log_path}: {e}"
 
 
+def _redact_more(text: str) -> str:
+    """PhotoCraft: also hide the plug-in data folder, the home folder, the user name, the launch
+    nonce, and any token value wherever it appears (REQ-36.0.3). Unchanged in Krita."""
+    import os
+
+    import krita
+
+    if not hasattr(krita, "photocraft_host"):
+        return text
+    secrets = (settings.server_authorization, settings.access_token)
+    secrets += (os.environ.get("PHOTOCRAFT_PLUGIN_NONCE", ""),)
+    for value in secrets:
+        if value:
+            text = text.replace(value, "<redacted>")
+    # The data folder lies in the home folder: replaced first. Paths appear as written, with
+    # forward slashes, and with doubled backslashes (in JSON).
+    for path, label in ((str(util.user_data_dir), "<plug-in data>"), (str(Path.home()), "~")):
+        for written in {path, path.replace("\\", "/"), path.replace("\\", "\\\\")}:
+            text = text.replace(written, label)
+    if len(name := Path.home().name) > 2:
+        text = text.replace(name, "<redacted>")
+    return text
+
+
 def collect_diagnostics(redact_user=True):
     import platform
 
@@ -257,5 +281,6 @@ def collect_diagnostics(redact_user=True):
 
         if user_name:
             out = out.replace(user_name, "<redacted>")
+        out = _redact_more(out)
 
     return out[: 65536 - 5000]  # GitHub issue body limit is 65536 characters
