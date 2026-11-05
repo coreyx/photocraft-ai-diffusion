@@ -31,7 +31,7 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
 ### Qt set-up in the plug-in process
 
 #### [NEW] `photocraft_host/qt_setup.py`
-- [ ] **TASK-1:** `configure_fonts(environ: MutableMapping[str, str], platform: str = sys.platform) -> str | None`:
+- [x] **TASK-1:** `configure_fonts(environ: MutableMapping[str, str], platform: str = sys.platform) -> str | None`:
   - On Windows, when `QT_QPA_FONTDIR` isn't set, set it to `%WINDIR%\Fonts`. Qt's offscreen platform on Windows looks in Qt's own (empty) font folder otherwise.
   - Return the folder set, or `None`. An explicit setting is kept, and other platforms are left alone.
 - [ ] **TASK-2:** `use_platform_tls() -> str`:
