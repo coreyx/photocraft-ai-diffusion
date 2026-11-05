@@ -5,7 +5,7 @@
   "conditioning": {
    "control": [
     {
-     "image": "image:a932dda5b3d802dc28683bfc",
+     "image": "image:8a1a9670ac545289e574a885",
      "mode": "style",
      "range": [
       0.2,
@@ -14,7 +14,7 @@
      "strength": 0.8
     },
     {
-     "image": "image:a932dda5b3d802dc28683bfc",
+     "image": "image:8a1a9670ac545289e574a885",
      "mode": "composition",
      "range": [
       0.0,
@@ -201,7 +201,7 @@
   "4": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:938a7edc0c23c6116e891b81"
+    "id": "image-bytes:7a08c6bff72d8e900369094d"
    }
   },
   "5": {
@@ -252,7 +252,7 @@
   "7": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:938a7edc0c23c6116e891b81"
+    "id": "image-bytes:7a08c6bff72d8e900369094d"
    }
   },
   "8": {

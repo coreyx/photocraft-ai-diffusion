@@ -27,8 +27,8 @@
      272
     ]
    },
-   "hires_mask": "image:630af37e1eb96fa6f7735ae8",
-   "initial_image": "image:2cfd89ca06fa0cc80110a861"
+   "hires_mask": "image:cf8d9a981274baf9d0af960c",
+   "initial_image": "image:67cc5ba12bd38dbaa537e0ec"
   },
   "inpaint": {
    "blend": 22,
@@ -290,7 +290,7 @@
   "3": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:398a7f7162b265f775bcd587"
+    "id": "image-bytes:f4a18a2712efd90d6af9017c"
    }
   },
   "4": {
@@ -309,7 +309,7 @@
   "5": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:b448525af38e0a45096928e6"
+    "id": "image-bytes:2ed6d123864ad53dd4f79dd0"
    }
   },
   "6": {

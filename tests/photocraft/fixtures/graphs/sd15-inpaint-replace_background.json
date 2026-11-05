@@ -1,6 +1,6 @@
 {
  "input": {
-  "batch_count": 3,
+  "batch_count": 4,
   "color_match": 1.0,
   "conditioning": {
    "control": [],
@@ -9,7 +9,7 @@
    "regions": []
   },
   "crop_upscale_extent": [
-   528,
+   512,
    512
   ],
   "images": {
@@ -31,7 +31,7 @@
      512
     ]
    },
-   "hires_mask": "image:3cd484506b7fe135119e620d",
+   "hires_mask": "image:ba79694dbdc972a070432ff7",
    "initial_image": "image:dab14b9d038b9c03d5867fa4"
   },
   "inpaint": {
@@ -41,10 +41,10 @@
    "grow": 5,
    "mode": "replace_background",
    "target_bounds": [
-    108,
-    66,
-    304,
-    288
+    0,
+    0,
+    512,
+    512
    ],
    "use_inpaint_model": true
   },
@@ -166,7 +166,7 @@
   "17": {
    "class_type": "RepeatLatentBatch",
    "inputs": {
-    "amount": 3,
+    "amount": 4,
     "samples": [
      "16",
      0
@@ -283,14 +283,14 @@
   "25": {
    "class_type": "ImageCrop",
    "inputs": {
-    "height": 288,
+    "height": 512,
     "image": [
      "24",
      0
     ],
-    "width": 304,
-    "x": 108,
-    "y": 66
+    "width": 512,
+    "x": 0,
+    "y": 0
    }
   },
   "26": {
@@ -347,7 +347,7 @@
   "4": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:500373ed55a1711f50a6ab46"
+    "id": "image-bytes:cdd6ec3fbc3f55e79454c0c5"
    }
   },
   "5": {
@@ -365,14 +365,14 @@
   "6": {
    "class_type": "CropMask",
    "inputs": {
-    "height": 288,
+    "height": 512,
     "mask": [
      "5",
      0
     ],
-    "width": 304,
-    "x": 108,
-    "y": 66
+    "width": 512,
+    "x": 0,
+    "y": 0
    }
   },
   "7": {

@@ -8,8 +8,8 @@
    "regions": []
   },
   "crop_upscale_extent": [
-   304,
-   288
+   512,
+   512
   ],
   "images": {
    "extent": {
@@ -30,7 +30,7 @@
      512
     ]
    },
-   "hires_mask": "image:3cd484506b7fe135119e620d",
+   "hires_mask": "image:ba79694dbdc972a070432ff7",
    "initial_image": "image:dab14b9d038b9c03d5867fa4"
   },
   "inpaint": {
@@ -40,10 +40,10 @@
    "grow": 5,
    "mode": "replace_background",
    "target_bounds": [
-    108,
-    66,
-    304,
-    288
+    0,
+    0,
+    512,
+    512
    ],
    "use_inpaint_model": true
   },
@@ -289,14 +289,14 @@
   "26": {
    "class_type": "ImageCrop",
    "inputs": {
-    "height": 288,
+    "height": 512,
     "image": [
      "25",
      0
     ],
-    "width": 304,
-    "x": 108,
-    "y": 66
+    "width": 512,
+    "x": 0,
+    "y": 0
    }
   },
   "27": {
@@ -368,7 +368,7 @@
   "6": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:500373ed55a1711f50a6ab46"
+    "id": "image-bytes:cdd6ec3fbc3f55e79454c0c5"
    }
   },
   "7": {
@@ -386,14 +386,14 @@
   "8": {
    "class_type": "CropMask",
    "inputs": {
-    "height": 288,
+    "height": 512,
     "mask": [
      "7",
      0
     ],
-    "width": 304,
-    "x": 108,
-    "y": 66
+    "width": 512,
+    "x": 0,
+    "y": 0
    }
   },
   "9": {

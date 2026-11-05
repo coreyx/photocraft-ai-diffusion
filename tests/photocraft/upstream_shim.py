@@ -113,13 +113,20 @@ def _install():
 _install()
 
 
-@pytest.fixture(autouse=True)
-def photocraft_connection(reset_krita_state):
-    """Connect each test's fresh ``Krita`` singleton (upstream's ``reset_krita_state`` makes a new
-    one per test) to a mock PhotoCraft with no documents open, as upstream's mock starts."""
+def connect_fresh():
+    """Connect a fresh ``Krita`` singleton to the mock PhotoCraft with no documents open, as
+    upstream's mock starts. (Also used by the parity driver, once per scenario.)"""
+    shim.Krita._instance = None
     _host.reset()
     _transport._listeners.clear()
     shim.attach(_transport, "test")
+
+
+@pytest.fixture(autouse=True)
+def photocraft_connection(reset_krita_state):
+    """Connect each test's fresh ``Krita`` singleton (upstream's ``reset_krita_state`` makes a new
+    one per test)."""
+    connect_fresh()
     yield
 
 

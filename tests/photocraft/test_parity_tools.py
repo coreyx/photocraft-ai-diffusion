@@ -76,6 +76,16 @@ def test_ellipse_selection_has_unselected_corners():
     assert raw[(h // 2) * w + w // 2] == 255
 
 
+def test_selection_bounds_are_tight():
+    """Each edge of the returned mask has a selected pixel, as Krita's selection bounds do."""
+    data, x, y, w, h = scenarios.selection_mask(("ellipse", 160, 120, 200, 180))
+    raw = bytes(data.data())
+    rows = [raw[r * w : (r + 1) * w] for r in range(h)]
+    assert any(rows[0]) and any(rows[-1])
+    assert any(row[0] for row in rows) and any(row[-1] for row in rows)
+    assert 160 <= x and 120 <= y and x + w <= 360 and y + h <= 300
+
+
 def test_describe_is_json_serializable():
     for scenario in scenarios.SCENARIOS:
         json.dumps(scenario.describe())
@@ -138,3 +148,27 @@ def test_local_checkout_still_matches_upstream_fixtures(repo_root: Path):
         check=False,
     )
     assert result.returncode == 0, result.stdout[-4000:] + result.stderr[-2000:]
+
+
+def test_photocraft_builds_upstream_graphs(repo_root: Path):
+    """REQ-15 to REQ-17, TASK-28: every scenario run on the ``krita`` stand-in and the mock
+    PhotoCraft (documents, layers and selections through the protocol) builds the same
+    ComfyUI requests as upstream does in Krita."""
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(DRIVER),
+            "--source",
+            str(repo_root),
+            "--host",
+            "photocraft",
+            "--check",
+            str(FIXTURES),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=880,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout[-4000:] + result.stderr[-2000:]
+    assert " 0 differ" in result.stdout

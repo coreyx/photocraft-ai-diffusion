@@ -46,17 +46,109 @@ def main(argv: list[str] | None = None) -> int:
     group.add_argument("--write", type=Path, help="write fixtures into this folder")
     group.add_argument("--check", type=Path, help="compare against fixtures in this folder")
     parser.add_argument("--only", nargs="*", help="scenario ids to run (default: all)")
+    parser.add_argument(
+        "--host",
+        choices=["mock", "photocraft"],
+        default="mock",
+        help="upstream's mock krita (default), or this project's krita stand-in on the mock PhotoCraft",
+    )
     args = parser.parse_args(argv)
 
     _prepare_path(args.source.resolve())
-    runner = _Runner()
+    reset = _install_photocraft() if args.host == "photocraft" else None
+    runner = _Runner(reset)
     return runner.run(args.write, args.check, args.only)
+
+
+def _krita_fidelity(krita: Any) -> None:
+    """Give upstream's test mock two behaviours of real Krita that its stubs leave out, and that
+    the scenarios depend on. Only the mock (test scaffolding) is patched; upstream's
+    ``ai_diffusion`` code runs unmodified.
+
+    - ``Node.bounds()`` is a layer's exact bounds: its non-transparent pixels (for a group, its
+      children's), where the mock reports the whole area ever written. Regions and reference
+      control images are cut to these bounds.
+    - ``Selection.invert()`` inverts the selection over the image, where the mock does
+      nothing. Replace Background inpaints the inverted selection.
+    """
+    from PyQt6.QtCore import QByteArray, QRect
+
+    def exact_bounds(node) -> tuple[int, int, int, int]:
+        children = [c for c in node.childNodes() if c.type() != "transparencymask"]
+        if node.type() == "grouplayer" and children:
+            boxes = [b for b in (exact_bounds(c) for c in children) if b[2] and b[3]]
+            if not boxes:
+                return 0, 0, 0, 0
+            x0, y0 = min(b[0] for b in boxes), min(b[1] for b in boxes)
+            x1, y1 = max(b[0] + b[2] for b in boxes), max(b[1] + b[3] for b in boxes)
+            return x0, y0, x1 - x0, y1 - y0
+        x, y, w, h = node._bounds
+        data = bytes(node._pixel_data)
+        if not w or not h or len(data) < w * h * 4:
+            return x, y, w, h
+        alpha = data[3::4]
+        rows = [r for r in range(h) if any(alpha[r * w : (r + 1) * w])]
+        if not rows:
+            return 0, 0, 0, 0
+        cols = [c for c in range(w) if any(alpha[r * w + c] for r in rows)]
+        return x + cols[0], y + rows[0], cols[-1] - cols[0] + 1, rows[-1] - rows[0] + 1
+
+    krita.Node.bounds = lambda self: QRect(*exact_bounds(self))
+
+    original_selection = krita.Document.selection
+
+    def selection(self):
+        result = original_selection(self)
+        if result is not None:
+            result._image = (self.width(), self.height())
+        return result
+
+    original_duplicate = krita.Selection.duplicate
+
+    def duplicate(self):
+        copy = original_duplicate(self)
+        copy._image = getattr(self, "_image", None)
+        return copy
+
+    def invert(self):
+        image = getattr(self, "_image", None)
+        if image is None:
+            return
+        width, height = image
+        current = bytes(self.pixelData(0, 0, width, height).data())
+        inverted = bytes(255 - v for v in current)
+        rows = [r for r in range(height) if any(inverted[r * width : (r + 1) * width])]
+        if not rows:
+            self._x = self._y = self._width = self._height = 0
+            self._data = QByteArray()
+            return
+        cols = [c for c in range(width) if any(inverted[r * width + c] for r in rows)]
+        x0, y0, x1, y1 = cols[0], rows[0], cols[-1] + 1, rows[-1] + 1
+        cropped = b"".join(inverted[r * width + x0 : r * width + x1] for r in range(y0, y1))
+        self._x, self._y, self._width, self._height = x0, y0, x1 - x0, y1 - y0
+        self._data = QByteArray(cropped)
+
+    krita.Document.selection = selection
+    krita.Selection.duplicate = duplicate
+    krita.Selection.invert = invert
+
+
+def _install_photocraft():
+    """Put the ``krita`` stand-in, on the mock PhotoCraft, where ``import krita`` finds it
+    (before upstream's mock), and return the function that reconnects it for a scenario."""
+    repo = Path(__file__).resolve().parents[3]
+    sys.path.insert(0, str(repo))
+    from tests.photocraft import upstream_shim
+
+    return upstream_shim.connect_fresh
 
 
 class _Runner:
     """Imports the selected checkout lazily, after ``sys.path`` points at it."""
 
-    def __init__(self) -> None:
+    def __init__(self, reset=None) -> None:
+        #: Reconnects the krita stand-in before each scenario (``--host photocraft``).
+        self._reset = reset
         from PyQt6.QtWidgets import QApplication
 
         self.app = QApplication.instance() or QApplication([])
@@ -80,6 +172,8 @@ class _Runner:
         from ai_diffusion.model.root import root as plugin_root
 
         eventloop.setup()
+        if reset is None:  # upstream's mock: as Krita behaves where the scenarios depend on it
+            _krita_fidelity(krita)
         self.krita = krita
         self.eventloop = eventloop
         self.util = util
@@ -131,6 +225,8 @@ class _Runner:
     async def _capture(self, scenario) -> dict[str, Any]:
         """Run one scenario and return its fixture: description, input and prompt (or error)."""
         self.krita.Krita._instance = None  # pyright: ignore[reportAttributeAccessIssue]
+        if self._reset is not None:
+            self._reset()
         self.KritaDocument._instances.clear()
         fixture: dict[str, Any] = {"scenario": scenario.describe()}
 

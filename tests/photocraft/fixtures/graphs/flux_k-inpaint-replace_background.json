@@ -12,24 +12,24 @@
   "images": {
    "extent": {
     "desired": [
-     304,
-     288
+     512,
+     512
     ],
     "initial": [
-     304,
-     288
+     512,
+     512
     ],
     "input": [
-     304,
-     288
+     512,
+     512
     ],
     "target": [
-     304,
-     288
+     512,
+     512
     ]
    },
-   "hires_mask": "image:10f29319f7f63c8e8ce3723a",
-   "initial_image": "image:bf638c4f33de5003ea7603d1"
+   "hires_mask": "image:ba79694dbdc972a070432ff7",
+   "initial_image": "image:dab14b9d038b9c03d5867fa4"
   },
   "inpaint": {
    "blend": 6,
@@ -40,8 +40,8 @@
    "target_bounds": [
     0,
     0,
-    304,
-    288
+    512,
+    512
    ]
   },
   "kind": "refine_region",
@@ -303,13 +303,13 @@
   "5": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:a6336dd85c129cf4e8750f30"
+    "id": "image-bytes:5bc3c7e2dab138ce18a3878b"
    }
   },
   "6": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:bd24e5a8c52b2009fb3b6c6a"
+    "id": "image-bytes:cdd6ec3fbc3f55e79454c0c5"
    }
   },
   "7": {

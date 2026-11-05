@@ -268,7 +268,7 @@ The upstream plug-in starts in its own process, talks to the host through the sh
 
 Every in-scope workspace produces the same ComfyUI requests and layers as upstream.
 
-- [ ] **TASK-28: Generate, inpaint, selection and queue parity**
+- [x] **TASK-28: Generate, inpaint, selection and queue parity**
   - **Associated Acceptance Criteria**: `15.1`, `15.2`, `15.3`, `15.4`, `16.1`, `16.2`, `17.1`, `17.2`, `17.3`
   - **Concrete Steps**:
     1. Add parity tests that build every Generate fixture through the shim and mock host and compare against the TASK-4 graphs.

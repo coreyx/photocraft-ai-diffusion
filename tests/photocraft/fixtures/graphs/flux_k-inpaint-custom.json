@@ -28,8 +28,8 @@
      288
     ]
    },
-   "hires_mask": "image:10f29319f7f63c8e8ce3723a",
-   "initial_image": "image:bf638c4f33de5003ea7603d1"
+   "hires_mask": "image:fce271b178a6741326c584c7",
+   "initial_image": "image:05084305be969c409df36ec2"
   },
   "inpaint": {
    "blend": 25,
@@ -304,13 +304,13 @@
   "5": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:a6336dd85c129cf4e8750f30"
+    "id": "image-bytes:f71da4b6b86df0793f2e7836"
    }
   },
   "6": {
    "class_type": "ETN_LoadImageCache",
    "inputs": {
-    "id": "image-bytes:bd24e5a8c52b2009fb3b6c6a"
+    "id": "image-bytes:90219cab39b05cc8761bdc4c"
    }
   },
   "7": {

@@ -118,11 +118,13 @@ def blob_image(width: int, height: int, rect: QRect, color: QColor) -> QImage:
 
 
 def selection_mask(shape: tuple) -> tuple[QByteArray, int, int, int, int]:
-    """An 8-bit selection mask for a rectangle or ellipse, cropped to the shape's bounds.
+    """An 8-bit selection mask for a rectangle or ellipse, cropped to the selected pixels.
 
     Returns ``(data, x, y, width, height)``. Krita reports a selection's tight bounds
-    (``Selection.x()``, ``width()`` ...), and upstream decides between Fill and Expand from
-    them, so the mask is stored at the shape's own rectangle, not the whole canvas.
+    (``Selection.x()``, ``width()`` ...), and upstream decides between Fill and Expand and
+    places the inpaint area from them, so the mask is stored at exactly those bounds: an
+    ellipse Qt draws without antialiasing doesn't reach every edge of its rectangle, and
+    upstream's mock reports whatever rectangle it is given.
     """
     kind, x, y, w, h = shape
     image = QImage(w, h, QImage.Format.Format_Grayscale8)
@@ -140,8 +142,13 @@ def selection_mask(shape: tuple) -> tuple[QByteArray, int, int, int, int]:
     assert bits is not None
     raw = bits.asstring(image.sizeInBytes())
     stride = image.bytesPerLine()
-    data = QByteArray(b"".join(raw[r * stride : r * stride + w] for r in range(h)))
-    return data, x, y, w, h
+    rows = [raw[r * stride : r * stride + w] for r in range(h)]
+    used_rows = [r for r in range(h) if any(rows[r])]
+    used_cols = [c for c in range(w) if any(rows[r][c] for r in used_rows)]
+    top, bottom = used_rows[0], used_rows[-1] + 1
+    left, right = used_cols[0], used_cols[-1] + 1
+    data = QByteArray(b"".join(rows[r][left:right] for r in range(top, bottom)))
+    return data, x + left, y + top, right - left, bottom - top
 
 
 # --- building a scenario --------------------------------------------------------------------
