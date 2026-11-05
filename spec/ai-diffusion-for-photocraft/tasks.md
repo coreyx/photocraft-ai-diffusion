@@ -146,7 +146,7 @@ Every document capability the AI plug-in needs works through the protocol.
     3. Leave previews out of composite reads unless `includePreview` is set, and drop them on a document switch or disconnect.
     4. Add tests: no undo steps, nothing saved, edits refused, composite reads exclude the preview, plus a snapshot of the hatch.
 
-- [ ] **TASK-15: Pose vector groups**
+- [x] **TASK-15: Pose vector groups**
   - **Associated Acceptance Criteria**: `10.1`, `10.2`, `10.3`, `10.4`
   - **Concrete Steps**:
     1. Implement `vector.createFromSvg`, `vector.shapes`, `vector.addSvg` and `vector.removeShapes` (D3). Parse the SVG with `usvg` and create one shape layer per circle or line inside a marked group, storing each element's id in layer data.
