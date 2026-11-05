@@ -173,7 +173,7 @@ A plug-in can build a full UI inside PhotoCraft, and the host series is ready to
     3. Implement `input.rs`: egui responses become `panel.input` events with modifiers. Show the optimistic local state until the plug-in confirms.
     4. Add tests: the echo plug-in's gallery mode round-trips every widget kind; snapshot tests; a 200-thumbnail list scrolling at 60 fps on the reference machine.
 
-- [ ] **TASK-18: Plug-in dock group and panel lifecycle**
+- [x] **TASK-18: Plug-in dock group and panel lifecycle**
   - **Associated Acceptance Criteria**: `5.2`, `5.3`
   - **Concrete Steps**:
     1. Add `dock::Group::Plugins` with dynamic tabs from registered panels, Window-menu entries, and persistence of dock and visibility state.
