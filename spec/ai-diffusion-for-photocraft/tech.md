@@ -251,7 +251,8 @@ Detection of Krita AI Diffusion (REQ-31) is a new module, `photocraft_host/krita
 - **Licenses.**
   - PyQt6 is GPL-3.0 and Qt is LGPL/GPL, both compatible with the GPL-3.0 plug-in.
   - python-websockets is BSD-3.
-  - uv and python-build-standalone are Apache-2.0/MIT, and CPython is PSF.
+  - uv is Apache-2.0/MIT.
+  - The bundled Python is CPython, under the PSF license, with the libraries it includes under their own licenses (shipped beside it in `python/`). It is built by python-build-standalone, whose build scripts are MPL-2.0 and don't ship in the package. The bundled pip vendors certifi, whose CA bundle is MPL-2.0; it ships unmodified with its license, which MPL-2.0 allows. Each package's `THIRD-PARTY.txt` points to these licenses.
   - Host additions use only dependencies already in PhotoCraft's tree.
   - Model weights carry their own licenses, which are surfaced by REQ-29.0.4.
 - **Upstream node packs.** We depend on Acly's `comfyui-tooling-nodes` and `comfyui-inpaint-nodes` at upstream's pinned commits. A breaking change there arrives with each upstream merge.

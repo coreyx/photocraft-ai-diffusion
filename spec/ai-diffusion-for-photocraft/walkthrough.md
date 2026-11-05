@@ -167,7 +167,6 @@ Final pass, on Windows 11 with Python 3.12:
 ## Follow-ups
 
 - **A native crash to investigate.** On Windows, the plug-in process crashes (`0xc0000374`, heap corruption) when a ComfyUI server accepts the websocket but never answers the client's close frame. Its cause is unknown, so it's a case for `/investigate`. A reproduction is kept locally (not committed): a stand-in server that doesn't answer close frames, and a probe script. A plain asyncio reproduction does *not* crash, so it needs more of the connect path. PhotoCraft supervises the plug-in, so the crash ends the plug-in, not PhotoCraft. But a misbehaving server shouldn't be able to cause it at all.
-- **tech.md's license line for python-build-standalone.** It says "Apache-2.0/MIT". The build scripts are MPL-2.0, and the bundled CPython is under the PSF license; `THIRD-PARTY.txt` in each package states them correctly. tech.md is approved, so correcting it needs your go-ahead to reopen it.
 - **Non-commercial models.** 14 models in the catalog don't allow commercial use, including MAT, the default inpaint model the managed server requires. The installer shows each license, but anyone using the plug-in commercially needs to pick their models accordingly.
 - **Offer the host to PhotoCraft.** `feat/process-plugins-upstream` in the fork is ready to propose to `storytold/photocraft`. Until it's merged there, the plug-in needs the fork.
 - **Offer the upstream bug fixes** above to Krita AI Diffusion, the security fix first.
