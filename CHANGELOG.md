@@ -36,6 +36,7 @@ All notable changes to AI Diffusion for PhotoCraft are documented here. The form
 - The Animation workspace, until PhotoCraft has a Frame Animation panel.
 
 ### Fixed
+- Closing the plug-in's settings dialog, or any dialog it showed, stopped the plug-in until it was restarted from Preferences › Plug-ins.
 - The plug-in crashed about 30 seconds after its first HTTPS request (such as the update check) when another OpenSSL was on `PATH`, Git for Windows' for one. Qt now uses the operating system's TLS on Windows and macOS.
 - On Windows, text in panels drawn as images (the Generate button) showed as empty boxes: Qt's offscreen platform found no fonts.
 - With no release published yet, the update check logged an error with a traceback. It now logs that no release is published. The warning about not being installed in a `pykrita` folder no longer appears in PhotoCraft.
