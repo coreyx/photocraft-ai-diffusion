@@ -154,7 +154,7 @@ Every document capability the AI plug-in needs works through the protocol.
     3. Make sure moving shapes with Move or Path Selection, and Duplicate Layer, raise `layers.changed`/`pixels.changed`.
     4. Add tests for an 18-joint, 17-bone skeleton: rendering snapshot, dragging, duplicating, and a save round trip.
 
-- [ ] **TASK-16: Host services and progress**
+- [x] **TASK-16: Host services and progress**
   - **Associated Acceptance Criteria**: `11.1`, `11.2`
   - **Concrete Steps**:
     1. Implement `notice.show`, `open.url`, `open.path`, `clipboard.get`/`clipboard.set` and the folders and locale in `welcome`, plus `locale.changed`.
