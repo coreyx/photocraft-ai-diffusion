@@ -19,6 +19,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import socket
 import time
 from collections.abc import Callable
 from contextlib import asynccontextmanager
@@ -306,6 +307,7 @@ async def test_krita_ai_diffusions_server_is_used(tmp_path: Path):
 
 
 @pytest.mark.skipif(not INSTALL, reason="the managed install: PHOTOCRAFT_E2E_INSTALL=<folder>")
+@pytest.mark.timeout(5400)  # downloads tens of gigabytes
 @qtapp
 async def test_a_managed_cuda_install_of_the_sdxl_workload(tmp_path: Path):
     """REQ-29.1: install, download the SDXL workload, launch and connect. Tens of gigabytes."""
@@ -315,8 +317,12 @@ async def test_a_managed_cuda_install_of_the_sdxl_workload(tmp_path: Path):
     server = Server(INSTALL, ServerBackend.cuda)
     await server.install(lambda _progress: None)
     sdxl = [m.id.string for m in resources.default_checkpoints if m.arch is Arch.sdxl][:1]
-    await server.download(sdxl + [m.id.string for m in resources.required_models], lambda _p: None)
-    url = await server.start()
+    required = [m.id.string for m in resources.required_models if m.arch in (Arch.sdxl, Arch.all)]
+    await server.download(sdxl + required, lambda _p: None)
+    with socket.socket() as probe:  # not ComfyUI's default 8188: one may run there already
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    url = await server.start(port)
     try:
         connection = Connection()
         connection.connect(ComfyClient(url))
