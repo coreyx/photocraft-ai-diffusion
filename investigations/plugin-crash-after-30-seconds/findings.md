@@ -58,7 +58,7 @@ Two other native crashes looked related:
 
 3. **Not the cause, found along the way.** On Windows, Qt's `offscreen` platform finds no fonts at all (`QFontDatabase.families()` is empty, in the bundled runtime and the development environment alike). Widgets the mirror sends as images, such as the Generate button, draw their text as empty boxes. Setting `QT_QPA_FONTDIR` to `%WINDIR%\Fonts` gives 57 families and fixes the drawing. It is unrelated to the crash.
 
-The websocket close-frame crash wasn't re-tested here. It is likely the same cause (its reproduction ran from Git Bash, with the update check on), but that needs confirming after the fix.
+**Update (after the fix):** the close-frame crash is the same cause. Its reproduction crashed at the commit it was found at (`2c04b79`) and no longer from `a43826c` (TASK-39) on, and at `2c04b79` it didn't crash with Git's folder left off `PATH`. Before TASK-39, the plug-in's start-up made an HTTPS request through Qt as well. With the fix ([spec/plugin-tls-and-fonts-fix](../../spec/plugin-tls-and-fonts-fix/implementation_plan.md)), every scenario that crashed passes from Git Bash.
 
 ## Recommended Fix
 

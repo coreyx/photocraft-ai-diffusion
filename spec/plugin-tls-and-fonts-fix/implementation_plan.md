@@ -74,7 +74,7 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
 ### Records
 
 #### [MODIFY] `spec/ai-diffusion-for-photocraft/walkthrough.md`
-- [ ] **TASK-12:** Change the native-crash follow-up to point to the findings and to this fix, with the scenarios re-run and their results.
+- [x] **TASK-12:** Change the native-crash follow-up to point to the findings and to this fix, with the scenarios re-run and their results.
 
 ## Verification Plan
 

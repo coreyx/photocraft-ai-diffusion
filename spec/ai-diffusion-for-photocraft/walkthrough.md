@@ -142,7 +142,10 @@ Final pass, on Windows 11 with Python 3.12:
 
 ## Manual Verification
 
-1. **A clean machine, with the real PhotoCraft UI.** This has not been done yet. The plug-in has only run against the mock PhotoCraft in the tests, and the built package against a stand-in host: `hello` after 0.6 s, first start 12.9 s, later starts 0.3 s. On a machine (or VM) without Python or Krita:
+1. **A clean machine, with the real PhotoCraft UI.** Partly done, on this development machine rather than a clean one.
+   - **Done:** the fork's PhotoCraft (release build) ran the package with an isolated settings folder (`PHOTOCRAFT_CONFIG_DIR`), driven through its control protocol. The runtime installed on first start, the panel appeared, the plug-in connected to ComfyUI, the style list opened and generations came back, with a preview on the canvas.
+   - **Not done:** the package was unpacked into the plug-in folder rather than installed from Preferences › Plug-ins, whose file picker the control protocol can't answer. Steps 3 and 6–8 below (apply and Undo, inpaint, Live, upscale, the `.pcraft` round trip) are still to do by hand.
+   - On a machine (or VM) without Python or Krita:
    1. Build PhotoCraft from the fork's `feat/process-plugins` branch and run it.
    2. Build the package: `python packaging/build.py --version 0.1.0 --platform windows-x64` (or the machine's platform).
    3. In PhotoCraft, open Preferences › Plug-ins and install `dist/ai-diffusion-for-photocraft-0.1.0-<platform>.zip`.
@@ -157,7 +160,7 @@ Final pass, on Windows 11 with Python 3.12:
      tests/photocraft_upstream/test_e2e_gpu.py -v
    ```
    All 8 should pass (the reuse case skips if no Krita AI Diffusion configuration is on that machine).
-3. **The managed CUDA install (criterion 29.1).** Written but not run: it downloads tens of gigabytes and takes most of an hour. Add `PHOTOCRAFT_E2E_INSTALL=<an empty folder>` to the command above.
+3. **The managed CUDA install (criterion 29.1).** Done on Windows with the fix: it installed, downloaded the SDXL workload, launched on a free port and connected (3 minutes 23 seconds, with downloads cached from earlier attempts). To run it: add `PHOTOCRAFT_E2E_INSTALL=<an empty folder>` to the command above. On a machine with nothing cached it downloads several gigabytes.
 4. **Before the first push:**
    - Scan the outgoing commits for private details.
    - After pushing, disable upstream's CI for this repository: `gh workflow disable test.yml`. It installs a ComfyUI server and downloads models.
@@ -166,7 +169,11 @@ Final pass, on Windows 11 with Python 3.12:
 
 ## Follow-ups
 
-- **A native crash to investigate.** On Windows, the plug-in process crashes (`0xc0000374`, heap corruption) when a ComfyUI server accepts the websocket but never answers the client's close frame. Its cause is unknown, so it's a case for `/investigate`. A reproduction is kept locally (not committed): a stand-in server that doesn't answer close frames, and a probe script. A plain asyncio reproduction does *not* crash, so it needs more of the connect path. PhotoCraft supervises the plug-in, so the crash ends the plug-in, not PhotoCraft. But a misbehaving server shouldn't be able to cause it at all.
+- **The native crashes are explained and fixed.**
+  - **Cause:** two OpenSSL builds in one process. Python's `ssl` loads Python's, and Qt's `openssl` TLS backend loads another found on `PATH` (Git for Windows' `mingw64in`). The first HTTPS request through Qt was followed by a crash about 30 seconds later. This covers the crash 30 seconds after start-up in the real PhotoCraft, the one during the managed install, and the close-frame one: before TASK-39, start-up made an HTTPS request too. Without Git's folder on `PATH`, that last reproduction doesn't crash either.
+  - **Fix:** [spec/plugin-tls-and-fonts-fix](../plugin-tls-and-fonts-fix/implementation_plan.md) keeps Qt on the operating system's TLS and gives Qt's offscreen platform the Windows fonts. Without fonts, drawn widgets' text was empty boxes.
+  - **Re-run from Git Bash, with Git's OpenSSL on `PATH`, all pass:** a 60-second run with the update check on; the real PhotoCraft, idle past 30 seconds, then a generation; the close-frame reproduction; the managed install.
+  - **Findings:** [investigations/plugin-crash-after-30-seconds](../../investigations/plugin-crash-after-30-seconds/findings.md).
 - **Non-commercial models.** 14 models in the catalog don't allow commercial use, including MAT, the default inpaint model the managed server requires. The installer shows each license, but anyone using the plug-in commercially needs to pick their models accordingly.
 - **Offer the host to PhotoCraft.** `feat/process-plugins-upstream` in the fork is ready to propose to `storytold/photocraft`. Until it's merged there, the plug-in needs the fork.
 - **Offer the upstream bug fixes** above to Krita AI Diffusion, the security fix first.
