@@ -402,7 +402,7 @@ The plug-in installs from a release package, updates itself, and passes the full
     3. Add audits that scan logs for secret values and check a network capture against the allow-list.
     4. Run the end-to-end suite on Windows and Linux with a GPU, and record the results in the walkthrough.
 
-- [ ] **TASK-46: Upstream merge rehearsal**
+- [x] **TASK-46: Upstream merge rehearsal**
   - **Associated Acceptance Criteria**: `38.2`
   - **Concrete Steps**:
     1. Verify that `UPSTREAM-CHANGES.md` lists exactly the upstream files changed (scripted diff against `v1.54.0-pre`).

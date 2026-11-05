@@ -31,6 +31,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+          fetch-depth: 0  # back to the upstream base commit, for the upstream changes check
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -45,6 +46,10 @@ jobs:
       - name: Typecheck
         if: ${{ !cancelled() }}
         run: pyright -p packaging/pyrightconfig.json
+      # REQ-38.2: UPSTREAM-CHANGES.md lists exactly the upstream files this project changed.
+      - name: Upstream changes
+        if: ${{ !cancelled() }}
+        run: python tests/photocraft/upstream_changes.py
 
   test:
     timeout-minutes: 20

@@ -16,7 +16,7 @@
   "id": "upscaler-default-all",
   "name": "NMKD Superscale",
   "license": "WTFPL",
-  "license_url": "http://www.wtfpl.net/txt/copying/",
+  "license_url": "https://www.wtfpl.net/txt/copying/",
   "restriction": "open",
   "source": "https://github.com/OpenModelDB/open-model-database/blob/main/data/models/4x-NMKD-Superscale.json",
   "confidence": "medium",
