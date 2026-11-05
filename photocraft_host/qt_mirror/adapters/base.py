@@ -28,13 +28,17 @@ class Input:
 class Context(Protocol):
     """What adapters may ask of the mirror."""
 
-    def build(self, widget: QWidget) -> Node: ...
+    def build(self, widget: QWidget, shown: bool = False) -> Node: ...
+
+    def handle(self, node_id: str, handler: Callable[[Input], None]) -> None: ...
+
+    def mark_dirty(self) -> None: ...
 
     def node_id(self, obj: QObject) -> str: ...
 
     def layout_node(self, layout: QLayout) -> Node: ...
 
-    def icon(self, icon: QIcon | None) -> str | None: ...
+    def icon(self, icon: QIcon | None, size: int | None = None) -> str | None: ...
 
     def image(self, picture: QPixmap | QImage) -> str: ...
 
@@ -50,6 +54,8 @@ class Adapter:
     kind: ClassVar[str] = "column"
     #: Signals (by name) that change what the node shows; each marks the widget dirty.
     signals: ClassVar[tuple[str, ...]] = ()
+    #: Whether a subclass that paints itself is sent as an image instead (``raster.py``).
+    raster_allowed: ClassVar[bool] = True
 
     def kind_of(self, widget: QWidget) -> str:
         return self.kind
@@ -71,6 +77,18 @@ class Adapter:
 
     def apply(self, widget: QWidget, event: Input, ctx: Context) -> None:
         """Play the user's input back through Qt, so the widget's own signals fire."""
+
+
+def overrides(widget: QWidget, base: type, *names: str) -> bool:
+    """Whether a Python class between ``widget``'s own class and ``base`` defines any of
+    ``names``. (PyQt hands out a new method object on every access, so methods can't be
+    compared by identity.)"""
+    for cls in type(widget).__mro__:
+        if cls is base:
+            return False
+        if not cls.__module__.startswith("PyQt6") and any(name in cls.__dict__ for name in names):
+            return True
+    return False
 
 
 def plain_label(text: str) -> str:

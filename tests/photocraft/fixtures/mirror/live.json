@@ -92,14 +92,18 @@
            "picture": true
           },
           {
-           "kind": "column",
-           "qt": "TextPromptWidget"
+           "kind": "textEdit",
+           "qt": "TextPromptWidget",
+           "text": "",
+           "placeholder": "Describe the content you want to see, or leave empty."
           }
          ]
         },
         {
-         "kind": "column",
+         "kind": "textEdit",
          "qt": "TextPromptWidget",
+         "text": "",
+         "placeholder": "Describe content you want to avoid.",
          "visible": false
         },
         {
@@ -122,14 +126,18 @@
            "picture": true
           },
           {
-           "kind": "column",
-           "qt": "TextPromptWidget"
+           "kind": "textEdit",
+           "qt": "TextPromptWidget",
+           "text": "",
+           "placeholder": "Describe the content you want to see, or leave empty."
           }
          ]
         },
         {
-         "kind": "column",
+         "kind": "textEdit",
          "qt": "TextPromptWidget",
+         "text": "",
+         "placeholder": "Describe content you want to avoid.",
          "visible": false
         },
         {

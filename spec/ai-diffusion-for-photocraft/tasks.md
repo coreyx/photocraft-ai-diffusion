@@ -248,7 +248,7 @@ The upstream plug-in starts in its own process, talks to the host through the sh
     3. Replay input through Qt APIs and `sendEvent`, so upstream's signal handlers run.
     4. Test each adapter's round trip against the mock host, plus a structure snapshot of the mirrored docker for each of the 4 workspaces.
 
-- [ ] **TASK-26: Qt mirror: rich widgets, menus, dialogs and image fallback**
+- [x] **TASK-26: Qt mirror: rich widgets, menus, dialogs and image fallback**
   - **Associated Acceptance Criteria**: `21.2`, `21.3`
   - **Concrete Steps**:
     1. Add a `QTextEdit`/`QPlainTextEdit` adapter: highlight spans taken from `QSyntaxHighlighter` formats, `QCompleter` popups sent as `completions`, cursor and key events (Ctrl+Up/Down, Shift+Enter, Ctrl+Backspace), and resizing.

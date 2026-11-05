@@ -131,8 +131,8 @@ def unregister(mirror: Mirror):
 class ChangeFilter(QObject):
     """The event filter installed on mirrored widgets: marks its mirror dirty, never consumes."""
 
-    def __init__(self, changed: Callable[[], None]):
-        super().__init__()
+    def __init__(self, changed: Callable[[], None], parent: QObject | None = None):
+        super().__init__(parent)
         self._changed = changed
 
     def eventFilter(self, a0: QObject | None, a1: QEvent | None) -> bool:

@@ -716,6 +716,9 @@ class MockHost:
     def _m_open_url(self, p, _):
         self.opened.append(str(p["url"]))
 
+    def _m_open_path(self, p, _):
+        self.opened.append(str(p["path"]))
+
     def _m_progress_set(self, p, _):
         self.progress[p["taskId"]] = p
 

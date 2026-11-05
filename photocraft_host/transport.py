@@ -13,7 +13,9 @@ The :class:`Transport` runs a reader thread that does nothing but read frames:
 :meth:`Transport.call` blocks the calling (Qt) thread until the reply arrives or its deadline
 passes, without re-entering the Qt event loop: upstream code that calls the ``krita`` API expects
 the call to return a value, as Krita's own API does, and must not see other events run in the
-middle of it. PhotoCraft answers every request within a frame, so the wait is short.
+middle of it. PhotoCraft answers every request within a frame, so the wait is short. The few
+requests that wait for the user (a message box, a file picker) use
+:meth:`Transport.call_waiting`, which runs the event loop meanwhile, as a modal Qt dialog does.
 """
 
 from __future__ import annotations
@@ -27,7 +29,7 @@ import threading
 from collections.abc import Callable
 from typing import IO, Any, NamedTuple
 
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import QEventLoop, QObject, QTimer, pyqtSignal
 
 log = logging.getLogger(__name__)
 
@@ -232,6 +234,35 @@ class Transport(QObject):
         answer comes within ``timeout`` seconds, and :class:`ConnectionError` when the connection
         is closed.
         """
+        request_id, pending = self._request(method, params, payload)
+        if not pending.done.wait(timeout):
+            with self._state_lock:
+                self._pending.pop(request_id, None)
+            raise TimeoutError(f"PhotoCraft did not answer {method} within {timeout} s")
+        return self._answer(pending)
+
+    def call_waiting(
+        self, method: str, params: Any = None, payload: bytes = b""
+    ) -> tuple[Any, bytes]:
+        """Send request ``method`` and wait for its answer with no deadline, running the Qt
+        event loop meanwhile.
+
+        For requests PhotoCraft answers once the user has chosen (``dialog.message``,
+        ``dialog.file``), the way Qt's own modal dialogs wait: pings, events and timers go on,
+        so the plug-in stays responsive while the user takes their time.
+        """
+        _request_id, pending = self._request(method, params, payload)
+        loop = QEventLoop()
+        timer = QTimer()
+        timer.setInterval(10)
+        timer.timeout.connect(lambda: (pending.done.is_set() or self.is_closed) and loop.quit())
+        timer.start()
+        if not pending.done.is_set():
+            loop.exec()
+        timer.stop()
+        return self._answer(pending)
+
+    def _request(self, method: str, params: Any, payload: bytes) -> tuple[int, _Pending]:
         pending = _Pending()
         with self._state_lock:
             if self._closed is not None:
@@ -251,10 +282,9 @@ class Transport(QObject):
             with self._state_lock:
                 self._pending.pop(request_id, None)
             raise
-        if not pending.done.wait(timeout):
-            with self._state_lock:
-                self._pending.pop(request_id, None)
-            raise TimeoutError(f"PhotoCraft did not answer {method} within {timeout} s")
+        return request_id, pending
+
+    def _answer(self, pending: _Pending) -> tuple[Any, bytes]:
         frame = pending.frame
         if frame is None:
             raise ConnectionError(self._closed or "the connection closed")

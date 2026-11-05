@@ -142,8 +142,9 @@
          "text": "Off"
         },
         {
-         "kind": "column",
-         "qt": "SwitchWidget"
+         "kind": "image",
+         "qt": "SwitchWidget",
+         "picture": true
         }
        ]
       }
@@ -155,15 +156,20 @@
    "kind": "row",
    "children": [
     {
-     "kind": "button",
+     "kind": "image",
      "qt": "GenerateButton",
-     "text": ""
+     "picture": true
     },
     {
      "kind": "toolButton",
      "qt": "QueueButton",
      "text": "0 ",
-     "picture": true
+     "picture": true,
+     "children": [
+      {
+       "kind": "popup"
+      }
+     ]
     }
    ]
   },

@@ -13,8 +13,11 @@ from PyQt6.QtWidgets import (
     QRadioButton,
     QToolButton,
     QWidget,
+    QWidgetAction,
 )
 
+from .. import menus
+from ..tree import node
 from .base import Adapter, Context, Input, plain_label
 
 
@@ -54,12 +57,48 @@ class PushButtonAdapter(Adapter):
             _set_checked(widget, event.value)
 
 
+#: The Qt property holding whether a tool button's widget pop-up is open in PhotoCraft.
+POPUP_OPEN = "_photocraft_popup_open"
+
+
+def _popup_widget(button: QToolButton) -> QWidget | None:
+    """The widget a tool button pops up through a ``QWidgetAction`` (upstream's queue button)."""
+    if button.menu() is not None:
+        return None
+    for action in button.actions():
+        if isinstance(action, QWidgetAction) and (widget := action.defaultWidget()) is not None:
+            return widget
+    return None
+
+
 class ToolButtonAdapter(Adapter):
-    """``QToolButton``: text and/or icon as its style shows them; checkable or not."""
+    """``QToolButton``: text and/or icon as its style shows them; checkable or not. A menu set
+    on it becomes its ``menu`` prop; a widget it pops up (a ``QWidgetAction``) becomes a
+    ``popup`` child, opened by a click."""
 
     qt_class = QToolButton
     kind = "toolButton"
-    signals = ("toggled",)
+    signals = ("toggled", "triggered")
+    # Upstream's tool buttons only style an icon and text; see raster.py.
+    raster_allowed = False
+
+    def children(self, widget: QWidget, ctx: Context):
+        assert isinstance(widget, QToolButton)
+        content = _popup_widget(widget)
+        if content is None:
+            return []
+        nid = ctx.node_id(widget)
+        popup_id = f"{nid}.popup"
+
+        def closed(event: Input):
+            if event.kind == "change" and event.value is False:
+                widget.setProperty(POPUP_OPEN, False)
+                content.hide()
+
+        ctx.handle(popup_id, closed)
+        is_open = bool(widget.property(POPUP_OPEN))
+        children = [ctx.build(content, shown=True)] if is_open else []
+        return [node(popup_id, "popup", {"anchor": nid, "open": is_open}, children)]
 
     def props(self, widget: QWidget, ctx: Context) -> dict[str, Any]:
         assert isinstance(widget, QToolButton)
@@ -74,11 +113,20 @@ class ToolButtonAdapter(Adapter):
         if widget.isCheckable():
             props["checkable"] = True
             props["checked"] = widget.isChecked()
+        if (menu := widget.menu()) is not None:
+            props["menu"] = menus.items_of(menu, ctx)
         return props
 
     def apply(self, widget: QWidget, event: Input, ctx: Context) -> None:
         assert isinstance(widget, QToolButton)
-        if event.kind == "click":
+        if event.kind == "menu" and (menu := widget.menu()) is not None:
+            menus.trigger(menu, event.value)
+        elif event.kind == "click" and (content := _popup_widget(widget)) is not None:
+            is_open = not bool(widget.property(POPUP_OPEN))
+            widget.setProperty(POPUP_OPEN, is_open)
+            # Shown, so upstream code asking isVisible() sees it as the user does.
+            content.setVisible(is_open)
+        elif event.kind == "click":
             widget.click()
         elif event.kind == "change" and widget.isCheckable():
             _set_checked(widget, event.value)

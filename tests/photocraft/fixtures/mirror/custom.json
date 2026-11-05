@@ -80,9 +80,8 @@
        "kind": "row",
        "children": [
         {
-         "kind": "button",
+         "kind": "image",
          "qt": "GenerateButton",
-         "text": "",
          "picture": true
         },
         {
@@ -104,7 +103,12 @@
          "kind": "toolButton",
          "qt": "QueueButton",
          "text": "0 ",
-         "picture": true
+         "picture": true,
+         "children": [
+          {
+           "kind": "popup"
+          }
+         ]
         }
        ]
       },
@@ -135,7 +139,32 @@
       },
       {
        "kind": "column",
-       "qt": "HistoryWidget"
+       "qt": "HistoryWidget",
+       "children": [
+        {
+         "kind": "thumbGrid",
+         "items": []
+        },
+        {
+         "kind": "row",
+         "children": [
+          {
+           "kind": "button",
+           "qt": "QPushButton",
+           "text": "Apply",
+           "visible": false,
+           "picture": true
+          },
+          {
+           "kind": "button",
+           "qt": "QPushButton",
+           "text": "",
+           "visible": false,
+           "picture": true
+          }
+         ]
+        }
+       ]
       },
       {
        "kind": "label",

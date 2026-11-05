@@ -19,13 +19,13 @@ class ImageCache:
     def __init__(self, transport: Any):
         self._transport = transport
         self._sent: set[str] = set()
-        self._icons: dict[int, str | None] = {}
+        self._icons: dict[tuple[int, int], str | None] = {}
 
     def icon(self, icon: QIcon | None, size: int = ICON_SIZE) -> str | None:
         """A reference for ``icon``, or ``None`` when it is empty."""
         if icon is None or icon.isNull():
             return None
-        key = icon.cacheKey()
+        key = (icon.cacheKey(), size)
         if key not in self._icons:
             pixmap = icon.pixmap(size, size)
             self._icons[key] = None if pixmap.isNull() else self.image(pixmap)
