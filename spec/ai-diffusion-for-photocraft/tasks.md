@@ -138,7 +138,7 @@ Every document capability the AI plug-in needs works through the protocol.
     3. Implement `layerData.get`/`layerData.set` using layer XMP `pcpp:data`.
     4. Add round-trip tests: `.pcraft`, PSD, editing with the plug-in disabled, and layer duplication.
 
-- [ ] **TASK-14: Transient preview layers**
+- [x] **TASK-14: Transient preview layers**
   - **Associated Acceptance Criteria**: `7.1`, `7.2`, `7.3`
   - **Concrete Steps**:
     1. Store previews in `PluginBroker`, and composite them through the `display_memo` path with the optional hatch pattern outside a rectangle.
