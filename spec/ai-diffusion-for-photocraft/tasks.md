@@ -98,7 +98,7 @@ PhotoCraft discovers, launches, talks to and survives a test plug-in.
 
 Every document capability the AI plug-in needs works through the protocol.
 
-- [ ] **TASK-9: Persistent layer ids**
+- [x] **TASK-9: Persistent layer ids**
   - **Associated Acceptance Criteria**: `2.2`
   - **Concrete Steps**:
     1. Add `Layer.uid: u128` to `photocraft-doc`. It's assigned at creation, and duplicating a layer gives a new uid.
