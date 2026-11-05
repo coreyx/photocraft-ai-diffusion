@@ -28,6 +28,7 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import photocraft_host.krita as shim
+from photocraft_host import qt_setup
 from photocraft_host.transport import Transport
 
 from .mock_host import MockHost, MockLayer
@@ -134,6 +135,9 @@ def connect_fresh():
 def photocraft_connection(reset_krita_state):
     """Connect each test's fresh ``Krita`` singleton (upstream's ``reset_krita_state`` makes a new
     one per test)."""
+    # As the plug-in sets Qt up when it starts (photocraft_host.main): upstream's HTTPS here
+    # (the GPU suite's install, the update check) must use the platform's TLS, as it does there.
+    qt_setup.use_platform_tls()
     connect_fresh()
     yield
 
