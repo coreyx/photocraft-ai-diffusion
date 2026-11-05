@@ -148,7 +148,13 @@ class Connection(QObject, ObservableProperties):
     async def disconnect(self):  # type: ignore (hides QObject.disconnect)
         if self._task is not None:
             self._task.cancel()
-            await self._task
+            try:
+                await self._task
+            except asyncio.CancelledError:
+                # A task cancelled before it started raises here; only re-raise when it is
+                # disconnect() itself that is being cancelled.
+                if not self._task.cancelled():
+                    raise
             self._task = None
 
         self._client = None

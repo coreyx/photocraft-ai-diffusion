@@ -339,7 +339,7 @@ The plug-in configures and connects to managed, custom and reused ComfyUI server
     3. Make sure the ComfyUI process ends with the plug-in on all OSes (Windows Job Object as upstream; a process group and parent-death watch on macOS and Linux).
     4. Test install state handling with a mocked downloader, Verify catching a corrupted file, upgrade keeping models and yaml edits, and process cleanup. The real CUDA install is tested end-to-end in TASK-45.
 
-- [ ] **TASK-38: Custom server connection**
+- [x] **TASK-38: Custom server connection**
   - **Associated Acceptance Criteria**: `30.1`, `30.2`, `30.3`
   - **Concrete Steps**:
     1. Confirm upstream's `comfy_client.py` runs unchanged under the shim's event loop.

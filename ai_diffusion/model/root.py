@@ -17,7 +17,7 @@ from ..backend.server import Server, ServerState
 from ..document import Document, KritaDocument
 from ..files import File, FileFormat, FileLibrary, FileSource
 from ..persistence import ModelSync, RecentlyUsedSync, import_prompt_from_file
-from ..settings import ServerMode, settings
+from ..settings import ServerMode, cloud_enabled, settings
 from ..ui.theme import checkpoint_icon
 from ..util import client_logger as log
 from .connection import Connection, ConnectionState
@@ -151,7 +151,9 @@ class Root(QObject):
                     else:
                         connection.state = ConnectionState.disconnected
                         connection.error = ""
-                        settings.server_mode = ServerMode.cloud
+                        # PhotoCraft: without the cloud module, stay undecided (REQ-32.0.2).
+                        if cloud_enabled():
+                            settings.server_mode = ServerMode.cloud
         except Exception as e:
             log.warning(f"Failed to launch/connect server at startup: {e}")
 

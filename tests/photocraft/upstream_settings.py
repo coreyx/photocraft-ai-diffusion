@@ -147,6 +147,7 @@ def main() -> int:
     results["connection"] = root.connection.state.name
     results["connection_error"] = root.connection.error
     results["connected_to"] = [r for r in stub.requests if r.startswith("/system_stats")]
+    results["supported_workloads"] = dialog.connection._supported_workloads.text()
     translation = dialog.interface._widgets["prompt_translation"]
     assert isinstance(translation, ComboBoxSetting)
     wait(lambda: translation._combo.count() > 1)  # the languages the server offers

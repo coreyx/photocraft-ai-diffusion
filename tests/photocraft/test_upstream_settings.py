@@ -132,6 +132,10 @@ def test_connect_to_a_custom_url_from_the_connection_page(results: dict):
     assert results["server_mode"] == "external" and results["server_url"]
     assert (results["connection"], results["connection_error"]) == ("connected", "")
     assert results["connected_to"] == ["/system_stats"]
+    # REQ-30.1: the stand-in server has an SD 1.5 checkpoint and every required node and model.
+    workloads = results["supported_workloads"]
+    assert "<b>SD 1.5</b>: supported" in workloads
+    assert "<b>SD XL</b>: missing Diffusion checkpoint model" in workloads
 
 
 def test_every_control_changes_its_key(results: dict):
