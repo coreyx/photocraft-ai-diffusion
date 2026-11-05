@@ -49,3 +49,11 @@ def use_platform_tls() -> str:
         if QSslSocket.setActiveBackend(name):
             break
     return QSslSocket.activeBackend()
+
+
+def font_family_count() -> int:
+    """How many font families Qt found, for the plug-in's start-up log: none means every text Qt
+    draws comes out as empty boxes. Needs a ``QGuiApplication``."""
+    from PyQt6.QtGui import QFontDatabase
+
+    return len(QFontDatabase.families())

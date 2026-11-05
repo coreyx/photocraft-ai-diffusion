@@ -38,7 +38,7 @@ None at this time. Linux, where Qt has only an OpenSSL backend, is checked durin
   - When Qt offers the platform's own TLS backend (`schannel` on Windows, `securetransport` on macOS), make it the active one with `QSslSocket.setActiveBackend`, before any request is made.
   - Return the active backend's name.
   - A docstring explains why: two OpenSSL builds in one process crash it (the findings).
-- [ ] **TASK-3:** `font_family_count() -> int`, for the start-up log line.
+- [x] **TASK-3:** `font_family_count() -> int`, for the start-up log line.
 
 #### [MODIFY] `photocraft_host/main.py`
 - [ ] **TASK-4:** In `main()`, call `configure_fonts(os.environ)` before the `QApplication` is created, and `use_platform_tls()` right after, before `install_krita_shim()`. Log one line: `Qt: TLS <backend>, <n> font families`.
