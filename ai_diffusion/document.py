@@ -15,6 +15,16 @@ from .localization import translate as _
 from .pose import Pose
 from .util import acquire_elements
 
+# PhotoCraft converts these colour models, in any bit depth, to 8-bit sRGB when the plug-in
+# reads pixels, and converts results back (REQ-37). Krita's names, as the `krita` stand-in
+# reports them, with the names shown to the user.
+_photocraft_convertible = {"RGBA": "RGB", "GRAYA": "Grayscale", "CMYKA": "CMYK", "LABA": "Lab"}
+_photocraft_depths = {"U8": "8-bit", "U16": "16-bit", "F32": "32-bit float"}
+
+
+def _is_photocraft():
+    return hasattr(krita, "photocraft_host")
+
 
 class SelectionModifiers(NamedTuple):
     feather_rel: float = 0.0
@@ -49,6 +59,11 @@ class Document(QObject):
 
     def check_color_mode(self) -> tuple[Literal[True], None] | tuple[Literal[False], str]:
         return True, None
+
+    @property
+    def color_conversion_note(self) -> str | None:
+        """A note for documents whose pixels are converted for generation (PhotoCraft)."""
+        return None
 
     def create_mask_from_selection(
         self, mod: SelectionModifiers
@@ -193,6 +208,12 @@ class KritaDocument(Document):
 
     def check_color_mode(self):
         model = self._doc.colorModel()
+        if _is_photocraft():
+            if model in _photocraft_convertible:
+                return True, None
+            mode = model.removesuffix("A").title()
+            msg = _("Incompatible document: {0} mode documents can't be converted for generation")
+            return False, msg.format(mode)
         msg_fmt = _("Incompatible document: Color {0} must be {1} (current {0}: {2})")
         if model != "RGBA":
             return False, msg_fmt.format("model", "RGB/Alpha", model)
@@ -200,6 +221,16 @@ class KritaDocument(Document):
         if depth != "U8":
             return False, msg_fmt.format("depth", "8-bit integer", depth)
         return True, None
+
+    @property
+    def color_conversion_note(self) -> str | None:
+        model, depth = self._doc.colorModel(), self._doc.colorDepth()
+        if not _is_photocraft() or (model == "RGBA" and depth == "U8"):
+            return None
+        if model not in _photocraft_convertible:
+            return None  # refused instead, by check_color_mode
+        name = f"{_photocraft_depths.get(depth, depth)} {_photocraft_convertible[model]}"
+        return _("Images are converted from {0} to 8-bit RGB for generation").format(name)
 
     def create_mask_from_selection(self, mod: SelectionModifiers):
         user_selection = self._doc.selection()

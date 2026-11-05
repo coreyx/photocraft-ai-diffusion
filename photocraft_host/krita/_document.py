@@ -232,7 +232,9 @@ class Node(QObject):
         return False
 
     def colorDepth(self) -> str:
-        return self._doc.colorDepth() if self._doc else "U8"
+        """The depth of the pixels this node hands out: always 8-bit, because PhotoCraft
+        converts to ``bgra8`` at the boundary whatever the document's own depth."""
+        return "U8"
 
     def bounds(self) -> QRect:
         if self._is_mask and self._doc is not None:

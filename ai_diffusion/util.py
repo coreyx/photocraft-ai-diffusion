@@ -27,13 +27,22 @@ class PluginError(Exception):
     pass
 
 
-def _get_user_data_dir():
+def _get_user_data_dir() -> Path:
     import krita
 
     if getattr(krita, "IS_MOCK", False):  # mock Krita used in tests
         dir = plugin_dir.parent / ".appdata"
         dir.mkdir(exist_ok=True)
         return dir
+
+    # PhotoCraft: the host gives the plug-in its own data folder, apart from Krita AI
+    # Diffusion's. Never fall back to Krita's location from here.
+    if (photocraft_host := getattr(krita, "photocraft_host", None)) is not None:
+        host = photocraft_host()
+        if host is None or host.data_dir is None:
+            raise PluginError("Not connected to PhotoCraft, so there is no data folder yet")
+        host.data_dir.mkdir(parents=True, exist_ok=True)
+        return host.data_dir
 
     try:
         dir = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation))

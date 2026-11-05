@@ -80,6 +80,9 @@ class MockDocument:
     blobs: dict[str, bytes] = field(default_factory=dict)
     path: str | None = None
     dpi: float = 72.0
+    #: PhotoCraft's colour mode and depth names (``"rgb"``, ``"cmyk"``...; ``"u8"``, ``"u16"``, ``"f32"``).
+    mode: str = "rgb"
+    depth: str = "u8"
 
     def bounds(self, layer: MockLayer) -> tuple[int, int, int, int]:
         """Content bounds: the box of non-transparent pixels, or the union of the children's."""
@@ -358,8 +361,8 @@ class MockHost:
             "width": doc.width,
             "height": doc.height,
             "dpi": doc.dpi,
-            "depth": "u8",
-            "mode": "rgb",
+            "depth": doc.depth,
+            "mode": doc.mode,
             "active": doc.id == self.active_doc,
         }
         if doc.path:

@@ -8,6 +8,8 @@ is attached once PhotoCraft has welcomed the plug-in (:func:`attach`).
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from PyQt6.QtCore import QObject, Qt, pyqtSignal
@@ -28,12 +30,32 @@ TOPICS = [
 ]
 
 
+@dataclass(frozen=True)
+class HostInfo:
+    """What PhotoCraft told the plug-in when it connected, for upstream code that needs it."""
+
+    version: str
+    #: PhotoCraft's UI language, as a BCP 47 tag (``"ja"``, ``"pt-BR"``).
+    locale: str = "en"
+    #: The plug-in's own data folder, separate from Krita AI Diffusion's.
+    data_dir: Path | None = None
+
+
+def photocraft_host() -> HostInfo | None:
+    """PhotoCraft's details once the plug-in is connected, else ``None``.
+
+    Upstream code checks for this function to tell it runs in PhotoCraft rather than Krita."""
+    host = Krita.instance()._host
+    return host.info if host is not None else None
+
+
 class _Host:
     """The connection to PhotoCraft and the open documents as the shim sees them."""
 
-    def __init__(self, transport: Any, host_version: str):
+    def __init__(self, transport: Any, info: HostInfo):
         self.transport = transport
-        self.host_version = host_version
+        self.info = info
+        self.host_version = info.version
         self.docs: dict[str, Document] = {}
         self.active: str | None = None
 
@@ -100,9 +122,11 @@ class _Host:
             doc._active = data.get("uid")
 
 
-def attach(transport: Any, host_version: str = "") -> _Host:
+def attach(
+    transport: Any, host_version: str = "", *, locale: str = "en", data_dir: Path | None = None
+) -> _Host:
     """Connect the ``krita`` stand-in to PhotoCraft, and load the open documents."""
-    host = _Host(transport, host_version)
+    host = _Host(transport, HostInfo(host_version, locale, data_dir))
     instance = Krita.instance()
     instance._host = host
     host.load()

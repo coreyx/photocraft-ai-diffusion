@@ -77,6 +77,13 @@ class JobParams:
             _move_field(data, "style", data["metadata"])
             _move_field(data, "sampler", data["metadata"])
             _move_field(data, "checkpoint", data["metadata"])
+        # Enums are stored by name (util.encode_json); restore them, and the frame tuple.
+        if isinstance(kind := data.get("workflow_kind"), str):
+            data["workflow_kind"] = WorkflowKind[kind]
+        if isinstance(mode := data.get("inpaint_mode"), str):
+            data["inpaint_mode"] = InpaintMode[mode]
+        if isinstance(frame := data.get("frame"), list):
+            data["frame"] = tuple(frame)
         return JobParams(**data)
 
     @classmethod

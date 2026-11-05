@@ -18,7 +18,9 @@ if importlib.util.find_spec("krita"):
 
     if not getattr(krita, "IS_MOCK", False):
         krita_ver = krita.Krita.instance().version()
-        if not krita_ver.startswith("6"):
+        # PhotoCraft: `krita` is the stand-in in photocraft_host.krita, which marks itself so.
+        is_photocraft = hasattr(krita, "photocraft_host")
+        if not krita_ver.startswith("6") and not is_photocraft:
             raise ImportError(f"This Plugin is for Krita 6.x, but you are using Krita {krita_ver}.")
 
         from .extension import AIToolsExtension as AIToolsExtension

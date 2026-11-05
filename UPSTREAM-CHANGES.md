@@ -4,7 +4,7 @@ This project keeps Krita AI Diffusion's files as unchanged as possible, so later
 
 - **Upstream:** [`Acly/krita-ai-diffusion`](https://github.com/Acly/krita-ai-diffusion)
 - **Base:** tag `v1.54.0-pre`, commit `828b70c`
-- **Not upstream files:** code added by this project lives in `photocraft_host/`, `packaging/` and `tests/photocraft/`, and isn't listed here.
+- **Not upstream files:** code added by this project lives in `photocraft_host/`, `packaging/`, `tests/photocraft/` and `tests/photocraft_upstream/`, and isn't listed here.
 
 **Status values:**
 - **changed**: the file differs from upstream.
@@ -14,15 +14,17 @@ This project keeps Krita AI Diffusion's files as unchanged as possible, so later
 | File | Status | Reason | Task |
 |---|---|---|---|
 | `README.md` | changed | Replaced with this project's README, which carries the attribution (REQ-38.1). When merging, keep ours. | TASK-2 |
-| `ai_diffusion/__init__.py` | pending | Accept the PhotoCraft host in the Krita version check | TASK-24 |
-| `ai_diffusion/util.py` | pending | `user_data_dir` comes from the host | TASK-24 |
-| `ai_diffusion/document.py` | pending | Relax the 8-bit RGBA check; show the colour-conversion note (REQ-37) | TASK-24 |
-| `ai_diffusion/persistence.py` | pending | `JobParams.from_dict` restores enums (REQ-33.0.2) | TASK-24 |
-| `ai_diffusion/localization.py` | pending | Default to the host locale (REQ-34.0.2) | TASK-24 |
+| `ai_diffusion/__init__.py` | changed | Accept the PhotoCraft host in the Krita version check. The `krita` stand-in marks itself with `photocraft_host`, which every PhotoCraft branch below checks for. | TASK-24 |
+| `ai_diffusion/util.py` | changed | `user_data_dir` is the data folder PhotoCraft gives the plug-in (REQ-13.0.3). Without one it raises rather than fall back to Krita AI Diffusion's folder. | TASK-24 |
+| `ai_diffusion/document.py` | changed | In PhotoCraft, RGB, Grayscale, CMYK and Lab in any depth are accepted, and the other modes are refused by name. `color_conversion_note` describes the conversion (REQ-37). Krita's check is unchanged. | TASK-24 |
+| `ai_diffusion/ui/diffusion.py` | changed | The docker shows `color_conversion_note` above the workspaces (REQ-37.0.2). Empty, so hidden, in Krita. | TASK-24 |
+| `ai_diffusion/model/jobs.py` | changed | `JobParams.from_dict` restores `workflow_kind` and `inpaint_mode` as enums and `frame` as a tuple; jobs restored from a document had strings (REQ-33.0.2). The design placed this in `persistence.py`; the function lives here. | TASK-24 |
+| `ai_diffusion/localization.py` | changed | The default language is PhotoCraft's UI language when there is a catalog for it, else English (REQ-34.0.2): `language_for_locale`, `default_language`. In Krita the default stays English. | TASK-24 |
 | `ai_diffusion/ui/widget.py` | pending | `ANIMATION_ENABLED`: hide the Animation workspace | TASK-27 |
 | `ai_diffusion/ui/actions.py` | pending | `ANIMATION_ENABLED`: skip Animation in Toggle Workspace | TASK-27 |
 | `ai_diffusion/ui/custom_workflow.py` | pending | `ANIMATION_ENABLED`: hide Generate Animation | TASK-27 |
 | `ai_diffusion/ui/live.py` | pending | `ANIMATION_ENABLED`: hide the Record button | TASK-27 |
+| `ai_diffusion/settings.py` | changed | `language` defaults to `default_language()`, and is written to `settings.json` only when it differs from that default, so the plug-in follows PhotoCraft's language until the user picks one (REQ-34.0.2). Importing Krita AI Diffusion's settings should drop an English `language` for the same reason (TASK-40). | TASK-24 |
 | `ai_diffusion/settings.py` | pending | Gate cloud-only keys; drop `last_news` | TASK-36 |
 | `ai_diffusion/backend/server.py` | pending | Default path, `extra_model_paths.yaml` section name, guard on Krita AI Diffusion installs | TASK-37 |
 | `ai_diffusion/presets/models.json` | pending | License fields per model (REQ-29.0.4) | TASK-37 |

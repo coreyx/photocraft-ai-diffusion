@@ -82,7 +82,16 @@ def _open(name: str, width: int = 512, height: int = 512):
 
 def _document(width: int = 512, height: int = 512) -> shim.Document:
     """Open a document in the mock host and return the stand-in's document for it."""
-    doc = _open("Test", width, height)
+    return open_document("Test", width, height)
+
+
+def open_document(
+    name: str, width: int = 512, height: int = 512, mode: str = "rgb", depth: str = "u8"
+) -> shim.Document:
+    """Open a document in the mock host, in PhotoCraft's colour ``mode`` and ``depth``, and
+    return the stand-in's document for it (for this project's tests of upstream code)."""
+    doc = _open(name, width, height)
+    doc.mode, doc.depth = mode, depth
     host = shim.Krita.instance()._host
     assert host is not None
     info, _ = host.call("doc.info", {"doc": doc.id})

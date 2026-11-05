@@ -16,11 +16,13 @@ from ._app import (
     DoubleParseSpinBox,
     DoubleSliderSpinBox,
     Extension,
+    HostInfo,
     Krita,
     Notifier,
     View,
     Window,
     attach,
+    photocraft_host,
 )
 from ._document import Document, Node, Selection, Shape, VectorLayer
 
@@ -34,6 +36,7 @@ __all__ = [
     "DoubleParseSpinBox",
     "DoubleSliderSpinBox",
     "Extension",
+    "HostInfo",
     "Krita",
     "Node",
     "Notifier",
@@ -43,4 +46,5 @@ __all__ = [
     "View",
     "Window",
     "attach",
+    "photocraft_host",
 ]

@@ -9,6 +9,7 @@ from typing import Any, ClassVar, NamedTuple
 
 from PyQt6.QtCore import QObject, pyqtSignal
 
+from .localization import default_language
 from .localization import translate as _
 from .platform_tools import is_macos, is_windows
 from .util import client_logger as log
@@ -166,7 +167,7 @@ class Settings(QObject):
     language: str
     _language = Setting(
         _("Language"),
-        "en",
+        default_language(),  # PhotoCraft: the host's language (REQ-34.0.2), else "en"
         _("Interface language used by the plugin - requires restart!"),
     )
 
@@ -535,8 +536,13 @@ class Settings(QObject):
 
     def save(self, path: Path | None = None):
         path = self.default_path or path
+        values = self._values
+        # PhotoCraft: keep following the host's language until the user picks one (REQ-34.0.2).
+        # In Krita the default is "en", which loading restores the same.
+        if values.get("language") == Settings._language.default:
+            values = {k: v for k, v in values.items() if k != "language"}
         with open(path, "w") as file:
-            file.write(json.dumps(self._values, default=encode_json, indent=4))
+            file.write(json.dumps(values, default=encode_json, indent=4))
 
     def load(self, path: Path | None = None):
         path = self.default_path or path

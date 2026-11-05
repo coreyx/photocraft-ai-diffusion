@@ -5,6 +5,37 @@ from typing import NamedTuple
 from .util import client_logger as log
 from .util import user_data_dir
 
+_language_dir = Path(__file__).parent / "language"
+
+
+def language_for_locale(locale: str, available: set[str]) -> str:
+    """The catalog id for a BCP 47 locale (``"ja-JP"``, ``"pt-BR"``, ``"zh-Hant"``), or ``"en"``
+    when no catalog fits."""
+    tag = locale.strip().lower().replace("_", "-")
+    lang, _sep, region = tag.partition("-")
+    candidates = [tag]
+    if lang == "zh":
+        traditional = any(part in ("hant", "tw", "hk", "mo") for part in tag.split("-")[1:])
+        candidates.append("zh-tw" if traditional else "zh-cn")
+    elif lang == "ca":
+        candidates.append("es-ca")  # Catalan (Valencian)
+    candidates.extend((f"{lang}-{region}" if region else lang, lang))
+    candidates += sorted(id for id in available if id.startswith(f"{lang}-"))
+    return next((id for id in candidates if id in available), "en")
+
+
+def default_language() -> str:
+    """The language used while the user hasn't picked one: in PhotoCraft, the host's UI language
+    when there is a catalog for it (REQ-34.0.2); otherwise, and in Krita, English."""
+    import krita
+
+    photocraft_host = getattr(krita, "photocraft_host", None)
+    host = photocraft_host() if photocraft_host is not None else None
+    if host is None:
+        return "en"
+    available = {f.stem for f in _language_dir.iterdir() if f.suffix == ".json"}
+    return language_for_locale(host.locale, available)
+
 
 class Language(NamedTuple):
     id: str
@@ -62,13 +93,13 @@ class Localization:
 
     @staticmethod
     def init(settings_path: Path | None = None):
-        language = "en"
+        language = default_language()
         settings_path = settings_path or user_data_dir / "settings.json"
         if settings_path.exists():
             try:
                 with settings_path.open(encoding="utf-8") as f:
                     settings = json.load(f)
-                    language = settings.get("language", "en")
+                    language = settings.get("language", language)
             except Exception as e:
                 log.warning(f"Could not read language settings: {e}")
 

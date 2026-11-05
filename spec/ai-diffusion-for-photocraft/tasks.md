@@ -232,7 +232,7 @@ The upstream plug-in starts in its own process, talks to the host through the sh
     3. Run upstream's own unit tests against the shim plus the mock host, in place of upstream's mock, and fix any differences.
     4. Test switching between two documents (each keeps its own prompt and history).
 
-- [ ] **TASK-24: Upstream adaptations for PhotoCraft**
+- [x] **TASK-24: Upstream adaptations for PhotoCraft**
   - **Associated Acceptance Criteria**: `13.3`, `33.1`, `34.2`, `37.1`, `37.2`
   - **Concrete Steps**:
     1. Point `util.user_data_dir` at the host data folder. Accept the PhotoCraft host in the `__init__.py` version check.

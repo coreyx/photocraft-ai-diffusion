@@ -295,7 +295,18 @@ class ImageDiffusionWidget(DockWidget):
         self._frame.addWidget(self._animation)
         self._frame.addWidget(self._custom)
         self._frame.addWidget(self._custom_placeholder)
-        self.setWidget(self._frame)
+
+        # PhotoCraft: a note when the document's pixels are converted for generation (REQ-37)
+        self._color_note = QLabel(self)
+        self._color_note.setWordWrap(True)
+        self._color_note.setStyleSheet(f"color: {theme.grey}; font-style: italic;")
+        self._color_note.setVisible(False)
+        content = QWidget(self)
+        content_layout = QVBoxLayout(content)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.addWidget(self._color_note)
+        content_layout.addWidget(self._frame)
+        self.setWidget(content)
 
         self._welcome.accepted.connect(self.update_content)
         root.connection.state_changed.connect(self.update_content)
@@ -342,3 +353,7 @@ class ImageDiffusionWidget(DockWidget):
         elif model.workspace is Workspace.custom:
             self._custom.model = model
             self._frame.setCurrentWidget(self._custom)
+
+        note = model.document.color_conversion_note if model is not None else None
+        self._color_note.setText(note or "")
+        self._color_note.setVisible(bool(note) and self._frame.currentWidget() is not self._welcome)
