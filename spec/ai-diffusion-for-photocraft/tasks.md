@@ -275,7 +275,7 @@ Every in-scope workspace produces the same ComfyUI requests and layers as upstre
     2. Test the decision table, auto-detected expand vs fill, edit mode, mask and context outputs against upstream (±1), resolution and pass choices, seeds per batch, queue modes and cancel calls (mocked ComfyUI).
     3. Fix any difference found in the shim or the mirror, not in upstream logic.
 
-- [ ] **TASK-29: Regions and control layers**
+- [x] **TASK-29: Regions and control layers**
   - **Associated Acceptance Criteria**: `18.1`, `18.2`, `18.3`, `18.4`, `19.1`, `19.2`, `19.3`, `19.4`
   - **Concrete Steps**:
     1. Persist region links on layers through the shim (layer data and uids), and test linking, re-linking into groups and removal on delete.
