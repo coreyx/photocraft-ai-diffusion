@@ -208,7 +208,7 @@ A plug-in can build a full UI inside PhotoCraft, and the host series is ready to
 
 The upstream plug-in starts in its own process, talks to the host through the shim, and its panel shows up natively.
 
-- [ ] **TASK-22: Transport client, entry point and mock host**
+- [x] **TASK-22: Transport client, entry point and mock host**
   - **Associated Acceptance Criteria**: `13.2`
   - **Concrete Steps**:
     1. Implement `photocraft_host/transport.py`:
