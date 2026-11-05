@@ -122,7 +122,7 @@ Every document capability the AI plug-in needs works through the protocol.
     4. Add tests: bit-exact 8-bit round trips, ±1 on 16-bit, ±2/255 on CMYK, Lab and Grayscale against the display conversion, an elliptical selection, and composite exclusion.
     5. Add a benchmark on the reference machine for the 2048² read and the 1024² write (≤ 150 ms each).
 
-- [ ] **TASK-12: Change events**
+- [x] **TASK-12: Change events**
   - **Associated Acceptance Criteria**: `4.1`, `4.2`, `4.3`
   - **Concrete Steps**:
     1. Implement the per-frame snapshot differ (D5): revision, layer-tree digest, selection generation, active layer, active document, and the `Arc` identity of layer content.
