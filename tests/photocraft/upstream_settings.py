@@ -37,7 +37,15 @@ def _plain(value: Any) -> Any:
     return value
 
 
-def _krita_ai_diffusion(home: Path) -> Path:
+def _free_port() -> int:
+    import socket
+
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        return probe.getsockname()[1]
+
+
+def _krita_ai_diffusion(home: Path, port: int) -> Path:
     """A Krita AI Diffusion managed install at its default path, where this OS keeps it, with
     the places Krita uses pointed into ``home``. Returns its data folder."""
     os.environ["APPDATA"] = str(home / "Roaming")
@@ -52,13 +60,15 @@ def _krita_ai_diffusion(home: Path) -> Path:
     (server / "models" / "checkpoints").mkdir(parents=True)
     (server / "ComfyUI" / "models").mkdir(parents=True)
     (server / ".version").write_text("1.54.0 cuda")
-    (folder / "settings.json").write_text(json.dumps({"server_mode": "managed"}))
+    settings = {"server_mode": "managed", "server_arguments": f"--port {port}"}
+    (folder / "settings.json").write_text(json.dumps(settings))
     return folder
 
 
 def main() -> int:
     data_dir = Path(sys.argv[1])
-    krita_data = _krita_ai_diffusion(data_dir.parent / "krita-home")
+    reuse_port = _free_port()
+    krita_data = _krita_ai_diffusion(data_dir.parent / "krita-home", reuse_port)
     app = QApplication([])
 
     from photocraft_host import main as plugin_main
@@ -128,7 +138,12 @@ def main() -> int:
     results["dialog_title"] = host.dialogs[dialog_id].get("title")
     mirror.flush()
     reuse = dialog.connection.krita_reuse
-    node = find_widget(host.dialogs[dialog_id]["tree"], mirror.node_id(reuse._summary)) or {}
+    node = (
+        find_widget(
+            host.dialogs[dialog_id]["tree"], mirror.node_id(reuse.item(reuse.configs[0]).summary)
+        )
+        or {}
+    )
     results["krita_reuse"] = {
         "text": node.get("props", {}).get("text", ""),
         "folder": str(krita_data),
@@ -297,6 +312,32 @@ def main() -> int:
         for item in group._items:
             packages[group._package_name(item.package)] = item.label.text()
     results["package_licenses"] = packages
+
+    # -- Use the same ComfyUI server: Krita AI Diffusion's managed install, already running
+    from ai_diffusion.model.connection import ConnectionState as State
+
+    show_page("Connection")
+    reuse = dialog.connection.krita_reuse
+    install_files = sorted(p.name for p in (krita_data / "server").rglob("*"))
+    with StubComfy(port=reuse_port) as running:
+        click(reuse.item(reuse.configs[0]).use_button)
+        wait(lambda: root.connection.state is State.connected and running.requests != [], 30)
+        mirror.flush()
+        server_widget = dialog.connection._server_widget
+        tree = host.dialogs[dialog_id]["tree"]
+        manage = find_widget(tree, mirror.node_id(server_widget._manage_button)) or {}
+        note = find_widget(tree, mirror.node_id(server_widget.krita_note)) or {}
+        results["reuse"] = {
+            "server_mode": settings.server_mode.name,
+            "server_path": settings.server_path == str(krita_data / "server"),
+            "provenance": settings.photocraft_reuse.get("mode"),
+            "connection": root.connection.state.name,
+            "asked_running_server": "/system_stats" in running.requests,
+            "manage_enabled": manage.get("props", {}).get("enabled"),
+            "note": note.get("props", {}).get("text", ""),
+            "install_unchanged": sorted(p.name for p in (krita_data / "server").rglob("*"))
+            == install_files,
+        }
 
     # -- recently used document settings apply to the next new document
     model = root.model_for_active_document()

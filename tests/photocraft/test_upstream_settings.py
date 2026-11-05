@@ -66,6 +66,7 @@ FIRST_RUN_KEYS = {
     "tiled_vae",
     "debug_dump_workflow",
     "document_defaults",
+    "photocraft_reuse",  # this plug-in's: which Krita AI Diffusion server it uses (design D10)
 }
 
 #: The keys the Diffusion, Interface, Performance and Plugin pages set.
@@ -197,3 +198,18 @@ def test_a_krita_ai_diffusion_managed_install_is_shown(results: dict):
     assert f"Install folder: {reuse['server']}" in text
     assert "Backend: cuda" in text and "Version: 1.54.0" in text
     assert all(folder in text for folder in reuse["models"])
+
+
+def test_using_krita_ai_diffusions_running_server_from_the_connection_page(results: dict):
+    """REQ-31.0.4, 31.0.5: Use the same ComfyUI server connects to the install Krita AI Diffusion
+    runs, installs nothing, and its Manage actions are disabled, saying why."""
+    reuse = results["reuse"]
+    assert (reuse["server_mode"], reuse["server_path"], reuse["provenance"]) == (
+        "managed",
+        True,
+        "same_server",
+    )
+    assert reuse["connection"] == "connected" and reuse["asked_running_server"]
+    assert reuse["install_unchanged"]
+    assert reuse["manage_enabled"] is False
+    assert "managed by Krita AI Diffusion" in reuse["note"]

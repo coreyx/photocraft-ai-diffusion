@@ -559,6 +559,7 @@ class ConnectionSettings(SettingsTab):
             from photocraft_host.krita_reuse_widget import KritaReuseWidget
 
             self.krita_reuse = KritaReuseWidget(self)
+            self.krita_reuse.configured.connect(self._reuse_configured)
             self._layout.addWidget(self.krita_reuse)
         self._layout.addWidget(self._server_mode)
         self._layout.addWidget(self._server_stack)
@@ -571,6 +572,11 @@ class ConnectionSettings(SettingsTab):
         root.connection.progress_changed.connect(self.update_server_status)
         self._setup_widget.finished.connect(self._setup_finished)
         self._server_widget.state_changed.connect(self.update_server_status)
+
+    def _reuse_configured(self):
+        """PhotoCraft: a Krita AI Diffusion configuration was used or imported (REQ-31)."""
+        self.read()
+        self._server_widget.update_ui()
 
     def _setup_finished(self, mode: ServerMode):
         self._server_mode.mode = mode

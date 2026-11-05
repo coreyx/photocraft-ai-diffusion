@@ -150,6 +150,11 @@ def start(transport, welcome: Welcome) -> list:
 
     for config in krita_reuse.detect():  # read-only; the Connection page shows them (REQ-31.0.1)
         log.info("Krita AI Diffusion found in %s (%s)", config.folder, config.server_mode)
+    from ai_diffusion.settings import settings
+
+    settings.changed.connect(  # reuse ends when the user picks another server (REQ-31.0.11)
+        lambda key, value: krita_reuse.forget_when_switched(settings, key, value)
+    )
 
     instance = krita.Krita.instance()
     instance.load_action_file(Path(ai_diffusion.__file__).parent / "ai_diffusion.action")

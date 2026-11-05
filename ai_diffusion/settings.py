@@ -514,6 +514,13 @@ class Settings(QObject):
     document_defaults: dict[str, Any]
     _document_defaults = Setting(_("Document Defaults"), {}, _("Recently used document settings"))
 
+    photocraft_reuse: dict[str, Any]
+    _photocraft_reuse = Setting(
+        "Krita AI Diffusion reuse",
+        {},
+        "PhotoCraft: the Krita AI Diffusion configuration whose server this one uses (design D10)",
+    )
+
     last_news: str
     _last_news = Setting("Last seen news digest", "")
 

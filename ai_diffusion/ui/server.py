@@ -7,6 +7,7 @@ from enum import Enum
 from html import escape
 from pathlib import Path
 
+import krita
 from krita import Krita
 from PyQt6.QtCore import Qt, QUrl, pyqtSignal
 from PyQt6.QtGui import QDesktopServices
@@ -956,6 +957,13 @@ class ServerWidget(QWidget):
         launch_layout.addLayout(buttons_layout, 0)
         layout.addLayout(launch_layout)
 
+        # PhotoCraft: why an install Krita AI Diffusion manages can't be changed here (REQ-31.0.5)
+        self.krita_note = QLabel(self)
+        self.krita_note.setWordWrap(True)
+        self.krita_note.setStyleSheet(f"color:{yellow}")
+        self.krita_note.setVisible(False)
+        layout.addWidget(self.krita_note)
+
         self._custom_tab = CustomPackageTab(srv, self)
         self._custom_tab.selected_models_changed.connect(self._update_selections)
 
@@ -1257,6 +1265,30 @@ class ServerWidget(QWidget):
             self._progress_info.setVisible(False)
             self.update_ui()
 
+    def _apply_krita_guard(self):
+        """PhotoCraft: an install Krita AI Diffusion manages is never upgraded, re-installed,
+        repaired or deleted from here; one that was moved or deleted isn't installed afresh
+        (REQ-31.0.5, 31.0.9)."""
+        from photocraft_host import krita_reuse
+
+        path = self._server.path
+        reused = krita_reuse.reused_install(settings)
+        moved = reused is not None and not (reused / ".version").is_file()
+        if not (moved or krita_reuse.is_krita_managed(path, settings)):
+            self.krita_note.setVisible(False)
+            return
+        self._manage_button.setEnabled(False)
+        if self.requires_install or self._server.state is ServerState.update_required:
+            self._launch_button.setEnabled(False)
+        if moved:
+            note = krita_reuse.validate(settings) or ""
+        else:
+            note = _(
+                "This ComfyUI is managed by Krita AI Diffusion: upgrade, re-install, repair or delete it there. Choose another folder to set up a server of your own."
+            )
+        self.krita_note.setText(note)
+        self.krita_note.setVisible(True)
+
     def update_ui(self):
         if self._location_edit.text() != settings.server_path:
             self._location_edit.setText(settings.server_path)
@@ -1342,6 +1374,8 @@ class ServerWidget(QWidget):
                 self._launch_button.setEnabled(False)
             else:
                 self._launch_button.setEnabled(True)
+        if hasattr(krita, "photocraft_host"):
+            self._apply_krita_guard()
 
         self.show_error(self._error)
 

@@ -155,7 +155,7 @@ class Server:
         ]
         self.missing_resources += missing_nodes
 
-        model_folders = [self.path, self.comfy_dir]
+        model_folders = [self.path, self.comfy_dir, *_shared_model_folders()]
         self.missing_resources += find_missing(model_folders, resources.required_models, Arch.all)
         if len(self.missing_resources) > 0:
             self.state = ServerState.missing_resources
@@ -166,6 +166,14 @@ class Server:
             # that installation did not complete successfully. Best bet is to try and re-install.
             self.state = ServerState.update_required
         else:
+            self.state = ServerState.stopped
+        if (
+            self.state is ServerState.update_required
+            and self.version != "incomplete"
+            and _is_krita_managed(self.path)
+        ):
+            # PhotoCraft: Krita AI Diffusion keeps its install in step with its own version;
+            # it is launched as it is, never upgraded from here (REQ-31.0.5).
             self.state = ServerState.stopped
 
         self.missing_resources += find_missing(model_folders, resources.required_models)
@@ -361,7 +369,8 @@ class Server:
                 not_found = set(packages) - {r.id.string for r in to_install}
                 raise ValueError("Some requested models were not found: " + ", ".join(not_found))
             for resource in to_install:
-                if not resource.exists_in(self.path) and not resource.exists_in(self.comfy_dir):
+                folders = [self.path, self.comfy_dir, *_shared_model_folders()]
+                if not any(resource.exists_in(folder) for folder in folders):
                     for file in resource.files:
                         target_file = self.path / file.path
                         target_file.parent.mkdir(parents=True, exist_ok=True)
@@ -962,6 +971,45 @@ def extra_model_paths_section() -> str:
     return "krita-managed"
 
 
+def _photocraft_reuse():
+    """PhotoCraft: the module that knows about Krita AI Diffusion installs, or None in Krita."""
+    import krita
+
+    if not hasattr(krita, "photocraft_host"):
+        return None
+    from photocraft_host import krita_reuse
+
+    return krita_reuse
+
+
+def _is_krita_managed(path: Path) -> bool:
+    reuse = _photocraft_reuse()
+    return reuse is not None and reuse.is_krita_managed(path, settings)
+
+
+def _shared_model_folders() -> list[Path]:
+    """PhotoCraft: the folders of other installs whose models this server uses (REQ-31.0.6)."""
+    reuse = _photocraft_reuse()
+    if reuse is None:
+        return []
+    return [
+        f
+        for install in reuse.shared_model_installs(settings)
+        for f in (install, install / "ComfyUI")
+    ]
+
+
+def _shared_model_sections() -> str:
+    """``extra_model_paths.yaml`` sections for the shared installs' model folders."""
+    text = ""
+    reuse = _photocraft_reuse()
+    installs = reuse.shared_model_installs(settings) if reuse is not None else []
+    for index, install in enumerate(installs, 1):
+        section = _extra_model_paths_yaml.format(section=f"shared-models-{index}")
+        text += section.replace("../models", (install / "models").as_posix(), 1)
+    return text
+
+
 def _configure_extra_model_paths(comfy_dir: Path):
     section = extra_model_paths_section()
     path = comfy_dir / "extra_model_paths.yaml"
@@ -974,6 +1022,9 @@ def _configure_extra_model_paths(comfy_dir: Path):
     if section not in contents:
         log.info(f"Extending {path}")
         contents += _extra_model_paths_yaml.format(section=section)
+        path.write_text(contents)
+    if (shared := _shared_model_sections()) and "shared-models-" not in contents:
+        contents += shared
         path.write_text(contents)
     if "model_patches" not in contents:
         log.info(f"Adding model_patches to {path}")

@@ -24,6 +24,7 @@ import sys
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 #: The settings read from Krita AI Diffusion, and their defaults when absent.
 READ_SETTINGS = {
@@ -196,3 +197,208 @@ def detect(
         if (config := read_config(folder, location)) is not None:
             found.append(config)
     return found
+
+
+# -- using a detected configuration (design D10, REQ-31.0.3 to 31.0.11)
+#
+# Reuse is an ordinary configuration plus provenance in the ``photocraft_reuse`` setting:
+# ``{"mode": "same_server" | "shared_models", "source_settings", "server_url"?,
+# "server_path"?, "detected_version"?, "shared_models"?}``. Switching to any other server
+# clears it.
+
+SAME_SERVER = "same_server"
+SHARED_MODELS = "shared_models"
+#: Settings not imported: where the server is (Use the same ComfyUI server sets those), this
+#: plug-in's own, and the secrets (imported only after a separate confirmation).
+NOT_IMPORTED = {
+    "server_mode",
+    "server_path",
+    "server_url",
+    "server_backend",
+    "server_arguments",
+    "photocraft_reuse",
+    "last_news",
+    *SECRETS,
+}
+#: Folders of user files imported: styles, sampler and other presets, tag files, workflows.
+IMPORTED_FOLDERS = ("styles", "presets", "tags", "workflows")
+
+
+def use_same_server(config: KritaConfig, settings: Any) -> None:
+    """Configure this plug-in to use the server ``config`` uses: its address for a custom server,
+    its install folder (with its backend and arguments) for a managed one. Nothing is installed,
+    and nothing in Krita AI Diffusion's folders changes."""
+    from ai_diffusion.settings import ServerBackend, ServerMode
+
+    provenance: dict[str, Any] = {
+        "mode": SAME_SERVER,
+        "source_settings": str(config.folder / "settings.json"),
+    }
+    # The provenance is written last: changing the server first clears any earlier one.
+    if config.is_custom:
+        provenance["server_url"] = config.server_url
+        settings.server_mode = ServerMode.external
+        settings.server_url = config.server_url
+    elif config.is_managed:
+        provenance["server_path"] = str(config.server_path)
+        provenance["detected_version"] = config.version
+        backend = config.installed_backend or config.server_backend
+        if backend in ServerBackend.__members__:
+            settings.server_backend = ServerBackend[backend]
+        settings.server_arguments = config.server_arguments
+        settings.server_path = str(config.server_path)
+        settings.server_mode = ServerMode.managed
+    else:
+        raise ValueError(f"no server to use: Krita AI Diffusion is in '{config.server_mode}' mode")
+    settings.photocraft_reuse = provenance
+    settings.save()
+
+
+def managed_url(config: KritaConfig) -> str:
+    """The address a managed install answers on when Krita AI Diffusion has started it."""
+    match = re.search(r"--port[ =](\d+)", config.server_arguments)
+    return f"127.0.0.1:{match.group(1) if match else 8188}"
+
+
+def _same(a: Path | str, b: Path | str) -> bool:
+    return os.path.normcase(os.path.normpath(a)) == os.path.normcase(os.path.normpath(b))
+
+
+def reused_install(settings: Any) -> Path | None:
+    """The Krita AI Diffusion install this plug-in uses as its managed server, if it does."""
+    provenance = settings.photocraft_reuse
+    if provenance.get("mode") == SAME_SERVER and provenance.get("server_path"):
+        return Path(provenance["server_path"])
+    return None
+
+
+def is_krita_managed(
+    path: Path, settings: Any = None, configs: list[KritaConfig] | None = None
+) -> bool:
+    """Whether ``path`` is a ComfyUI install that Krita AI Diffusion manages: the one this plug-in
+    reuses, or one a detected configuration has as its server. Such an install is never
+    upgraded, re-installed, repaired or deleted from here (REQ-31.0.5)."""
+    if settings is not None and (reused := reused_install(settings)) is not None:
+        if _same(reused, path):
+            return True
+    configs = detect() if configs is None else configs
+    return any(c.is_managed and _same(c.server_path, path) for c in configs)
+
+
+def validate(settings: Any) -> str | None:
+    """Check the reused install before connecting (REQ-31.0.9): a notice when it was moved or
+    deleted, or when Krita AI Diffusion changed its version (the provenance then follows)."""
+    from ai_diffusion.localization import translate as _
+
+    install = reused_install(settings)
+    if install is None:
+        return None
+    version_file = install / ".version"
+    if not version_file.is_file():
+        return _(
+            "The Krita AI Diffusion server at {path} was moved or deleted. Detect Krita AI Diffusion again, or set up your own server.",
+            path=str(install),
+        )
+    parts = version_file.read_text(encoding="utf-8").split()
+    version = parts[0] if parts else None
+    provenance = dict(settings.photocraft_reuse)
+    if version != provenance.get("detected_version"):
+        before = provenance.get("detected_version")
+        provenance["detected_version"] = version
+        settings.photocraft_reuse = provenance
+        settings.save()
+        return _(
+            "Krita AI Diffusion changed its server from version {old} to {new}.",
+            old=str(before),
+            new=str(version),
+        )
+    return None
+
+
+def share_models(config: KritaConfig, settings: Any, own_path: Path) -> None:
+    """Set up this plug-in's own managed server in ``own_path``, using the reused install's model
+    folders, so no model is downloaded again (REQ-31.0.6, 31.7)."""
+    from ai_diffusion.settings import ServerMode
+
+    settings.server_path = str(own_path)
+    settings.server_mode = ServerMode.managed
+    settings.photocraft_reuse = {
+        "mode": SHARED_MODELS,
+        "source_settings": str(config.folder / "settings.json"),
+        "shared_models": [str(config.server_path)],
+    }
+    settings.save()
+
+
+def shared_model_installs(settings: Any) -> list[Path]:
+    """Other installs whose models this plug-in's own server uses, for its install and its
+    ``extra_model_paths.yaml``."""
+    provenance = settings.photocraft_reuse
+    if provenance.get("mode") != SHARED_MODELS:
+        return []
+    return [Path(p) for p in provenance.get("shared_models", [])]
+
+
+def forget_when_switched(settings: Any, key: str, _value: Any = None) -> None:
+    """Clear the provenance once the user picks another server (REQ-31.0.11). Connected to
+    ``settings.changed``."""
+    provenance = settings.photocraft_reuse
+    if not provenance or key not in ("server_mode", "server_url", "server_path"):
+        return
+    mode = getattr(settings.server_mode, "name", "")
+    if provenance.get("mode") == SAME_SERVER and provenance.get("server_path"):
+        kept = mode == "managed" and _same(settings.server_path, provenance["server_path"])
+    elif provenance.get("mode") == SAME_SERVER:
+        kept = mode == "external" and settings.server_url == provenance.get("server_url")
+    else:  # shared models: this plug-in's own managed server
+        kept = mode == "managed"
+    if not kept:
+        settings.photocraft_reuse = {}
+        settings.save()
+
+
+def import_settings(
+    config: KritaConfig, data_dir: Path, settings: Any, secrets: bool = False
+) -> dict[str, list[str]]:
+    """Copy Krita AI Diffusion's settings and user files into this plug-in (REQ-31.0.7, 31.0.8):
+    its settings except where its server is, and its styles, presets, tag files and workflows.
+    ``server_authorization`` and ``access_token`` only with ``secrets``, after the user's
+    separate confirmation. Files already here are kept. Returns what was copied, by name only,
+    so it can be shown and logged without any value.
+    """
+    import shutil
+    from enum import Enum
+
+    from ai_diffusion.settings import Settings
+
+    source = _read_json(config.folder / "settings.json")
+    copied: list[str] = []
+    for key, value in source.items():
+        if key in NOT_IMPORTED and not (secrets and key in SECRETS):
+            continue
+        setting = getattr(Settings, f"_{key}", None)
+        if setting is None:
+            continue
+        if isinstance(setting.default, Enum):
+            if not isinstance(value, str):
+                continue
+            value = setting.str_to_enum(value)
+        elif not isinstance(value, type(setting.default)):
+            continue
+        setattr(settings, key, value)
+        copied.append(key)
+    settings.save()
+
+    files: list[str] = []
+    for name in IMPORTED_FOLDERS:
+        src = config.folder / name
+        if not src.is_dir():
+            continue
+        for file in sorted(src.rglob("*")):
+            target = data_dir / name / file.relative_to(src)
+            if not file.is_file() or target.exists():
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(file, target)
+            files.append(f"{name}/{file.relative_to(src).as_posix()}")
+    return {"settings": copied, "files": files}

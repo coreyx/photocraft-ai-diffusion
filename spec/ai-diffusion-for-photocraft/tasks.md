@@ -360,7 +360,7 @@ The plug-in configures and connects to managed, custom and reused ComfyUI server
     2. Add the detection section to the Connection page: version, mode, address or folder, backend, model folders, and a "Detect Krita AI Diffusion" button.
     3. Test with synthetic folder layouts for Windows (installer and portable), Linux (native and Flatpak) and macOS.
 
-- [ ] **TASK-41: Reuse the same server, import settings, and switch away**
+- [x] **TASK-41: Reuse the same server, import settings, and switch away**
   - **Associated Acceptance Criteria**: `31.2`, `31.3`, `31.4`, `31.5`, `31.6`, `31.7`, `31.9`
   - **Concrete Steps**:
     1. Implement "Use the same ComfyUI server" (D10): custom mode writes `server_url`; managed mode writes `server_path` and launches or connects using upstream's code. Add the `photocraft_reuse` provenance key.
