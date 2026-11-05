@@ -130,7 +130,7 @@ class _Runner:
 
     async def _capture(self, scenario) -> dict[str, Any]:
         """Run one scenario and return its fixture: description, input and prompt (or error)."""
-        self.krita.Krita._instance = None
+        self.krita.Krita._instance = None  # pyright: ignore[reportAttributeAccessIssue]
         self.KritaDocument._instances.clear()
         fixture: dict[str, Any] = {"scenario": scenario.describe()}
 

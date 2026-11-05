@@ -18,11 +18,15 @@ from __future__ import annotations
 
 import itertools
 import os
+import re
 import threading
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
+
+from PyQt6.QtCore import QBuffer, QByteArray, QIODevice
+from PyQt6.QtGui import QImage
 
 from photocraft_host import transport
 
@@ -44,6 +48,7 @@ class MockLayer:
     pixels: bytearray | None = None
     children: list[MockLayer] = field(default_factory=list)
     data: dict[str, str] = field(default_factory=dict)
+    mask: bytearray | None = None
 
     def info(self) -> dict[str, Any]:
         return {
@@ -55,7 +60,7 @@ class MockLayer:
             "opacity": self.opacity,
             "blend": self.blend,
             "bounds": {"x": 0, "y": 0, "width": 0, "height": 0},
-            "hasMask": False,
+            "hasMask": self.mask is not None,
             "animated": False,
             "children": [c.info() for c in self.children],
         }
@@ -74,6 +79,32 @@ class MockDocument:
     selection: bytearray | None = None
     blobs: dict[str, bytes] = field(default_factory=dict)
     path: str | None = None
+    dpi: float = 72.0
+
+    def bounds(self, layer: MockLayer) -> tuple[int, int, int, int]:
+        """Content bounds: the box of non-transparent pixels, or the union of the children's."""
+        if layer.children:
+            boxes = [b for b in (self.bounds(c) for c in layer.children) if b[2] and b[3]]
+            if not boxes:
+                return 0, 0, 0, 0
+            x0, y0 = min(b[0] for b in boxes), min(b[1] for b in boxes)
+            x1, y1 = max(b[0] + b[2] for b in boxes), max(b[1] + b[3] for b in boxes)
+            return x0, y0, x1 - x0, y1 - y0
+        if layer.pixels is None:
+            return 0, 0, 0, 0
+        alpha = layer.pixels[3::4]
+        rows = [y for y in range(self.height) if any(alpha[y * self.width : (y + 1) * self.width])]
+        if not rows:
+            return 0, 0, 0, 0
+        cols = [x for x in range(self.width) if any(alpha[y * self.width + x] for y in rows)]
+        return cols[0], rows[0], cols[-1] - cols[0] + 1, rows[-1] - rows[0] + 1
+
+    def info(self, layer: MockLayer) -> dict[str, Any]:
+        info = layer.info()
+        x, y, w, h = self.bounds(layer)
+        info["bounds"] = {"x": x, "y": y, "width": w, "height": h}
+        info["children"] = [self.info(c) for c in layer.children]
+        return info
 
     def walk(self) -> list[tuple[MockLayer | None, MockLayer]]:
         """Every layer with its parent group, bottom to top, depth first."""
@@ -92,6 +123,9 @@ class MockDocument:
             if layer.uid == uid:
                 return layer
         raise _Refused("notFound", f"no layer '{uid}'")
+
+    def find_or_none(self, uid: str) -> MockLayer | None:
+        return next((layer for _, layer in self.walk() if layer.uid == uid), None)
 
     def siblings(self, uid: str) -> list[MockLayer]:
         for parent, layer in self.walk():
@@ -145,6 +179,12 @@ class MockHost:
         self.preview: dict | None = None
         self.answers: dict[str, Callable[[Any, bytes], Any]] = {}
         self._ids = itertools.count(1)
+        self._doc_ids = itertools.count(1)
+        #: Makes the document ``doc.open`` opens; the mock can't read files, so by default a
+        #: white one named after the path.
+        self.open_document: Callable[[str], MockDocument] = lambda path: self.add_document(
+            os.path.basename(path) or "Untitled"
+        )
         self._replies: dict[int, transport.Frame] = {}
         self._reply_ready = threading.Condition()
         to_plugin_r, to_plugin_w = os.pipe()
@@ -168,7 +208,7 @@ class MockHost:
         layers: list[MockLayer] | None = None,
     ) -> MockDocument:
         """Open a document (active) with a white ``Background`` layer unless ``layers`` are given."""
-        doc_id = str(len(self.docs) + 1)
+        doc_id = str(next(self._doc_ids))
         if layers is None:
             layers = [MockLayer("Background", pixels=bytearray(b"\xff" * (width * height * 4)))]
         doc = MockDocument(
@@ -180,6 +220,16 @@ class MockHost:
         self.docs[doc_id] = doc
         self.active_doc = doc_id
         return doc
+
+    def reset(self):
+        """Close every document, and forget what plug-ins registered, as a fresh PhotoCraft has."""
+        self.docs.clear()
+        self.active_doc = None
+        for registry in (self.panels, self.actions, self.progress, self.dialogs, self.images):
+            registry.clear()
+        self.notices.clear()
+        self.subscriptions.clear()
+        self.preview = None
 
     def close(self):
         """End the connection, as PhotoCraft quitting would.
@@ -307,7 +357,7 @@ class MockHost:
             "name": doc.name,
             "width": doc.width,
             "height": doc.height,
-            "dpi": 72.0,
+            "dpi": doc.dpi,
             "depth": "u8",
             "mode": "rgb",
             "active": doc.id == self.active_doc,
@@ -322,12 +372,18 @@ class MockHost:
     def _m_doc_info(self, p, _):
         return self._doc_info(self._doc(p))
 
+    def _m_doc_open(self, p, _):
+        doc = self.open_document(str(p.get("path", "")))
+        doc.path = str(p.get("path", "")) or None
+        return {"doc": doc.id}
+
     def _m_doc_setActive(self, p, _):
         self.active_doc = self._doc(p).id
 
     # layers
     def _m_layer_tree(self, p, _):
-        return [layer.info() for layer in self._doc(p).layers]
+        doc = self._doc(p)
+        return [doc.info(layer) for layer in doc.layers]
 
     def _m_layer_active(self, p, _):
         return self._doc(p).active_layer
@@ -374,9 +430,9 @@ class MockHost:
         doc = self._doc(p)
         layer = doc.find(p["uid"])
         doc.siblings(layer.uid).remove(layer)
-
-    def _m_layer_addMask(self, p, _):
-        self._doc(p).find(p["uid"])
+        # As PhotoCraft does: deleting the active layer makes the top layer active.
+        if doc.active_layer is not None and doc.find_or_none(doc.active_layer) is None:
+            doc.active_layer = doc.layers[-1].uid if doc.layers else None
 
     def _m_undo_begin(self, p, _):
         self._doc(p)
@@ -401,15 +457,25 @@ class MockHost:
                     out[o : o + 4] = src[i : i + 4]
         return bytes(out)
 
-    def _composite(self, doc: MockDocument, exclude: set[str]) -> bytearray:
-        """The topmost visible non-transparent pixel of every point (enough for the tests)."""
+    def _composite(
+        self, doc: MockDocument, exclude: set[str], layers: list[MockLayer] | None = None
+    ) -> bytearray:
+        """The topmost visible non-transparent pixel of every point of ``layers`` (the whole
+        document by default), groups included through their children: enough for the tests."""
         out = bytearray(doc.width * doc.height * 4)
-        for _, layer in doc.walk():
-            if layer.pixels is None or not layer.visible or layer.uid in exclude:
-                continue
-            for i in range(0, len(out), 4):
-                if layer.pixels[i + 3]:
-                    out[i : i + 4] = layer.pixels[i : i + 4]
+
+        def draw(stack: list[MockLayer]):
+            for layer in stack:
+                if not layer.visible or layer.uid in exclude:
+                    continue
+                if layer.children:
+                    draw(layer.children)
+                elif layer.pixels is not None:
+                    for i in range(0, len(out), 4):
+                        if layer.pixels[i + 3]:
+                            out[i : i + 4] = layer.pixels[i : i + 4]
+
+        draw(doc.layers if layers is None else layers)
         return out
 
     def _m_pixels_read(self, p, _):
@@ -420,7 +486,10 @@ class MockHost:
             src = self._composite(doc, set(p.get("exclude") or []))
         else:
             layer = doc.find(source.get("uid", ""))
-            src = layer.pixels or bytearray(doc.width * doc.height * 4)
+            if source.get("kind") == "group":
+                src = self._composite(doc, set(), layer.children)
+            else:
+                src = layer.pixels or bytearray(doc.width * doc.height * 4)
         px = self._region(doc, src, x, y, w, h)
         return {}, (px if p.get("format", "bgra8") == "bgra8" else _swap(px))
 
@@ -570,3 +639,115 @@ class MockHost:
 
     def _m_progress_clear(self, p, _):
         self.progress.pop(p["taskId"], None)
+
+    # canvas, masks, thumbnails and vector content
+    def _m_doc_resizeCanvas(self, p, _):
+        doc = self._doc(p)
+        w, h = int(p["width"]), int(p["height"])
+        if w <= 0 or h <= 0:
+            raise _Refused("invalid", "canvas size must be positive")
+        for _, layer in doc.walk():
+            if layer.pixels is not None:
+                old = bytes(layer.pixels)
+                layer.pixels = bytearray(self._region(doc, old, 0, 0, w, h))
+        doc.width, doc.height = w, h
+
+    def _m_doc_resizeImage(self, p, _):
+        """Nearest-neighbour resample (enough for the tests)."""
+        doc = self._doc(p)
+        w, h = int(p["width"]), int(p["height"])
+        if w <= 0 or h <= 0:
+            raise _Refused("invalid", "image size must be positive")
+        for _, layer in doc.walk():
+            if layer.pixels is not None:
+                old = layer.pixels
+                new = bytearray(w * h * 4)
+                for y in range(h):
+                    sy = y * doc.height // h
+                    for x in range(w):
+                        sx = x * doc.width // w
+                        new[(y * w + x) * 4 : (y * w + x) * 4 + 4] = old[
+                            (sy * doc.width + sx) * 4 : (sy * doc.width + sx) * 4 + 4
+                        ]
+                layer.pixels = new
+        doc.width, doc.height = w, h
+        if p.get("dpi"):
+            doc.dpi = float(p["dpi"])
+
+    def _m_layer_addMask(self, p, payload):
+        doc = self._doc(p)
+        layer = doc.find(p["uid"])
+        if p.get("from") == "image":
+            if len(payload) != doc.width * doc.height:
+                raise _Refused("invalid", "a mask covers the canvas")
+            layer.mask = bytearray(payload)
+        else:
+            layer.mask = bytearray(b"\xff" * (doc.width * doc.height))
+
+    def _m_mask_read(self, p, _):
+        doc = self._doc(p)
+        layer = doc.find(p["uid"])
+        x, y, w, h = _rect(p)
+        if p.get("which") == "layerMask":
+            if layer.mask is None:
+                raise _Refused("notFound", "the layer has no mask")
+            src = layer.mask
+            return {}, bytes(
+                src[(y + r) * doc.width + x + c]
+                if 0 <= x + c < doc.width and 0 <= y + r < doc.height
+                else 0
+                for r in range(h)
+                for c in range(w)
+            )
+        px = self._region(doc, layer.pixels or bytearray(doc.width * doc.height * 4), x, y, w, h)
+        return {}, bytes(px[3::4])
+
+    def _m_layer_thumbnail(self, p, _):
+        doc = self._doc(p)
+        layer = doc.find(p["uid"])
+        pixels = (
+            layer.pixels
+            if layer.pixels is not None
+            else self._composite(doc, set(), layer.children)
+        )
+        full = QImage(
+            bytes(pixels), doc.width, doc.height, doc.width * 4, QImage.Format.Format_ARGB32
+        )
+        image = full.scaled(max(1, int(p.get("width", 1))), max(1, int(p.get("height", 1))))
+        data = QByteArray()
+        buffer = QBuffer(data)
+        buffer.open(QIODevice.OpenModeFlag.WriteOnly)
+        image.save(buffer, "PNG")
+        return {}, bytes(data.data())
+
+    def _m_vector_shapes(self, p, _):
+        doc = self._doc(p)
+        group = doc.find(p["uid"])
+        if group.kind != "group" or "vector.group" not in group.data:
+            raise _Refused("invalid", "not a vector layer")
+        return {
+            "shapes": [
+                {
+                    "id": c.data.get("vector.id", c.name),
+                    "handle": c.uid,
+                    "svg": c.data.get("svg", ""),
+                }
+                for c in group.children
+            ]
+        }
+
+    def _m_vector_addSvg(self, p, _):
+        """Each ``<circle .../>`` or ``<line .../>`` becomes a shape child, its markup kept."""
+        doc = self._doc(p)
+        group = doc.find(p["uid"])
+        for element in re.findall(r"<(?:circle|line)\b[^>]*/>", p.get("svg", "")):
+            found = re.search(r'id="([^"]*)"', element)
+            element_id = found.group(1) if found else "shape"
+            group.children.append(
+                MockLayer(element_id, kind="shape", data={"vector.id": element_id, "svg": element})
+            )
+
+    def _m_vector_removeShapes(self, p, _):
+        doc = self._doc(p)
+        group = doc.find(p["uid"])
+        group.children = [c for c in group.children if c.uid not in set(p.get("ids") or [])]

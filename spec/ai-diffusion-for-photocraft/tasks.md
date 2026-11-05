@@ -221,7 +221,7 @@ The upstream plug-in starts in its own process, talks to the host through the sh
     3. Implement `tests/photocraft/mock_host.py`, an in-process host speaking the protocol over pipes with an in-memory document model.
     4. Add transport unit tests (framing, deadlines, out-of-order responses) and run the headless start-up test in CI.
 
-- [ ] **TASK-23: The `krita` API shim**
+- [x] **TASK-23: The `krita` API shim**
   - **Associated Acceptance Criteria**: `14.2`
   - **Concrete Steps**:
     1. Implement `photocraft_host/krita/` covering inventory §5 H-01 to H-72:

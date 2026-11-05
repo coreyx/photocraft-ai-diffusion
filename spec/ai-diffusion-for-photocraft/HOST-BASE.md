@@ -48,7 +48,7 @@ The fork leaves PhotoCraft's own CI workflows unchanged, and they run on GitHub'
 
 ## Upstream series
 
-`feat/process-plugins` keeps one commit per task, with the spec trailers. `feat/process-plugins-upstream` holds the same final tree as eleven topic commits on the same base, ready to propose upstream. Each topic ends at a tree that passed its gate on `feat/process-plugins`, with only comment and test-label wording made neutral. No commit's diff or message names a particular plug-in.
+`feat/process-plugins` keeps one commit per task, with the spec trailers. `feat/process-plugins-upstream` holds the same final tree as twelve topic commits on the same base, ready to propose upstream. Each topic ends at a tree that passed its gate on `feat/process-plugins`, with only comment and test-label wording made neutral. No commit's diff or message names a particular plug-in.
 
 | Upstream commit | Topic | Tasks |
 |---|---|---|
@@ -63,5 +63,6 @@ The fork leaves PhotoCraft's own CI workflows unchanged, and they run on GitHub'
 | 9 | Host services and progress | TASK-16 |
 | 10 | Panels, dialogs and actions | TASK-17 to TASK-20 |
 | 11 | Documentation and error-path tests | TASK-21 |
+| 12 | Resampling a document (`doc.resizeImage`) | TASK-23 |
 
 To rebuild it after more host commits, regroup the new commits the same way: by topic, each ending at a gated tree.
