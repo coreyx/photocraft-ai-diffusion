@@ -25,6 +25,23 @@ AI Diffusion for PhotoCraft runs as its own process next to PhotoCraft:
 
 The full specification is in [`spec/ai-diffusion-for-photocraft/`](spec/ai-diffusion-for-photocraft/), and the analysis it's based on is in [`analysis/ai-diffusion-for-photocraft/`](analysis/ai-diffusion-for-photocraft/).
 
+## Running the fork's PhotoCraft beside an installed one
+
+Until the plug-in host is part of PhotoCraft, the plug-in needs PhotoCraft built from the fork. By default, that build keeps its settings in the same folder as an installed PhotoCraft (`%APPDATA%\Photocraft` on Windows). It also hands any launch to the PhotoCraft already running there. Run it as a portable copy instead, so the two stay apart:
+
+1. Build it from the fork, with [craft-fonts](https://github.com/storytold/craft-fonts) checked out beside it for the fonts official builds have:
+
+   ```sh
+   git clone -b feat/process-plugins https://github.com/coreyx/photocraft.git
+   cd photocraft
+   CRAFT_FONTS_DIR="$PWD/../craft-fonts" cargo build --release -p photocraft
+   ```
+
+2. Copy `target/release/photocraft.exe` (on macOS and Linux, `photocraft`) into a folder of its own, and put an empty file named `portable.txt` beside it.
+3. Start it from there, through a shortcut if you like. It keeps everything in `PhotoCraftData` next to the executable: preferences, installed plug-ins and crash recovery. It runs as its own instance, alongside an installed PhotoCraft.
+
+`PHOTOCRAFT_CONFIG_DIR=<folder>` does the same for one launch, without the marker file.
+
 ## Installing
 
 1. Get the package for your platform (`ai-diffusion-for-photocraft-<version>-<platform>.zip`) from a release, or build it with `python packaging/build.py --version <version>`. Packages exist for Windows x64, macOS (Apple silicon and Intel) and Linux x64. Each bundles its own Python.
