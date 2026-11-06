@@ -34,6 +34,7 @@ The PhotoCraft fork that carries the process plug-in host (Part A of [requiremen
 | `photocraft-algo tests::relight_admission_tracks_the_document_dependent_working_set` | Working-set assertion (`crates/algo/src/tests.rs:16`) |
 | `photocraft-gpu::it timing::a_refresh_that_submits_several_times_is_one_measurement` | GPU timing: summed GPU time below the measured wait |
 | `photocraft-gpu::it timing::gpu_time_tracks_execution_not_submission` | Occasional, under a full parallel run only: GPU timing again. It passed 5 of 5 runs on its own, and the fork doesn't change `photocraft-gpu` |
+| `photocraft-compose cmyk::tests::the_split_route_agrees_with_the_exact_path` | Found during the dialog-layout gate (2026-11-06): a proptest input where one ink differs (0.952 against 1.0). Proptest saves such an input and replays it first, so it then fails every time; the saved input was removed rather than committed, so later runs fail only when the random search finds such a case again. The fork doesn't change `photocraft-compose` |
 
 **How host tasks are gated.** `cargo xtask ci` stops at the first failing step, so on this machine it always stops at `test` because of the four tests above. A host task's gate passes when:
 1. `cargo xtask ci` reports fmt, clippy, layers and scorecard as ok;
@@ -48,7 +49,7 @@ The fork leaves PhotoCraft's own CI workflows unchanged, and they run on GitHub'
 
 ## Upstream series
 
-`feat/process-plugins` keeps one commit per task, with the spec trailers. `feat/process-plugins-upstream` holds the same final tree as fourteen topic commits on the same base, ready to propose upstream. Each topic ends at a tree that passed its gate on `feat/process-plugins`, with only comment and test-label wording made neutral. No commit's diff or message names a particular plug-in.
+`feat/process-plugins` keeps one commit per task, with the spec trailers. `feat/process-plugins-upstream` holds the same final tree as fifteen topic commits on the same base, ready to propose upstream. Each topic ends at a tree that passed its gate on `feat/process-plugins`, with only comment and test-label wording made neutral. No commit's diff or message names a particular plug-in.
 
 | Upstream commit | Topic | Tasks |
 |---|---|---|
@@ -66,5 +67,6 @@ The fork leaves PhotoCraft's own CI workflows unchanged, and they run on GitHub'
 | 12 | Resampling a document (`doc.resizeImage`) | TASK-23 |
 | 13 | Keys claimed by widgets, grid headers, completion highlight, image clicks | TASK-26 |
 | 14 | A plug-in updating itself (`plugin.update`) | TASK-43 |
+| 15 | Dialog sizes and Qt-like stretch in rows | [plugin-dialog-layout-fix](../plugin-dialog-layout-fix/implementation_plan.md) TASK-1 to TASK-6 |
 
 To rebuild it after more host commits, regroup the new commits the same way: by topic, each ending at a gated tree.

@@ -77,7 +77,7 @@ None at this time.
 
 ### Fork: gate and series
 
-- [ ] **TASK-8:** Fork gate:
+- [x] **TASK-8:** Fork gate:
   - `cargo xtask ci`: fmt, clippy, layers and scorecard pass; the tests show only the 4 failures known before this work;
   - the panic-hunt run, `cargo test --doc --workspace`, `cargo xtask wasm` and `cargo xtask i18n-coverage`.
 
