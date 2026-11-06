@@ -39,7 +39,7 @@ None at this time.
 ### Fork: drawing dialogs and rows
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_dialogs.rs`
-- [ ] **TASK-3:** `Dialog` keeps the size and minimum size from `dialog.open`.
+- [x] **TASK-3:** `Dialog` keeps the size and minimum size from `dialog.open`.
   - A window dialog opens at that size (`default_size`, with `min_size` for the minimum), clamped to the main window's area less a margin. Without a size, it opens at 420×320 as today.
   - A dialog with a size scrolls its content vertically (the window's own scroll area), so it keeps that size. An egui window that sizes itself to its content grows every frame when a layout fills it. In a dialog taller than the window, its last items (Ok, Restore Defaults) scroll with the page rather than staying pinned at the bottom as in Qt.
   - A modal dialog uses the same size for its content.
