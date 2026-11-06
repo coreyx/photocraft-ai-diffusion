@@ -39,7 +39,7 @@ None at this time.
 ### Fork: drawing dialogs and rows
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_dialogs.rs`
-- [ ] **TASK-3:** `Dialog` keeps the size and minimum size from `dialog.open`.
+- [x] **TASK-3:** `Dialog` keeps the size and minimum size from `dialog.open`.
   - A window dialog opens at that size (`default_size`, with `min_size` for the minimum), clamped to the main window's area less a margin. Without a size, it opens at 420×320 as today.
   - A modal dialog uses the same size for its content.
 
