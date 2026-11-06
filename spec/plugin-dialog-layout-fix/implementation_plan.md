@@ -101,7 +101,7 @@ None at this time.
 ### Records
 
 #### [MODIFY] `spec/plugin-dialog-close-exit-fix/walkthrough.md`
-- [ ] **TASK-11:** Its Connection-page follow-up points to the findings and this fix.
+- [x] **TASK-11:** Its Connection-page follow-up points to the findings and this fix.
 
 ## Verification Plan
 
