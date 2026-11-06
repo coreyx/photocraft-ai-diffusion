@@ -37,10 +37,12 @@ Until the plug-in host is part of PhotoCraft, the plug-in needs PhotoCraft built
    CRAFT_FONTS_DIR="$PWD/../craft-fonts" cargo build --release -p photocraft
    ```
 
-2. Copy `target/release/photocraft.exe` (on macOS and Linux, `photocraft`) into a folder of its own, and put an empty file named `portable.txt` beside it.
+2. Copy `target/release/photocraft.exe` (on macOS and Linux, `photocraft`) into a folder of its own that you can write to, such as `%LOCALAPPDATA%\Programs\PhotoCraft-fork` on Windows. Put an empty file named `portable.txt` beside it. In a folder you can't write to, such as Program Files, PhotoCraft warns and falls back to the shared settings folder.
 3. Start it from there, through a shortcut if you like. It keeps everything in `PhotoCraftData` next to the executable: preferences, installed plug-ins and crash recovery. It runs as its own instance, alongside an installed PhotoCraft.
 
 `PHOTOCRAFT_CONFIG_DIR=<folder>` does the same for one launch, without the marker file.
+
+When this build offers a PhotoCraft update, choose Later. The update is the official build, which has no plug-in host.
 
 ## Installing
 
