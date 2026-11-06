@@ -44,7 +44,7 @@ None at this time.
   - A modal dialog uses the same size for its content.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/render.rs`
-- [ ] **TASK-4:** A `row` whose visible children include `grow` spacers lays out as Qt's stretch does:
+- [x] **TASK-4:** A `row` whose visible children include `grow` spacers lays out as Qt's stretch does:
   - the items before the first `grow` spacer from the left;
   - the items after the last one from the right edge, in their order (egui's right-to-left layout);
   - the items between, centred in what's left.
