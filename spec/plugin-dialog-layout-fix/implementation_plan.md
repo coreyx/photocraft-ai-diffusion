@@ -39,18 +39,24 @@ None at this time.
 ### Fork: drawing dialogs and rows
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_dialogs.rs`
-- [x] **TASK-3:** `Dialog` keeps the size and minimum size from `dialog.open`.
+- [ ] **TASK-3:** `Dialog` keeps the size and minimum size from `dialog.open`.
   - A window dialog opens at that size (`default_size`, with `min_size` for the minimum), clamped to the main window's area less a margin. Without a size, it opens at 420×320 as today.
+  - A dialog with a size scrolls its content vertically (the window's own scroll area), so it keeps that size. An egui window that sizes itself to its content grows every frame when a layout fills it. In a dialog taller than the window, its last items (Ok, Restore Defaults) scroll with the page rather than staying pinned at the bottom as in Qt.
   - A modal dialog uses the same size for its content.
+  - *Revised during implementation: the vertical scroll was added. The first version opened at the size, then grew.*
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/render.rs`
-- [x] **TASK-4:** A `row` whose visible children include `grow` spacers lays out as Qt's stretch does:
-  - the items before the first `grow` spacer from the left;
+- [ ] **TASK-4:** A `row` whose visible children include any `grow` child (a spacer or a widget, such as a line edit) lays out as Qt's stretch and expanding widgets do:
+  - the items before the first `grow` child from the left;
   - the items after the last one from the right edge, in their order (egui's right-to-left layout);
-  - the items between, centred in what's left.
+  - between them, the growing widgets share the leftover width in equal parts. Each is in a cell as tall as the row's available height, laid out from the top, so a growing column (a dialog's page) isn't limited to one line.
+  - with only `grow` spacers between, the items there are centred.
 
-  The `grow` spacers themselves take no fixed space. A row without them draws as today.
-- [ ] **TASK-5:** A `grow` spacer in a column takes the available height only when it's finite and no taller than the screen. Otherwise, inside a scroll area for one, it takes none.
+  The `grow` spacers themselves take no fixed space. A row without `grow` children draws as today. *Revised during implementation: the first version handled spacers only, and a growing URL field still pushed Connect past the edge.*
+- [/] **TASK-5:** Unbounded heights:
+  - **A `grow` spacer in a column** takes the available height only when it's bounded: finite, no taller than the screen, and not during a window's first-frame sizing pass. Otherwise, inside a scroll area for one, it takes none.
+  - **A `scroll` node** whose height is unbounded (inside another scroll area, such as a sized dialog's) lays its children out directly. A nested egui scroll area would shrink to egui's minimum scrolled height, a few lines.
+  - *Revised during implementation: the nested scroll case was added.*
 
 ### Fork: tests
 
@@ -58,9 +64,13 @@ None at this time.
 - [ ] **TASK-6:** Tests with the fork's kittest harness:
   - **A row** `[button "Left", spacer grow, button "Right"]` in a sized dialog: Right's right edge is at the content's right edge and inside the window.
   - **Two `grow` spacers** centre the item between them.
+  - **A growing line edit** followed by a button: the button is inside the window.
   - **A column `grow` spacer** at the end of a scroll area adds no scroll height.
-  - **A dialog opened with a size and minimum size** opens at that size, and at the minimum when the size is smaller.
-  - **The settings page's shape** (synthetic labels, the same structure as the captured Connection page): a page column with a scroll area holding a section, a row of images and a stack with a URL row, then a bottom row with two `grow` spacers. Opened at 960×480 in a 1440×900 window, "Server URL", "Connect" and "Ok" are all inside the dialog.
+  - **A dialog opened with a size and minimum size** opens at that size, and at the minimum when the size is smaller. It keeps its size over many frames, with content that fills it.
+  - **The settings page's shape** (synthetic labels, the same structure as the captured Connection page): a fixed-width list beside a page column with a scroll area holding a section, a stack with a URL row (a growing line edit and Connect), then a bottom row with two `grow` spacers. Opened at 960×480 in a 1440×900 window:
+    - the dialog stays 960×480;
+    - "Server URL" and "Connect" are inside it horizontally and visible;
+    - "Ok" is inside it horizontally.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_panels_tests.rs` or the echo plug-in tests
 - [ ] **TASK-7:** The echo plug-in's gallery, which has rows and spacers, still draws as before: its existing tests and snapshots pass unchanged, and any snapshot that changes is reviewed and explained.
@@ -80,6 +90,13 @@ None at this time.
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror.py` (or `test_qt_mirror_rich.py`, where dialogs are tested)
 - [ ] **TASK-10:** A `QDialog` with `setMinimumSize(960, 480)` and `resize(1000, 600)` opens with `width` 1000, `height` 600, `minWidth` 960 and `minHeight` 480. A dialog with no minimum size sends no `minWidth` or `minHeight`.
+
+#### [MODIFY] `photocraft_host/qt_mirror/adapters/lists.py`
+- [ ] **TASK-12:** The list adapter no longer sets `grow: 1` on every list. Whether a list grows is left to its layout (`layouts._grow`, from the layout's stretch and the list's size policy), as for other widgets. A test in `tests/photocraft/test_qt_mirror*.py`:
+  - in a horizontal layout, a list with `setFixedWidth(120)` has no `grow`;
+  - a list with the default policy still grows, in a vertical layout and in a horizontal one.
+
+  *Added during implementation: upstream's settings list is fixed at 120 points, yet arrived as growing and took half the dialog's width.*
 
 ### Records
 
