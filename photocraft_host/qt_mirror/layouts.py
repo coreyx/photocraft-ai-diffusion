@@ -72,7 +72,14 @@ def _grow(layout: QLayout, index: int, item: QLayoutItem, n: Node):
     if direction is None:
         return
     stretch = layout.stretch(index) if isinstance(layout, QBoxLayout) else 0
-    expands = bool(item.expandingDirections() & direction)
+    # setFixedWidth/Height keeps an Expanding policy; Qt's layout honours the maximum instead.
+    least, most = item.minimumSize(), item.maximumSize()
+    fixed = (
+        most.width() <= least.width()
+        if direction == Qt.Orientation.Horizontal
+        else most.height() <= least.height()
+    )
+    expands = bool(item.expandingDirections() & direction) and not fixed
     if stretch > 0:
         n["props"]["grow"] = stretch
     elif expands:

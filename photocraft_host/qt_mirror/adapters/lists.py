@@ -128,13 +128,12 @@ class ListWidgetAdapter(Adapter):
             "selectionMode": "multi" if multi else None,
             "thumbSize": size if icon_mode else None,
             "keys": LIST_KEYS if _handles_keys(widget) else None,
-            "grow": 1,
         }
 
     def props(self, widget: QWidget, ctx: Context) -> dict[str, Any]:
         assert isinstance(widget, QListWidget)
         if overlays(widget):
-            return {"grow": 1}
+            return {}
         return self._grid_props(widget, ctx)
 
     def children(self, widget: QWidget, ctx: Context):
@@ -145,7 +144,8 @@ class ListWidgetAdapter(Adapter):
         nid = ctx.node_id(widget)
         grid_id = f"{nid}.items"
         ctx.handle(grid_id, lambda event: self.apply(widget, event, ctx))
-        grid = node(grid_id, self._grid_kind(widget), self._grid_props(widget, ctx))
+        # The list fills the column wrapping it; whether the column grows is up to its layout.
+        grid = node(grid_id, self._grid_kind(widget), {**self._grid_props(widget, ctx), "grow": 1})
         return [grid, node(f"{nid}.overlay", "row", {}, [ctx.build(child) for child in extra])]
 
     def apply(self, widget: QWidget, event: Input, ctx: Context) -> None:

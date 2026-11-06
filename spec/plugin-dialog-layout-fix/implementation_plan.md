@@ -92,7 +92,7 @@ None at this time.
 - [x] **TASK-10:** A `QDialog` with `setMinimumSize(960, 480)` and `resize(1000, 600)` opens with `width` 1000, `height` 600, `minWidth` 960 and `minHeight` 480. A dialog with no minimum size sends no `minWidth` or `minHeight`.
 
 #### [MODIFY] `photocraft_host/qt_mirror/adapters/lists.py`
-- [ ] **TASK-12:** The list adapter no longer sets `grow: 1` on every list. Whether a list grows is left to its layout (`layouts._grow`, from the layout's stretch and the list's size policy), as for other widgets. A test in `tests/photocraft/test_qt_mirror*.py`:
+- [x] **TASK-12:** The list adapter no longer sets `grow: 1` on every list. Whether a list grows is left to its layout (`layouts._grow`, from the layout's stretch and the list's size policy), as for other widgets. A test in `tests/photocraft/test_qt_mirror*.py`:
   - in a horizontal layout, a list with `setFixedWidth(120)` has no `grow`;
   - a list with the default policy still grows, in a vertical layout and in a horizontal one.
 

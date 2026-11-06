@@ -23,6 +23,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QListWidget,
     QProgressBar,
     QPushButton,
     QRadioButton,
@@ -516,6 +517,24 @@ def test_expanding_widgets_grow(mirror):
     layout.addWidget(edit)
     panel = mirror(root)
     assert panel.props(edit)["grow"] == 1 and "grow" not in panel.props(label)
+
+
+def test_lists_grow_as_their_layout_lets_them(mirror):
+    fixed = QListWidget()  # the settings dialog's page list
+    fixed.setFixedWidth(120)
+    beside = QListWidget()
+    across = QListWidget()
+    root = QWidget()
+    outer = QVBoxLayout(root)
+    row = QHBoxLayout()
+    row.addWidget(fixed)
+    row.addWidget(beside)
+    outer.addLayout(row)
+    outer.addWidget(across)
+    panel = mirror(root)
+    assert "grow" not in panel.props(fixed)
+    assert panel.props(beside)["grow"] == 1, "a list grows in a row by default"
+    assert panel.props(across)["grow"] == 1, "and in a column"
 
 
 def test_hidden_disabled_and_tooltips(mirror):
