@@ -31,7 +31,7 @@ None at this time.
 ### Fork: protocol and docs
 
 #### [MODIFY] `crates/process-plugin-protocol/src/method.rs`
-- [ ] **TASK-1:** `OpenDialogParams` gains optional `width`, `height`, `min_width` and `min_height` (`Option<u32>`, camelCase on the wire). They are omitted when absent and ignored when 0. The crate's tests cover a round trip with and without them.
+- [x] **TASK-1:** `OpenDialogParams` gains optional `width`, `height`, `min_width` and `min_height` (`Option<u32>`, camelCase on the wire). They are omitted when absent and ignored when 0. The crate's tests cover a round trip with and without them.
 
 #### [MODIFY] `docs/process-plugins.md`
 - [ ] **TASK-2:** `dialog.open`'s row lists the four fields: the dialog's initial size and minimum size in points, kept within PhotoCraft's window.
