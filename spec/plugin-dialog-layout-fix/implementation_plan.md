@@ -89,7 +89,7 @@ None at this time.
 - [x] **TASK-9:** When opening a dialog, `Mirror.start` sends `width` and `height` (the larger of the Qt dialog's size and its size hint) and `minWidth` and `minHeight` (its minimum size, when set).
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror.py` (or `test_qt_mirror_rich.py`, where dialogs are tested)
-- [ ] **TASK-10:** A `QDialog` with `setMinimumSize(960, 480)` and `resize(1000, 600)` opens with `width` 1000, `height` 600, `minWidth` 960 and `minHeight` 480. A dialog with no minimum size sends no `minWidth` or `minHeight`.
+- [x] **TASK-10:** A `QDialog` with `setMinimumSize(960, 480)` and `resize(1000, 600)` opens with `width` 1000, `height` 600, `minWidth` 960 and `minHeight` 480. A dialog with no minimum size sends no `minWidth` or `minHeight`.
 
 #### [MODIFY] `photocraft_host/qt_mirror/adapters/lists.py`
 - [ ] **TASK-12:** The list adapter no longer sets `grow: 1` on every list. Whether a list grows is left to its layout (`layouts._grow`, from the layout's stretch and the list's size policy), as for other widgets. A test in `tests/photocraft/test_qt_mirror*.py`:

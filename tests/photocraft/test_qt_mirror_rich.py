@@ -631,6 +631,32 @@ def test_dialogs_are_mirrored_into_photocraft_windows(link, host: MockHost, qt_a
     assert ("dialog.close", {"dialogId": opened["dialogId"]}) in host.calls
 
 
+def test_dialogs_open_at_their_qt_size(link, host: MockHost, qt_app):
+    def opened(title: str) -> dict:
+        (params,) = [p for m, p in host.calls if m == "dialog.open" and p["title"] == title]
+        return params
+
+    settings = QDialog()
+    settings.setWindowTitle("Configuration")
+    QVBoxLayout(settings).addWidget(QLabel("Server URL"))
+    settings.setMinimumSize(960, 480)
+    settings.resize(1000, 600)
+    settings.show()
+    sized = opened("Configuration")
+    assert (sized["width"], sized["height"]) == (1000, 600)
+    assert (sized["minWidth"], sized["minHeight"]) == (960, 480)
+    settings.hide()
+
+    plain = QDialog()
+    plain.setWindowTitle("Plain")
+    QVBoxLayout(plain).addWidget(QLabel("Text"))
+    plain.show()
+    params = opened("Plain")
+    assert params["width"] > 0 and params["height"] > 0
+    assert "minWidth" not in params and "minHeight" not in params
+    plain.hide()
+
+
 def test_a_dialog_closed_in_photocraft_is_rejected(link, host: MockHost, qt_app):
     dialog = QDialog()
     QVBoxLayout(dialog).addWidget(QLabel("Settings"))

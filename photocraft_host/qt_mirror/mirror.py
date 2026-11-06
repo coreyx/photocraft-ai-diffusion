@@ -99,10 +99,14 @@ def _tooltip(widget: QWidget) -> str | None:
 def dialog_size(dialog: QWidget) -> dict[str, int]:
     """The size PhotoCraft opens a dialog at: the larger of its Qt size and size hint, so a
     dialog its code resized keeps that size and one laid out only by its layout still fits.
-    Its minimum size goes too, when the dialog has one."""
+    Its minimum size goes too, when the dialog's code set one."""
     size, hint, minimum = dialog.size(), dialog.sizeHint(), dialog.minimumSize()
     out = {"width": max(size.width(), hint.width()), "height": max(size.height(), hint.height())}
-    if minimum.width() > 0 and minimum.height() > 0:
+    # A shown dialog's layout gives it a minimum of its own, measured with Qt's fonts; only one
+    # its code set says something PhotoCraft's layout doesn't work out by itself.
+    layout = dialog.layout()
+    from_layout = layout is not None and minimum == layout.totalMinimumSize()
+    if minimum.width() > 0 and minimum.height() > 0 and not from_layout:
         out.update(minWidth=minimum.width(), minHeight=minimum.height())
     return out
 
