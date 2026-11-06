@@ -96,6 +96,17 @@ def _tooltip(widget: QWidget) -> str | None:
     return tip
 
 
+def dialog_size(dialog: QWidget) -> dict[str, int]:
+    """The size PhotoCraft opens a dialog at: the larger of its Qt size and size hint, so a
+    dialog its code resized keeps that size and one laid out only by its layout still fits.
+    Its minimum size goes too, when the dialog has one."""
+    size, hint, minimum = dialog.size(), dialog.sizeHint(), dialog.minimumSize()
+    out = {"width": max(size.width(), hint.width()), "height": max(size.height(), hint.height())}
+    if minimum.width() > 0 and minimum.height() > 0:
+        out.update(minWidth=minimum.width(), minHeight=minimum.height())
+    return out
+
+
 class Mirror(QObject):
     """Mirrors ``root`` (and everything inside it) into the PhotoCraft panel ``surface_id``, or
     a dialog window when ``surface="dialog"``."""
@@ -168,6 +179,7 @@ class Mirror(QObject):
             params["icon"] = self._icon
         if self._is_dialog:
             params["modal"] = self._modal
+            params.update(dialog_size(self.root))
         self._transport.call(self._surface["open"], params)
         self._sent = tree
         self._transport.on(self._surface["input"], self._on_input)

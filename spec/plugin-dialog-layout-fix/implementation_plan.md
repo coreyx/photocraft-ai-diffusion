@@ -86,7 +86,7 @@ None at this time.
 ### Plug-in: dialog size
 
 #### [MODIFY] `photocraft_host/qt_mirror/mirror.py`
-- [ ] **TASK-9:** When opening a dialog, `Mirror.start` sends `width` and `height` (the larger of the Qt dialog's size and its size hint) and `minWidth` and `minHeight` (its minimum size, when set).
+- [x] **TASK-9:** When opening a dialog, `Mirror.start` sends `width` and `height` (the larger of the Qt dialog's size and its size hint) and `minWidth` and `minHeight` (its minimum size, when set).
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror.py` (or `test_qt_mirror_rich.py`, where dialogs are tested)
 - [ ] **TASK-10:** A `QDialog` with `setMinimumSize(960, 480)` and `resize(1000, 600)` opens with `width` 1000, `height` 600, `minWidth` 960 and `minHeight` 480. A dialog with no minimum size sends no `minWidth` or `minHeight`.
