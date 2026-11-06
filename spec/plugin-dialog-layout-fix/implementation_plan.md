@@ -46,14 +46,14 @@ None at this time.
   - *Revised during implementation: the vertical scroll was added. The first version opened at the size, then grew.*
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/render.rs`
-- [ ] **TASK-4:** A `row` whose visible children include any `grow` child (a spacer or a widget, such as a line edit) lays out as Qt's stretch and expanding widgets do:
+- [x] **TASK-4:** A `row` whose visible children include any `grow` child (a spacer or a widget, such as a line edit) lays out as Qt's stretch and expanding widgets do:
   - the items before the first `grow` child from the left;
   - the items after the last one from the right edge, in their order (egui's right-to-left layout);
   - between them, the growing widgets share the leftover width in equal parts. Each is in a cell as tall as the row's available height, laid out from the top, so a growing column (a dialog's page) isn't limited to one line.
   - with only `grow` spacers between, the items there are centred.
 
   The `grow` spacers themselves take no fixed space. A row without `grow` children draws as today. *Revised during implementation: the first version handled spacers only, and a growing URL field still pushed Connect past the edge.*
-- [/] **TASK-5:** Unbounded heights:
+- [x] **TASK-5:** Unbounded heights:
   - **A `grow` spacer in a column** takes the available height only when it's bounded: finite, no taller than the screen, and not during a window's first-frame sizing pass. Otherwise, inside a scroll area for one, it takes none.
   - **A `scroll` node** whose height is unbounded (inside another scroll area, such as a sized dialog's) lays its children out directly. A nested egui scroll area would shrink to egui's minimum scrolled height, a few lines.
   - *Revised during implementation: the nested scroll case was added.*
