@@ -61,7 +61,7 @@ None at this time.
 ### Fork: tests
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_dialogs_tests.rs`
-- [ ] **TASK-6:** Tests with the fork's kittest harness:
+- [x] **TASK-6:** Tests with the fork's kittest harness:
   - **A row** `[button "Left", spacer grow, button "Right"]` in a sized dialog: Right's right edge is at the content's right edge and inside the window.
   - **Two `grow` spacers** centre the item between them.
   - **A growing line edit** followed by a button: the button is inside the window.
