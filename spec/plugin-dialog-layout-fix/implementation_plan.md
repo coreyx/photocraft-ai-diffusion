@@ -73,7 +73,7 @@ None at this time.
     - "Ok" is inside it horizontally.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_panels_tests.rs` or the echo plug-in tests
-- [ ] **TASK-7:** The echo plug-in's gallery, which has rows and spacers, still draws as before: its existing tests and snapshots pass unchanged, and any snapshot that changes is reviewed and explained.
+- [x] **TASK-7:** The echo plug-in's gallery, which has rows and spacers, still draws as before: its existing tests and snapshots pass unchanged, and any snapshot that changes is reviewed and explained.
 
 ### Fork: gate and series
 
