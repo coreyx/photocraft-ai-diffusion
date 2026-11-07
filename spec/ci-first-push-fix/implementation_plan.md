@@ -81,7 +81,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
 ### CI
 
 #### [MODIFY] `.github/workflows/photocraft.yml`
-- [ ] **TASK-8:** Change `macos-14` to `macos-15` in the test matrix (line 59), matching the PhotoCraft fork's CI.
+- [x] **TASK-8:** Change `macos-14` to `macos-15` in the test matrix (line 59), matching the PhotoCraft fork's CI.
 
 ### Live-overhead test
 
