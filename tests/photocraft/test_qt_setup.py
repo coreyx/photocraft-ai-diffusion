@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from photocraft_host.qt_setup import configure_fonts
+from photocraft_host.qt_setup import configure_fonts, use_platform_tls
 
 HERE = Path(__file__).resolve().parent
 
@@ -33,6 +33,21 @@ def test_macos_and_linux_are_left_alone():
         environ: dict[str, str] = {}
         assert configure_fonts(environ, platform) is None
         assert environ == {}
+
+
+def test_each_platform_asks_only_for_its_own_tls_backend(monkeypatch: pytest.MonkeyPatch):
+    """Qt logs a warning for each backend it is asked for and doesn't have."""
+    from PyQt6.QtNetwork import QSslSocket
+
+    asked: list[str] = []
+    monkeypatch.setattr(QSslSocket, "setActiveBackend", lambda name: asked.append(name) or True)
+    for platform, expected in (("win32", ["schannel"]), ("darwin", ["securetransport"])):
+        asked.clear()
+        use_platform_tls(platform)
+        assert asked == expected, platform
+    asked.clear()
+    use_platform_tls("linux")
+    assert asked == [], "Linux keeps Qt's own choice"
 
 
 def _foreign_openssl() -> Path | None:

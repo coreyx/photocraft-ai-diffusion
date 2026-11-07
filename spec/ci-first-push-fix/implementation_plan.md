@@ -76,7 +76,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
   - Callers in `tls_crash.py` and `upstream_shim.py` keep calling it with no argument.
 
 #### [MODIFY] `tests/photocraft/test_qt_setup.py`
-- [ ] **TASK-7:** Add `test_each_platform_asks_only_for_its_own_tls_backend`. With `QSslSocket.setActiveBackend` monkeypatched to record its calls, `use_platform_tls("win32")` asks for `["schannel"]`, `"darwin"` for `["securetransport"]`, and `"linux"` for nothing.
+- [x] **TASK-7:** Add `test_each_platform_asks_only_for_its_own_tls_backend`. With `QSslSocket.setActiveBackend` monkeypatched to record its calls, `use_platform_tls("win32")` asks for `["schannel"]`, `"darwin"` for `["securetransport"]`, and `"linux"` for nothing.
 
 ### CI
 
