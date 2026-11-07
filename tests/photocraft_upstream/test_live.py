@@ -140,7 +140,7 @@ async def test_apply_and_apply_to_new_layer(tmp_path: Path):
 @qtapp
 async def test_the_plugins_own_overhead_for_a_live_update(tmp_path: Path):
     """Reading a 1024x1024 document through PhotoCraft and preparing the live job stays well
-    within the 250 ms the plug-in may add (REQ-24.3)."""
+    within the 250 ms the plug-in may add (criterion 24.1)."""
     doc = krita.Document(1024, 1024)  # pyright: ignore[reportCallIssue] (the harness takes a size)
     async with _env(tmp_path, doc) as (model, _client):
         model.workspace = Workspace.live

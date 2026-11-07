@@ -93,7 +93,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
   The existing pixel tests (`tests/photocraft` and `tests/photocraft_upstream`) check that nothing changed.
 
 #### [MODIFY] `tests/photocraft_upstream/test_live.py`
-- [ ] **TASK-10:** In `test_the_plugins_own_overhead_for_a_live_update`, cite criterion 24.1 instead of REQ-24.3 in the docstring, and keep the `< 0.25` s assertion unchanged.
+- [x] **TASK-10:** In `test_the_plugins_own_overhead_for_a_live_update`, cite criterion 24.1 instead of REQ-24.3 in the docstring, and keep the `< 0.25` s assertion unchanged.
 
 ### GitHub repository settings
 
