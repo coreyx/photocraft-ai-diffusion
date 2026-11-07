@@ -543,16 +543,19 @@ class MockHost:
     def _region(
         self, doc: MockDocument, src: bytes | bytearray, x: int, y: int, w: int, h: int
     ) -> bytes:
+        """The ``w``×``h`` rectangle at ``x``, ``y`` of a whole-canvas ``bgra8`` buffer, with
+        transparent pixels where it reaches past the canvas.
+
+        Copies a row's run at a time: the live-overhead test (criterion 24.1) times a read
+        through this mock, which must cost little next to the plug-in's own work."""
         out = bytearray(w * h * 4)
-        for row in range(h):
-            sy = y + row
-            if not 0 <= sy < doc.height:
-                continue
-            for col in range(w):
-                sx = x + col
-                if 0 <= sx < doc.width:
-                    i, o = (sy * doc.width + sx) * 4, (row * w + col) * 4
-                    out[o : o + 4] = src[i : i + 4]
+        x0, x1 = max(x, 0), min(x + w, doc.width)
+        if x0 >= x1:
+            return bytes(out)
+        run = (x1 - x0) * 4
+        for row in range(max(0, -y), min(h, doc.height - y)):
+            i, o = ((y + row) * doc.width + x0) * 4, (row * w + x0 - x) * 4
+            out[o : o + run] = src[i : i + run]
         return bytes(out)
 
     def _composite(
@@ -569,9 +572,16 @@ class MockHost:
                 if layer.children:
                     draw(layer.children)
                 elif layer.pixels is not None:
-                    for i in range(0, len(out), 4):
-                        if layer.pixels[i + 3]:
-                            out[i : i + 4] = layer.pixels[i : i + 4]
+                    # Whole layers where alpha allows it; per pixel only for mixed alpha. The
+                    # live-overhead test times a composite read of a 1024×1024 document.
+                    whole = len(layer.pixels) == len(out)
+                    transparent = layer.pixels[3::4].count(0) if whole else -1
+                    if transparent == 0:
+                        out[:] = layer.pixels
+                    elif transparent < len(out) // 4:  # mixed, or not the canvas's size
+                        for i in range(0, len(out), 4):
+                            if layer.pixels[i + 3]:
+                                out[i : i + 4] = layer.pixels[i : i + 4]
 
         draw(doc.layers if layers is None else layers)
         return out

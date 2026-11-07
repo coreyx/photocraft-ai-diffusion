@@ -86,7 +86,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
 ### Live-overhead test
 
 #### [MODIFY] `tests/photocraft/mock_host.py`
-- [ ] **TASK-9:** Make the mock host's pixel copies cost milliseconds rather than hundreds of them, with the same results:
+- [x] **TASK-9:** Make the mock host's pixel copies cost milliseconds rather than hundreds of them, with the same results:
   - `MockHost._region` copies each row's clipped run with one slice assignment instead of a byte copy per pixel.
   - `MockHost._composite`'s `draw` reads each layer's alpha bytes with one slice (`pixels[3::4]`). It copies a layer with no transparent pixel whole, skips a fully transparent one, and keeps the per-pixel loop only for layers with mixed alpha.
 
