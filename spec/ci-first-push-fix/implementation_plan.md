@@ -64,7 +64,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
   With `--raise-in-slot`, it instead calls `photocraft_host.main.install_excepthook()`, raises `ValueError` from a `QTimer.singleShot` slot, prints `survived` after the next event and exits 0.
 
 #### [NEW] `tests/photocraft/test_late_reply.py`
-- [ ] **TASK-5:** Two subprocess tests:
+- [x] **TASK-5:** Two subprocess tests:
   - `test_a_reply_finishing_after_the_event_loop_closed_doesnt_abort`: the helper with no hook exits 0, prints `finished`, and its stderr has neither `InvalidStateError` nor `Event loop is closed`. This fails at the current head; checked before TASK-2 is applied.
   - `test_an_exception_escaping_a_qt_slot_is_logged_not_fatal`: the helper with `--raise-in-slot` exits 0, prints `survived`, and its stderr has `unhandled exception in the plug-in` and `ValueError`.
 
