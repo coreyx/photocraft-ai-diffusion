@@ -42,7 +42,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
 ### Plug-in process
 
 #### [MODIFY] `photocraft_host/main.py`
-- [ ] **TASK-1:** Add `install_excepthook()`, which sets `sys.excepthook` to log the exception with `log.critical("unhandled exception in the plug-in", exc_info=(type, value, tb))`. Call it first thing in `main()`, before the `QApplication` is created.
+- [x] **TASK-1:** Add `install_excepthook()`, which sets `sys.excepthook` to log the exception with `log.critical("unhandled exception in the plug-in", exc_info=(type, value, tb))`. Call it first thing in `main()`, before the `QApplication` is created.
   - A comment explains why: PyQt6 calls `qFatal` (`abort`) when an exception escapes a slot while `sys.excepthook` is Python's default, and Krita's own Python host doesn't stand behind the plug-in process here.
   - `KeyboardInterrupt` goes to `sys.__excepthook__`, so Ctrl+C still behaves normally when the process is run by hand.
 

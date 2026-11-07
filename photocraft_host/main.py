@@ -79,6 +79,24 @@ def setup_logging():
     )
 
 
+def install_excepthook():
+    """Log an exception nothing caught, and keep the plug-in running.
+
+    PyQt6 ends the process with ``abort()`` when an exception escapes a Qt slot while
+    ``sys.excepthook`` is Python's default. Krita's Python host doesn't stand behind this
+    process, so without a hook of its own one stray exception in upstream's code (such as a
+    network reply finishing after shutdown has closed the event loop) kills the plug-in.
+    """
+
+    def hook(kind, value, tb):
+        if issubclass(kind, KeyboardInterrupt):  # Ctrl+C when run by hand still stops it
+            sys.__excepthook__(kind, value, tb)
+            return
+        log.critical("unhandled exception in the plug-in", exc_info=(kind, value, tb))
+
+    sys.excepthook = hook
+
+
 def install_krita_shim():
     """Make ``import krita`` find the stand-in (``photocraft_host.krita``) once it exists."""
     if "krita" in sys.modules or importlib.util.find_spec("photocraft_host.krita") is None:
@@ -189,6 +207,7 @@ def main(streams=None, welcome: Welcome | None = None, first_id: int = 1) -> int
     """
     if not logging.getLogger().handlers:
         setup_logging()
+    install_excepthook()
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from photocraft_host import qt_setup
 
