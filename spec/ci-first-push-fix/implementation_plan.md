@@ -50,7 +50,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
 - [x] **TASK-2:** In `RequestManager._finished`, once the tracker's future is known, return without touching it when `future.done()` or `future.get_loop().is_closed()`. In the `except` branch, call `future.set_exception(e)` only when the future isn't done yet. The existing `future.cancelled()` check is covered by `done()`, so it merges into the new check.
 
 #### [MODIFY] `UPSTREAM-CHANGES.md`
-- [ ] **TASK-3:** Add a row for `ai_diffusion/backend/network.py`, status `changed`. Reason: a reply that finishes after `eventloop.stop()` raised `RuntimeError` and then `InvalidStateError` from inside a Qt slot, which aborts a process without an exception hook. This is a bug fix also present in Krita, worth offering upstream. Task: TASK-2. Place the row in the table's path order.
+- [x] **TASK-3:** Add a row for `ai_diffusion/backend/network.py`, status `changed`. Reason: a reply that finishes after `eventloop.stop()` raised `RuntimeError` and then `InvalidStateError` from inside a Qt slot, which aborts a process without an exception hook. This is a bug fix also present in Krita, worth offering upstream. Task: TASK-2. Place the row in the table's path order.
 
 ### Tests for the shutdown abort
 
