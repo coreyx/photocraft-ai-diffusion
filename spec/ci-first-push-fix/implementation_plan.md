@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 ---
 
 # Make the plug-in's CI pass on all three platforms
