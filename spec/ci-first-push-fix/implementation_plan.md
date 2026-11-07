@@ -55,7 +55,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
 ### Tests for the shutdown abort
 
 #### [NEW] `tests/photocraft/late_reply.py`
-- [ ] **TASK-4:** A helper script, run as a subprocess the way `tests/photocraft/tls_crash.py` is. It reproduces the shutdown race deterministically on every platform, without relying on how fast a refused connection fails:
+- [x] **TASK-4:** A helper script, run as a subprocess the way `tests/photocraft/tls_crash.py` is. It reproduces the shutdown race deterministically on every platform, without relying on how fast a refused connection fails:
   1. Start a local TCP server on a free loopback port, in a thread. It accepts one connection and holds it open without answering.
   2. Set up the `krita` stand-in with a temporary data folder, then upstream's `eventloop` and a `RequestManager`, and send a GET to that server.
   3. Once the request is connected, call `eventloop.stop()`, then let the server close the connection, which makes the reply finish with an error.
