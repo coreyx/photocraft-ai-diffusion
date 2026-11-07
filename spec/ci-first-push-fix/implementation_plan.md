@@ -71,7 +71,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
 ### TLS backend
 
 #### [MODIFY] `photocraft_host/qt_setup.py`
-- [ ] **TASK-6:** Replace the `PLATFORM_TLS` tuple with a mapping, `{"win32": "schannel", "darwin": "securetransport"}`. `use_platform_tls(platform: str = sys.platform)` calls `QSslSocket.setActiveBackend` only with that platform's backend. On any other platform it doesn't call it. It returns `QSslSocket.activeBackend()` as before.
+- [x] **TASK-6:** Replace the `PLATFORM_TLS` tuple with a mapping, `{"win32": "schannel", "darwin": "securetransport"}`. `use_platform_tls(platform: str = sys.platform)` calls `QSslSocket.setActiveBackend` only with that platform's backend. On any other platform it doesn't call it. It returns `QSslSocket.activeBackend()` as before.
   - The docstring keeps its reason (two OpenSSL builds in one process on Windows) and says that Linux leaves Qt's choice alone.
   - Callers in `tls_crash.py` and `upstream_shim.py` keep calling it with no argument.
 

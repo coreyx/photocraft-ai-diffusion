@@ -27,13 +27,13 @@ def configure_fonts(environ: MutableMapping[str, str], platform: str = sys.platf
     return folder
 
 
-#: Qt's TLS backends that use the operating system's own TLS, in order of preference.
-PLATFORM_TLS = ("schannel", "securetransport")
+#: Qt's TLS backend that uses the operating system's own TLS, by ``sys.platform``.
+PLATFORM_TLS = {"win32": "schannel", "darwin": "securetransport"}
 
 
-def use_platform_tls() -> str:
+def use_platform_tls(platform: str = sys.platform) -> str:
     r"""Make the operating system's TLS (schannel on Windows, Secure Transport on macOS) Qt's
-    active backend, where Qt has one, before any request is made. Returns the active backend.
+    active backend before any request is made. Returns the active backend.
 
     Qt otherwise prefers its OpenSSL backend whenever it can load an OpenSSL from the DLL search
     path, such as the one in Git for Windows' ``mingw64\bin``. Python's ``ssl``, which the
@@ -41,13 +41,15 @@ def use_platform_tls() -> str:
     OpenSSL builds in one process crash it about 30 seconds after Qt's first HTTPS request
     (``investigations/plugin-crash-after-30-seconds/findings.md``). Linux has no such backend:
     there Qt's choice is left as it is.
+
+    Only the platform's own backend is asked for: Qt logs a warning for each one it doesn't have
+    (``investigations/ci-first-push-failures/findings.md``).
     """
     from PyQt6.QtNetwork import QSslSocket
 
     # Set rather than list first: asking which backends are available can load OpenSSL.
-    for name in PLATFORM_TLS:
-        if QSslSocket.setActiveBackend(name):
-            break
+    if (name := PLATFORM_TLS.get(platform)) is not None:
+        QSslSocket.setActiveBackend(name)
     return QSslSocket.activeBackend()
 
 
