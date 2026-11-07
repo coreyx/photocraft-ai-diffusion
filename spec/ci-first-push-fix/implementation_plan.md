@@ -98,7 +98,7 @@ This plan fixes all three. It also stops the TLS set-up from logging warnings on
 ### GitHub repository settings
 
 #### [MODIFY] `coreyx/photocraft-ai-diffusion` Actions settings
-- [ ] **TASK-11:** Disable upstream's workflow with `gh workflow disable test.yml -R coreyx/photocraft-ai-diffusion`, as the first walkthrough's step 4 says. If GitHub hasn't registered it yet, record that in the walkthrough instead (see Open Questions).
+- [x] **TASK-11:** Disable upstream's workflow with `gh workflow disable test.yml -R coreyx/photocraft-ai-diffusion`, as the first walkthrough's step 4 says. If GitHub hasn't registered it yet, record that in the walkthrough instead (see Open Questions).
 
 ## Verification Plan
 
