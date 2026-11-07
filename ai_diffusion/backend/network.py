@@ -226,8 +226,10 @@ class RequestManager:
             code = reply.error()
             tracker = self._requests[reply]
             future = tracker.future
-            if future.cancelled():
-                return  # operation was cancelled, discard result
+            # Cancelled, or the event loop was closed (shutdown) while the reply was in flight:
+            # resolving the future would schedule its callbacks on a closed loop and raise.
+            if future.done() or future.get_loop().is_closed():
+                return
             if code == QNetworkReply.NetworkError.NoError:
                 if tracker.buffer is not None:
                     tracker.buffer.write(reply.readAll().data())
@@ -242,7 +244,7 @@ class RequestManager:
             else:
                 future.set_exception(NetworkError.from_reply(reply))
         except Exception as e:
-            if future is not None:
+            if future is not None and not future.done():
                 future.set_exception(e)
 
     def _cleanup(self):
