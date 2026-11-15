@@ -44,7 +44,7 @@ None at this time.
 - [x] **TASK-1:** Add `PANEL_RESIZED = "panel.resized"` to the UI events, listed in `ALL` and in the module comment's list of events that always go to their owner. Add `PanelResized { panel_id: String, width: f32, height: f32 }` with camelCase serde.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_panels.rs`
-- [ ] **TASK-2:** In `body()`, read the content size inside the panel's scroll area (`ui.available_width()`, and the viewport's height) and send `panel.resized` to the panel's plug-in when it differs from the last size sent for that panel by half a point or more. Keep the last size sent per panel in `Panels` (`sizes: HashMap<String, (f32, f32)>`).
+- [x] **TASK-2:** In `body()`, read the content size inside the panel's scroll area (`ui.available_width()`, and the viewport's height) and send `panel.resized` to the panel's plug-in when it differs from the last size sent for that panel by half a point or more. Keep the last size sent per panel in `Panels` (`sizes: HashMap<String, (f32, f32)>`).
   - A plug-in that isn't responding gets nothing, and its last size is left unset, so the size goes out once it responds again.
   - A panel registered again (after a restart) forgets its last size.
 
