@@ -49,7 +49,7 @@ None at this time.
   - A panel registered again (after a restart) forgets its last size.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_panels_tests.rs`
-- [ ] **TASK-3:** Add `a_panel_tells_its_plugin_its_size`:
+- [x] **TASK-3:** Add `a_panel_tells_its_plugin_its_size`:
   - once drawn, a registered panel has sent one `panel.resized` with its `panelId` and a width within the dock's range;
   - another frame at the same size sends nothing;
   - a narrower window sends the new width.
