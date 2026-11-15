@@ -74,7 +74,7 @@ None at this time.
 - [x] **TASK-8:** A `QToolButton` with no icon and an `arrowType` other than `NoArrow` sends `icon: "icon:chevron-down"` (or `-up`, `-left`, `-right`). Upstream's mode drop-down (`generation.py:779-780`) is such a button, and PhotoCraft draws a button with neither icon nor text as nothing.
 
 #### [MODIFY] `tests/photocraft/mock_host.py`, `tests/photocraft/test_qt_mirror.py` and `tests/photocraft/test_qt_mirror_rich.py`
-- [ ] **TASK-9:** Tests:
+- [x] **TASK-9:** Tests:
   - **`test_a_panel_lays_out_at_photocraft_s_width`:** a panel with a row of a self-drawing expanding widget and a tool button, mirrored at 360 px. After `panel.resized` with `width: 280`, the root is 280 px wide, and the image's width plus the tool button's fits in 280.
   - **Below the minimum:** a width below the root's minimum lays out at the minimum.
   - **`test_an_arrow_only_tool_button_shows_a_chevron`.**

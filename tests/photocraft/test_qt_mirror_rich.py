@@ -24,6 +24,7 @@ from PyQt6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
     QFileDialog,
+    QHBoxLayout,
     QInputDialog,
     QLabel,
     QListView,
@@ -33,6 +34,7 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QPlainTextEdit,
     QPushButton,
+    QSizePolicy,
     QToolButton,
     QVBoxLayout,
     QWidget,
@@ -501,6 +503,46 @@ class Switch(QPushButton):
     def paintEvent(self, a0):
         painter = QPainter(self)
         painter.fillRect(self.rect(), QColor("green" if self.isChecked() else "grey"))
+
+
+def test_a_panel_lays_out_at_photocraft_s_width(mirror):
+    """A self-drawn widget is sent as an image of its Qt width, which PhotoCraft can't shrink:
+    laid out at PhotoCraft's width, it fits beside what follows it (spec
+    ``generate-panel-rows-fit``)."""
+    root = QWidget()
+    row = QHBoxLayout(root)
+    generate = Switch("Generate")
+    generate.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+    queue = QToolButton()
+    queue.setText("Queue")
+    row.addWidget(generate)
+    row.addWidget(queue)
+    panel = mirror(root)
+    assert root.width() == 360, "PhotoCraft's width isn't known yet"
+
+    panel.host.resize_panel(PANEL, 280, 400)
+    wait_for(panel.app, lambda: root.width() == 280)
+    panel.flush()
+    image = panel.props(generate)
+    assert image["width"] == generate.width() and image["width"] + queue.width() <= 280
+
+    panel.host.resize_panel(PANEL, 20, 400)
+    minimum = root.minimumSizeHint().width()
+    wait_for(panel.app, lambda: root.width() == minimum)
+    panel.host.resize_panel("another-panel", 500, 400)
+    settle(panel.app, 0.3)
+    assert root.width() == minimum, "another panel's size isn't this one's"
+
+
+def test_an_arrow_only_tool_button_shows_a_chevron(mirror):
+    """Upstream's Generate mode drop-down has only Qt's arrow (spec ``generate-panel-rows-fit``)."""
+    down = QToolButton()
+    down.setArrowType(Qt.ArrowType.DownArrow)
+    plain = QToolButton()
+    plain.setText("Go")
+    panel = mirror(column(down, plain))
+    assert panel.props(down)["icon"] == "icon:chevron-down"
+    assert "icon" not in panel.props(plain)
 
 
 class Track(QWidget):

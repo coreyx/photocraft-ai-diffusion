@@ -358,6 +358,11 @@ class MockHost:
         """Send the plug-in an event."""
         self._send({"type": "event", "topic": topic, "data": data}, payload)
 
+    def resize_panel(self, panel_id: str, width: float, height: float):
+        """Tell the plug-in its panel's content size, as PhotoCraft does when it draws the panel
+        and when the user resizes the dock (``panel.resized``)."""
+        self.send_event("panel.resized", {"panelId": panel_id, "width": width, "height": height})
+
     def request(self, method: str, params: Any = None, timeout: float = 5.0) -> transport.Frame:
         """Send the plug-in a request (``ping``, ``shutdown``) and wait for its answer frame.
 
