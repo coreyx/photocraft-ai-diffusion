@@ -34,7 +34,7 @@ None at this time. The two side points in the findings stay out of scope and are
 ### Message box titles
 
 #### [MODIFY] `photocraft_host/qt_mirror/dialogs.py`
-- [ ] **TASK-1:** Record a message box's title where macOS can't drop it, and send that.
+- [x] **TASK-1:** Record a message box's title where macOS can't drop it, and send that.
   - Add `TITLE_PROPERTY = "photocraft_title"`.
   - In `install()`, keep the originals in `_originals` and replace two methods:
     - `QMessageBox.__init__`: call the original, then, when the first positional argument is a `QMessageBox.Icon` and a second one follows, store that second argument (the title) with `setProperty(TITLE_PROPERTY, title)`.

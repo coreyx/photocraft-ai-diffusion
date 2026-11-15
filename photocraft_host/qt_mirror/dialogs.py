@@ -39,6 +39,9 @@ _dialog_ids = itertools.count(1)
 _open: dict[int, Any] = {}
 _originals: dict[str, Any] = {}
 
+#: The dynamic property holding a message box's title as the plug-in gave it.
+TITLE_PROPERTY = "photocraft_title"
+
 _KINDS = {
     QMessageBox.Icon.Question: "question",
     QMessageBox.Icon.Warning: "warning",
@@ -67,7 +70,10 @@ def message_box_exec(box: QMessageBox) -> int:
         buttons.remove(default)
         buttons.insert(0, default)
     labels = [plain_label(b.text()) for b in buttons]
-    picked = _message(_KINDS.get(box.icon(), "information"), box.windowTitle(), text, labels)
+    title = box.property(TITLE_PROPERTY)
+    if title is None:
+        title = box.windowTitle()
+    picked = _message(_KINDS.get(box.icon(), "information"), title, text, labels)
     chosen = next((b for b, label in zip(buttons, labels, strict=True) if label == picked), None)
     if chosen is None:
         chosen = box.escapeButton()
@@ -107,6 +113,32 @@ def _standard_box(kind: QMessageBox.Icon):
         )
 
     return staticmethod(show)
+
+
+def _message_box_init(self: QMessageBox, *args: Any, **kwargs: Any):
+    """``QMessageBox(icon, title, text, ...)``, recording the title (see :func:`_keep_title`)."""
+    _originals["message_box_init"](self, *args, **kwargs)
+    if len(args) >= 2 and isinstance(args[0], QMessageBox.Icon):
+        self.setProperty(TITLE_PROPERTY, args[1])
+
+
+def _message_box_set_window_title(self: QMessageBox, title: str):
+    """``QMessageBox.setWindowTitle``, recording the title (see :func:`_keep_title`)."""
+    self.setProperty(TITLE_PROPERTY, title)
+    _originals["message_box_set_window_title"](self, title)
+
+
+def _keep_title():
+    """Record each message box's title as the plug-in gives it, for PhotoCraft's message box.
+
+    Qt's ``QMessageBox::setWindowTitle`` ignores the title on macOS (``#ifndef Q_OS_MAC``, after
+    the macOS guidelines), and the constructor sets it through that method. ``windowTitle()`` is
+    then empty there whichever platform plug-in runs, ``offscreen`` included, and PhotoCraft's
+    dialog would have no title (``investigations/macos-ctrl-and-message-box-titles``)."""
+    _originals["message_box_init"] = QMessageBox.__init__
+    _originals["message_box_set_window_title"] = QMessageBox.setWindowTitle
+    QMessageBox.__init__ = _message_box_init  # type: ignore[method-assign]
+    QMessageBox.setWindowTitle = _message_box_set_window_title  # type: ignore[method-assign]
 
 
 def _filters(spec: str | None) -> list[dict[str, Any]]:
@@ -315,6 +347,7 @@ def install(transport: Any):
     _originals["show"] = QDialog.show
     QDialog.show = _show  # type: ignore[method-assign]
     QDialog.exec = _exec  # type: ignore[method-assign]
+    _keep_title()
     for name, icon in [
         ("information", QMessageBox.Icon.Information),
         ("question", QMessageBox.Icon.Question),
