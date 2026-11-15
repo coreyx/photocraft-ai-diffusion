@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 ---
 
 # Fit the Generate panel's rows to the panel, and show the mode drop-down
