@@ -71,6 +71,15 @@ def _popup_widget(button: QToolButton) -> QWidget | None:
     return None
 
 
+#: PhotoCraft's icons for a tool button's Qt arrow (``QToolButton.setArrowType``).
+_ARROWS = {
+    Qt.ArrowType.DownArrow: "chevron-down",
+    Qt.ArrowType.UpArrow: "chevron-up",
+    Qt.ArrowType.LeftArrow: "chevron-left",
+    Qt.ArrowType.RightArrow: "chevron-right",
+}
+
+
 class ToolButtonAdapter(Adapter):
     """``QToolButton``: text and/or icon as its style shows them; checkable or not. A menu set
     on it becomes its ``menu`` prop; a widget it pops up (a ``QWidgetAction``) becomes a
@@ -104,6 +113,10 @@ class ToolButtonAdapter(Adapter):
         assert isinstance(widget, QToolButton)
         style = widget.toolButtonStyle()
         icon = ctx.icon(widget.icon())
+        if icon is None and (arrow := _ARROWS.get(widget.arrowType())) is not None:
+            # Upstream's Generate mode drop-down is only Qt's down arrow; PhotoCraft draws a
+            # button with neither icon nor text as nothing, so its own chevron stands in.
+            icon = f"icon:{arrow}"
         shows_text = style != Qt.ToolButtonStyle.ToolButtonIconOnly or icon is None
         shows_icon = style != Qt.ToolButtonStyle.ToolButtonTextOnly
         props: dict[str, Any] = {
