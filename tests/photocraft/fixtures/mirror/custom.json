@@ -94,7 +94,7 @@
         {
          "kind": "toolButton",
          "qt": "QToolButton",
-         "text": ""
+         "picture": true
         },
         {
          "kind": "spacer"
@@ -129,7 +129,8 @@
          "kind": "toolButton",
          "qt": "ExpanderButton",
          "text": " Text Output",
-         "checkable": true
+         "checkable": true,
+         "picture": true
         },
         {
          "kind": "scroll",

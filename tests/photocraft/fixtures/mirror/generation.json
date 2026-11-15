@@ -136,8 +136,8 @@
       {
        "kind": "toolButton",
        "qt": "QToolButton",
-       "text": "",
-       "visible": false
+       "visible": false,
+       "picture": true
       },
       {
        "kind": "toolButton",
