@@ -29,7 +29,7 @@ None at this time.
 - [x] **TASK-1:** In `Tree::apply`, `Patch::Remove`: collect the ids of the removed node and every node under it, and drop their entries from `self.local`. A comment says why: a node the plug-in inserts again under the same id (a menu reopened after being dismissed) must show as the plug-in sends it, not as the user last left the removed one. `Patch::Move` keeps local values, since the node lives on.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/tests.rs`
-- [ ] **TASK-2:** Add `a_removed_popup_leaves_no_local_state`:
+- [x] **TASK-2:** Add `a_removed_popup_leaves_no_local_state`:
   1. Build a tree with a popup anchored to a button, `open: true`, with one entry.
   2. Set `local[(popup, "open")] = false`, as a click elsewhere does.
   3. `Remove` the popup, then `Insert` it again with `open: true`.
