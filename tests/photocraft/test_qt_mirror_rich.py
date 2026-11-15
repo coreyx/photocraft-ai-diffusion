@@ -376,12 +376,8 @@ def test_context_menus_pop_up_in_photocraft(mirror):
     )
     wait_for(panel.app, lambda: panel.mirror._menus != {})
     panel.flush()
-    popup = find_widget(panel.tree, f"{grid_id}.menu")
-    assert (
-        popup is not None
-        and popup["kind"] == "popup"
-        and popup["props"] == {"anchor": grid_id, "open": True}
-    )
+    popup = _popup_of(panel.tree, grid_id)
+    assert popup is not None and popup["props"] == {"anchor": grid_id, "open": True}
     copy, save = popup["children"]
     assert copy["props"]["text"] == "Copy Prompt" and save["props"]["enabled"] is False
     panel.host.send_event(
@@ -389,7 +385,50 @@ def test_context_menus_pop_up_in_photocraft(mirror):
     )
     wait_for(panel.app, lambda: history.copied == ["red"])
     panel.flush()
-    assert find_widget(panel.tree, f"{grid_id}.menu") is None, "closed after choosing"
+    assert _popup_of(panel.tree, grid_id) is None, "closed after choosing"
+
+
+def test_a_context_menu_opens_again_after_being_dismissed(mirror):
+    """Dismissed by clicking elsewhere, a menu opens again on the next right-click, under a new
+    id: PhotoCraft remembers the dismissed one as closed (spec ``context-menu-reopen-fix``)."""
+    history = History()
+    item = QListWidgetItem(thumb("red"), "")
+    item.setData(Qt.ItemDataRole.UserRole, "red")
+    history.addItem(item)
+    panel = mirror(column(history))
+    grid_id = f"{panel.mirror.node_id(history)}.items"
+    red = find_widget(panel.tree, grid_id)["props"]["items"][0]["id"]  # type: ignore[index]
+
+    def right_click() -> dict:
+        panel.host.send_event(
+            "panel.input", {"owner": PANEL, "nodeId": grid_id, "kind": "context", "value": red}
+        )
+        wait_for(panel.app, lambda: panel.mirror._menus != {})
+        panel.flush()
+        popup = _popup_of(panel.tree, grid_id)
+        assert popup is not None and popup["props"]["open"] is True
+        return popup
+
+    first = right_click()
+    panel.host.send_event(
+        "panel.input", {"owner": PANEL, "nodeId": first["id"], "kind": "change", "value": False}
+    )
+    wait_for(panel.app, lambda: panel.mirror._menus == {})
+    panel.flush()
+    assert _popup_of(panel.tree, grid_id) is None, "closed by clicking elsewhere"
+    second = right_click()
+    assert second["id"] != first["id"]
+
+
+def _popup_of(tree: dict, anchor: str) -> dict | None:
+    """The pop-up menu open under ``anchor``, if any."""
+    stack = [tree]
+    while stack:
+        n = stack.pop()
+        if n.get("kind") == "popup" and n.get("props", {}).get("anchor") == anchor:
+            return n
+        stack.extend(n.get("children", []))
+    return None
 
 
 # -- menus and pop-ups

@@ -15,6 +15,7 @@ Entry ids are paths of action indices (``"3"``, ``"2/1"`` for an entry of a subm
 from __future__ import annotations
 
 import contextlib
+import itertools
 import logging
 from collections.abc import Callable, Generator
 from typing import TYPE_CHECKING, Any
@@ -33,6 +34,8 @@ log = logging.getLogger(__name__)
 #: The mirror and node whose input is being handled, so ``QMenu.exec`` knows where it opens.
 _anchor: tuple[Mirror, str] | None = None
 _installed = False
+#: Numbers each menu opened with ``exec`` (see :func:`popup_id`).
+_popup_ids = itertools.count(1)
 
 
 @contextlib.contextmanager
@@ -116,9 +119,19 @@ def trigger(menu: QMenu, entry_id: Any) -> bool:
     return True
 
 
-def popup_node(mirror: Mirror, anchor: str, menu: QMenu, close: Callable[[], None]) -> Node:
-    """A menu opened with ``exec`` as a pop-up of entries under ``anchor``."""
-    popup_id = f"{anchor}.menu"
+def popup_id(anchor: str) -> str:
+    """A new id for a menu opened under ``anchor``.
+
+    Each opened menu gets its own: PhotoCraft remembers what the user did to a pop-up (closing it
+    by clicking elsewhere) by its id, and a menu opened later must not start out closed
+    (``investigations/context-menu-stops-opening``)."""
+    return f"{anchor}.menu.{next(_popup_ids)}"
+
+
+def popup_node(
+    mirror: Mirror, anchor: str, popup_id: str, menu: QMenu, close: Callable[[], None]
+) -> Node:
+    """A menu opened with ``exec`` as the pop-up ``popup_id`` of entries under ``anchor``."""
 
     def closed(event: Input):
         if event.kind == "change" and event.value is False:

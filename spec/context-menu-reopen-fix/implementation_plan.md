@@ -40,10 +40,10 @@ None at this time.
 ### Plug-in
 
 #### [MODIFY] `photocraft_host/qt_mirror/menus.py`
-- [ ] **TASK-3:** `popup_node` gives each menu it opens a fresh popup id, `f"{anchor}.menu.{next(_popup_ids)}"` with a module-level `itertools.count(1)`. A comment says why: a new menu must not inherit what PhotoCraft remembers about an earlier one under the same id. The id is chosen once per opened menu, not per rebuild of the tree. So `Mirror.open_menu` stores it alongside the menu, `mirror.py`'s `_menus` becomes `dict[str, tuple[QMenu, str]]`, and `popup_node` takes the id instead of deriving it. The close handler and the entries' ids use it.
+- [x] **TASK-3:** `popup_node` gives each menu it opens a fresh popup id, `f"{anchor}.menu.{next(_popup_ids)}"` with a module-level `itertools.count(1)`. A comment says why: a new menu must not inherit what PhotoCraft remembers about an earlier one under the same id. The id is chosen once per opened menu, not per rebuild of the tree. So `Mirror.open_menu` stores it alongside the menu, `mirror.py`'s `_menus` becomes `dict[str, tuple[QMenu, str]]`, and `popup_node` takes the id instead of deriving it. The close handler and the entries' ids use it.
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror_rich.py`
-- [ ] **TASK-4:** The history context-menu test (`:370-392`) finds the popup by `kind == "popup"` and `anchor == grid_id` instead of its old id. Add `test_a_context_menu_opens_again_after_being_dismissed`:
+- [x] **TASK-4:** The history context-menu test (`:370-392`) finds the popup by `kind == "popup"` and `anchor == grid_id` instead of its old id. Add `test_a_context_menu_opens_again_after_being_dismissed`:
   1. Right-click a result.
   2. Send `change: false` on the popup, as a click elsewhere does, and check it's gone.
   3. Right-click again.

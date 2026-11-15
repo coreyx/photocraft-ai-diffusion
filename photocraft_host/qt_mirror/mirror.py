@@ -144,7 +144,7 @@ class Mirror(QObject):
         self._tracked: set[str] = set()
         self._widgets: dict[str, QWidget] = {}
         self._handlers: dict[str, Callable[[Input], None]] = {}
-        self._menus: dict[str, QMenu] = {}
+        self._menus: dict[str, tuple[QMenu, str]] = {}
         self._sent: Node | None = None
         self._force: set[str] = set()
         self._flush_timer = QTimer(self)
@@ -238,9 +238,9 @@ class Mirror(QObject):
         self._widgets = {}
         self._handlers = {}
         tree = self.build(self.root)
-        for anchor, menu in list(self._menus.items()):
+        for anchor, (menu, popup_id) in list(self._menus.items()):
             tree["children"].append(
-                menus.popup_node(self, anchor, menu, lambda a=anchor: self.close_menu(a))
+                menus.popup_node(self, anchor, popup_id, menu, lambda a=anchor: self.close_menu(a))
             )
         return tree
 
@@ -316,13 +316,13 @@ class Mirror(QObject):
     def open_menu(self, anchor: str, menu: QMenu):
         """Show ``menu`` as a pop-up under the node ``anchor``."""
         menu.aboutToShow.emit()
-        self._menus[anchor] = menu
+        self._menus[anchor] = (menu, menus.popup_id(anchor))
         self.mark_dirty()
 
     def close_menu(self, anchor: str):
-        menu = self._menus.pop(anchor, None)
-        if menu is not None:
-            menu.aboutToHide.emit()
+        opened = self._menus.pop(anchor, None)
+        if opened is not None:
+            opened[0].aboutToHide.emit()
         self.mark_dirty()
 
     # -- input
