@@ -260,6 +260,9 @@ class MockHost:
         self.subscriptions: set[str] = set()
         self.preview: dict | None = None
         self.answers: dict[str, Callable[[Any, bytes], Any]] = {}
+        #: A panel's content size sent with ``panel.resized`` as it registers, before the answer,
+        #: as PhotoCraft draws a new panel at once.
+        self.panel_size: tuple[float, float] | None = None
         self._ids = itertools.count(1)
         self._doc_ids = itertools.count(1)
         #: Makes the document ``doc.open`` opens; the mock can't read files, so by default a
@@ -719,6 +722,8 @@ class MockHost:
 
     def _m_panel_register(self, p, _):
         self.panels[p["panelId"]] = {"title": p["title"], "tree": p["tree"]}
+        if self.panel_size is not None:
+            self.resize_panel(p["panelId"], *self.panel_size)
 
     def _m_panel_patch(self, p, _):
         if p["panelId"] not in self.panels:

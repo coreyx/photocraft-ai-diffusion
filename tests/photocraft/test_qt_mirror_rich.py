@@ -550,12 +550,29 @@ def test_a_docker_s_widget_follows_photocraft_s_width(mirror):
     dock.setWidget(content)
     panel = mirror(content)
     before = panel.props(generate)["width"]
+    # As the real docker's widget was when PhotoCraft's width came: not laid out in the dock,
+    # which a never-shown window doesn't do on a resize.
+    content.resize(100, 30)
 
     panel.host.resize_panel(PANEL, 280, 400)
     wait_for(panel.app, lambda: content.width() == 280)
     panel.flush()
     image = panel.props(generate)
     assert image["width"] != before and image["width"] + queue.width() <= 280
+
+
+def test_a_panel_takes_the_size_photocraft_sends_as_it_registers(mirror, host: MockHost):
+    """PhotoCraft draws a new panel at once, so its first ``panel.resized`` can arrive while the
+    plug-in is still waiting for ``panel.register``'s answer. PhotoCraft sends a size only when it
+    changes, so missing that one left the panel at Qt's default width."""
+    host.panel_size = (280, 400)
+    dock = QDockWidget()
+    content = QWidget()
+    QHBoxLayout(content).addWidget(Switch("Generate"))
+    dock.setWidget(content)
+    content.resize(100, 30)  # as the real docker's widget was: not yet laid out in the dock
+    panel = mirror(content)
+    wait_for(panel.app, lambda: content.width() == 280)
 
 
 def test_an_arrow_only_tool_button_shows_a_chevron(mirror):

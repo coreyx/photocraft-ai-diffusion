@@ -387,12 +387,23 @@ class Mirror(QObject):
         width = max(self._panel_width, self.root.minimumSizeHint().width())
         if width == self.root.width():
             return
-        # A docker's widget sits in the stand-in's off-screen QDockWidget, the window to resize;
-        # its frame keeps its width, so the widget gets PhotoCraft's.
+        # A docker's widget sits in the stand-in's off-screen QDockWidget, the window to resize.
+        # Never shown, it doesn't lay out its widget on a resize: the layout is redone by hand,
+        # then whatever frame the window keeps around the widget is added.
         window = self.root.window()
-        frame = window.width() - self.root.width()
-        window.resize(width + frame, window.height())
+        window.resize(width, window.height())
+        self._lay_out(window)
+        if (frame := window.width() - self.root.width()) != 0:
+            window.resize(width + frame, window.height())
+            self._lay_out(window)
         self.mark_dirty()
+
+    @staticmethod
+    def _lay_out(window: QWidget):
+        """Lay ``window`` out at its current size now, as showing it would."""
+        if (layout := window.layout()) is not None:
+            layout.invalidate()
+            layout.activate()
 
     def _on_dialog_closed(self, data: dict[str, Any], _payload: bytes):
         if data.get("dialogId") != self.surface_id:
