@@ -54,7 +54,7 @@ None at this time. The two side points in the findings stay out of scope and are
 ### Modifier tests
 
 #### [MODIFY] `photocraft_host/qt_mirror/adapters/text.py`
-- [ ] **TASK-3:** Give `qt_modifiers` a `platform: str = sys.platform` parameter, used instead of reading `sys.platform` directly, as `configure_fonts` and `use_platform_tls` do. Its callers (`text.py:106`, `raster.py:64`) keep calling it without one.
+- [x] **TASK-3:** Give `qt_modifiers` a `platform: str = sys.platform` parameter, used instead of reading `sys.platform` directly, as `configure_fonts` and `use_platform_tls` do. Its callers (`text.py:106`, `raster.py:64`) keep calling it without one.
 
 #### [NEW] `tests/photocraft/test_modifiers.py`
 - [ ] **TASK-4:** Unit tests of `qt_modifiers`:

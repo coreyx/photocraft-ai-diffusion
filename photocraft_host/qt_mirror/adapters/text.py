@@ -80,11 +80,11 @@ def from_utf16(text: str, position: int) -> int:
     return len(text)
 
 
-def qt_modifiers(modifiers: dict[str, bool]) -> Qt.KeyboardModifier:
+def qt_modifiers(modifiers: dict[str, bool], platform: str = sys.platform) -> Qt.KeyboardModifier:
     """PhotoCraft's modifiers (``{shift, ctrl, alt, meta}``) as Qt's."""
     mods = Qt.KeyboardModifier.NoModifier
     # Qt's Control is the Command key on macOS, which PhotoCraft reports as meta.
-    ctrl, meta = ("meta", "ctrl") if sys.platform == "darwin" else ("ctrl", "meta")
+    ctrl, meta = ("meta", "ctrl") if platform == "darwin" else ("ctrl", "meta")
     if modifiers.get(ctrl):
         mods |= Qt.KeyboardModifier.ControlModifier
     if modifiers.get(meta):
