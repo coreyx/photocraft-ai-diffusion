@@ -382,12 +382,17 @@ class Mirror(QObject):
         laid out for a wider panel they push what follows them past its edge
         (``investigations/generate-panel-rows-overflow``). Below the layout's minimum, the panel is
         laid out at the minimum, as a Krita docker can't be narrower."""
-        if self._panel_width is None or not self.root.isWindow():
+        if self._panel_width is None:
             return
         width = max(self._panel_width, self.root.minimumSizeHint().width())
-        if width != self.root.width():
-            self.root.resize(width, self.root.height())
-            self.mark_dirty()
+        if width == self.root.width():
+            return
+        # A docker's widget sits in the stand-in's off-screen QDockWidget, the window to resize;
+        # its frame keeps its width, so the widget gets PhotoCraft's.
+        window = self.root.window()
+        frame = window.width() - self.root.width()
+        window.resize(width + frame, window.height())
+        self.mark_dirty()
 
     def _on_dialog_closed(self, data: dict[str, Any], _payload: bytes):
         if data.get("dialogId") != self.surface_id:

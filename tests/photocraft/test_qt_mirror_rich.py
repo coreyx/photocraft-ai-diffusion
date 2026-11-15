@@ -23,6 +23,7 @@ from PyQt6.QtWidgets import (
     QCompleter,
     QDialog,
     QDialogButtonBox,
+    QDockWidget,
     QFileDialog,
     QHBoxLayout,
     QInputDialog,
@@ -532,6 +533,29 @@ def test_a_panel_lays_out_at_photocraft_s_width(mirror):
     panel.host.resize_panel("another-panel", 500, 400)
     settle(panel.app, 0.3)
     assert root.width() == minimum, "another panel's size isn't this one's"
+
+
+def test_a_docker_s_widget_follows_photocraft_s_width(mirror):
+    """As the plug-in mirrors a docker: its widget sits in the stand-in's QDockWidget, which is
+    never shown. The widget still ends up at PhotoCraft's width."""
+    dock = QDockWidget()
+    content = QWidget()
+    row = QHBoxLayout(content)
+    generate = Switch("Generate")
+    generate.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+    queue = QToolButton()
+    queue.setText("Queue")
+    row.addWidget(generate)
+    row.addWidget(queue)
+    dock.setWidget(content)
+    panel = mirror(content)
+    before = panel.props(generate)["width"]
+
+    panel.host.resize_panel(PANEL, 280, 400)
+    wait_for(panel.app, lambda: content.width() == 280)
+    panel.flush()
+    image = panel.props(generate)
+    assert image["width"] != before and image["width"] + queue.width() <= 280
 
 
 def test_an_arrow_only_tool_button_shows_a_chevron(mirror):
