@@ -26,7 +26,7 @@ None at this time.
 ### PhotoCraft fork
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/mod.rs`
-- [ ] **TASK-1:** In `Tree::apply`, `Patch::Remove`: collect the ids of the removed node and every node under it, and drop their entries from `self.local`. A comment says why: a node the plug-in inserts again under the same id (a menu reopened after being dismissed) must show as the plug-in sends it, not as the user last left the removed one. `Patch::Move` keeps local values, since the node lives on.
+- [x] **TASK-1:** In `Tree::apply`, `Patch::Remove`: collect the ids of the removed node and every node under it, and drop their entries from `self.local`. A comment says why: a node the plug-in inserts again under the same id (a menu reopened after being dismissed) must show as the plug-in sends it, not as the user last left the removed one. `Patch::Move` keeps local values, since the node lives on.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/tests.rs`
 - [ ] **TASK-2:** Add `a_removed_popup_leaves_no_local_state`:
