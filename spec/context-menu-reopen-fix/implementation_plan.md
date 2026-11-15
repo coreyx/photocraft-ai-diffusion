@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 ---
 
 # Reopen a plug-in's context menu after one was dismissed
