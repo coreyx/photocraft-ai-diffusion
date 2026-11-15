@@ -38,6 +38,8 @@ FLUSH_MS = 16
 POLL_MS = 500
 #: Width a panel's widgets are laid out at in Qt (a docker's), for widgets sent as images.
 PANEL_WIDTH = 360
+#: How long a panel's width must hold still before it is laid out again, in milliseconds.
+RESIZE_SETTLE_MS = 100
 
 _ids = itertools.count(1)
 
@@ -154,6 +156,11 @@ class Mirror(QObject):
         self._poll_timer = QTimer(self)
         self._poll_timer.setInterval(poll_ms)
         self._poll_timer.timeout.connect(self.flush)
+        self._panel_width: int | None = None
+        self._resize_timer = QTimer(self)
+        self._resize_timer.setSingleShot(True)
+        self._resize_timer.setInterval(RESIZE_SETTLE_MS)
+        self._resize_timer.timeout.connect(self._apply_panel_width)
 
     @property
     def panel_id(self) -> str:
@@ -189,15 +196,20 @@ class Mirror(QObject):
         self._transport.on(self._surface["input"], self._on_input)
         if self._is_dialog:
             self._transport.on("dialog.closed", self._on_dialog_closed)
+        else:
+            self._transport.on("panel.resized", self._on_panel_resized)
         self._poll_timer.start()
 
     def stop(self):
         """Remove the panel or close the dialog, and stop following the widgets."""
         self._poll_timer.stop()
         self._flush_timer.stop()
+        self._resize_timer.stop()
         self._transport.off(self._surface["input"], self._on_input)
         if self._is_dialog:
             self._transport.off("dialog.closed", self._on_dialog_closed)
+        else:
+            self._transport.off("panel.resized", self._on_panel_resized)
         tracker.unregister(self)
         if self._sent is not None:
             self._sent = None
@@ -352,6 +364,30 @@ class Mirror(QObject):
                 adapter.apply(widget, event, self)
             except Exception:
                 log.exception("input %s on %s failed", event.kind, node_id)
+
+    def _on_panel_resized(self, data: dict[str, Any], _payload: bytes):
+        """PhotoCraft's width for this panel (``panel.resized``), applied once it holds still."""
+        if data.get("panelId") != self.surface_id:
+            return
+        width = data.get("width")
+        if not isinstance(width, (int, float)) or isinstance(width, bool) or width <= 0:
+            return
+        self._panel_width = round(width)
+        self._resize_timer.start()  # a dragged dock edge sends a width every frame
+
+    def _apply_panel_width(self):
+        """Lay the panel out at PhotoCraft's width.
+
+        Widgets drawn as images (upstream's Generate button) keep their width in PhotoCraft, so
+        laid out for a wider panel they push what follows them past its edge
+        (``investigations/generate-panel-rows-overflow``). Below the layout's minimum, the panel is
+        laid out at the minimum, as a Krita docker can't be narrower."""
+        if self._panel_width is None or not self.root.isWindow():
+            return
+        width = max(self._panel_width, self.root.minimumSizeHint().width())
+        if width != self.root.width():
+            self.root.resize(width, self.root.height())
+            self.mark_dirty()
 
     def _on_dialog_closed(self, data: dict[str, Any], _payload: bytes):
         if data.get("dialogId") != self.surface_id:

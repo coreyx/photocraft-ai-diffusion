@@ -68,7 +68,7 @@ None at this time.
 ### Plug-in
 
 #### [MODIFY] `photocraft_host/qt_mirror/mirror.py`
-- [ ] **TASK-7:** A panel's mirror handles `panel.resized` for its own `panelId`. It keeps the latest width and, after 100 ms with no newer one, resizes its root to `max(width, root.minimumSizeHint().width())` wide, keeping its height, then marks itself dirty. Qt reflows, and the self-drawn widgets are redrawn at their new width. Dialogs, which PhotoCraft sizes from the plug-in's own size, are unchanged. A comment says why the root needs the panel's width: widgets drawn as images can't shrink in PhotoCraft.
+- [x] **TASK-7:** A panel's mirror handles `panel.resized` for its own `panelId`. It keeps the latest width and, after 100 ms with no newer one, resizes its root to `max(width, root.minimumSizeHint().width())` wide, keeping its height, then marks itself dirty. Qt reflows, and the self-drawn widgets are redrawn at their new width. Dialogs, which PhotoCraft sizes from the plug-in's own size, are unchanged. A comment says why the root needs the panel's width: widgets drawn as images can't shrink in PhotoCraft.
 
 #### [MODIFY] `photocraft_host/qt_mirror/adapters/buttons.py`
 - [ ] **TASK-8:** A `QToolButton` with no icon and an `arrowType` other than `NoArrow` sends `icon: "icon:chevron-down"` (or `-up`, `-left`, `-right`). Upstream's mode drop-down (`generation.py:779-780`) is such a button, and PhotoCraft draws a button with neither icon nor text as nothing.
