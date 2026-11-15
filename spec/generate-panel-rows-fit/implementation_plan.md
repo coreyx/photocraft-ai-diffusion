@@ -55,7 +55,7 @@ None at this time.
   - a narrower window sends the new width.
 
 #### [MODIFY] `docs/process-plugins.md`
-- [ ] **TASK-4:** Document `panel.resized` in the event table, next to `panel.input`: its payload, when it's sent, that it isn't subscribed to, and that a plug-in laying out with its own toolkit should lay its panel out at that width.
+- [x] **TASK-4:** Document `panel.resized` in the event table, next to `panel.input`: its payload, when it's sent, that it isn't subscribed to, and that a plug-in laying out with its own toolkit should lay its panel out at that width.
 
 ### PhotoCraft fork: rows with a slider
 
