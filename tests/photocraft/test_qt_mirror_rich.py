@@ -570,6 +570,7 @@ def test_message_boxes_ask_photocraft(link, host: MockHost, qt_app):
     assert asked[-1]["kind"] == "warning" and asked[-1]["buttons"][0] == "Cancel", (
         "the default first"
     )
+    assert asked[-1]["title"] == "Confirm Deletion", "built with the constructor"
     clicked = box.clickedButton()
     assert clicked is not None and clicked.text() == "Delete"
 
@@ -578,6 +579,24 @@ def test_message_boxes_ask_photocraft(link, host: MockHost, qt_app):
         QMessageBox.warning(None, "Oops", "Closed without a choice")
         == QMessageBox.StandardButton.NoButton
     )
+
+
+def test_a_message_box_title_survives_qt_dropping_it(link, host: MockHost, qt_app):
+    """On macOS, Qt's ``QMessageBox`` ignores its window title. Cleared here as macOS leaves it,
+    PhotoCraft still gets the title the plug-in gave (spec ``macos-modifier-tests-and-message-
+    box-titles``)."""
+    asked: list[dict] = []
+    host.answers["dialog.message"] = lambda p, _: (asked.append(p), {"button": "OK"})[1]
+    box = QMessageBox(QMessageBox.Icon.Information, "Verification Failed", "Some files differ.")
+    QDialog.setWindowTitle(box, "")
+    assert box.windowTitle() == ""
+    box.exec()
+    assert asked[-1]["title"] == "Verification Failed"
+
+    box.setWindowTitle("Later")
+    QDialog.setWindowTitle(box, "")
+    box.exec()
+    assert asked[-1]["title"] == "Later", "a title set after construction"
 
 
 def test_file_pickers_ask_photocraft(link, host: MockHost):

@@ -44,7 +44,7 @@ None at this time. The two side points in the findings stay out of scope and are
   - `_standard_box` needs no change: it builds its box with the constructor, so the title is recorded.
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror_rich.py`
-- [ ] **TASK-2:** Test titles as macOS leaves them, on every platform.
+- [x] **TASK-2:** Test titles as macOS leaves them, on every platform.
   - In `test_message_boxes_ask_photocraft`, the "Confirm Deletion" box (built with the constructor, shown with `exec()`) also asserts `asked[-1]["title"] == "Confirm Deletion"`.
   - Add `test_a_message_box_title_survives_qt_dropping_it`:
     - build a `QMessageBox` with a title and clear it with `QDialog.setWindowTitle(box, "")`, as macOS's `QMessageBox` leaves it;
