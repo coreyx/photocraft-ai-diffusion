@@ -60,7 +60,7 @@ None at this time.
 ### PhotoCraft fork: rows with a slider
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/render.rs`
-- [ ] **TASK-5:** In `row()`, when no child grows, treat a visible `slider` or `sliderSpin` child as growing, so the items after it keep their size and the slider takes what's left. Those egui widgets take all the width offered, as the existing comment there says. A row with growing children is unchanged.
+- [x] **TASK-5:** In `row()`, when no child grows, treat a visible `slider` or `sliderSpin` child as growing, so the items after it keep their size and the slider takes what's left. Those egui widgets take all the width offered, as the existing comment there says. A row with growing children is unchanged.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/tests.rs`
 - [ ] **TASK-6:** Add `a_slider_leaves_room_for_the_buttons_after_it`: a 300 pt row of `sliderSpin`, `toolButton` and `toolButton`. Both buttons are drawn inside the row's right edge. Before TASK-5 they aren't.
