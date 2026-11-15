@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 ---
 
 # Fix the macOS message box titles and the modifier tests
