@@ -31,7 +31,7 @@ def main() -> int:
     from photocraft_host import qt_mirror
     from photocraft_host.qt_mirror import Mirror
     from photocraft_host.transport import Transport
-    from tests.photocraft.mock_host import MockHost, find_widget
+    from tests.photocraft.mock_host import COMMAND, MockHost, find_widget
 
     plugin_main.install_krita_shim()
     import krita
@@ -98,7 +98,7 @@ def main() -> int:
     results["completer_opened"] = bool(node.get("props", {}).get("completions"))
     send(prompt_id, "key", "Escape")
     send(prompt_id, "cursor", {"anchor": 2, "cursor": 5})
-    send(prompt_id, "key", "Up", ctrl=True)
+    send(prompt_id, "key", "Up", **{COMMAND: True})
     results["weighted"] = prompt.text
     results["model_prompt"] = model.regions.positive
 

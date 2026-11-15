@@ -42,7 +42,7 @@ from PyQt6.QtWidgets import (
 from photocraft_host.qt_mirror import Mirror, dialogs, install, tracker
 from photocraft_host.transport import Transport
 
-from .mock_host import MockHost, find_widget
+from .mock_host import COMMAND, MockHost, find_widget
 from .test_qt_mirror import PANEL, Panel, column, settle, wait_for
 
 
@@ -200,7 +200,7 @@ def test_prompt_edits_cursor_and_keys(mirror):
             "nodeId": panel.mirror.node_id(prompt),
             "kind": "key",
             "value": "Up",
-            "modifiers": {"ctrl": True},
+            "modifiers": {COMMAND: True},
         },
     )
     wait_for(panel.app, weighted)
@@ -517,7 +517,7 @@ def test_self_drawn_widgets_are_images(mirror, host: MockHost):
             "modifiers": mods or {},
         },
     )
-    send({"x": 10, "y": 5, "action": "press"}, {"ctrl": True})
+    send({"x": 10, "y": 5, "action": "press"}, {COMMAND: True})
     send({"x": 50, "y": 5, "action": "move"})
     send({"x": 90, "y": 5, "action": "release"})
     wait_for(panel.app, lambda: len(track.events) == 3)

@@ -66,7 +66,7 @@ None at this time. The two side points in the findings stay out of scope and are
 - [x] **TASK-5:** Add `COMMAND = "meta" if sys.platform == "darwin" else "ctrl"`, with a comment saying it is the modifier PhotoCraft sends for the key Qt calls Control: Command on a Mac (fork `render.rs:100`), Ctrl elsewhere.
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror_rich.py` and `tests/photocraft/upstream_interactions.py`
-- [ ] **TASK-6:** Send `COMMAND` where the tests mean Qt's Control:
+- [x] **TASK-6:** Send `COMMAND` where the tests mean Qt's Control:
   - `test_qt_mirror_rich.py:203`, the Up key in `test_prompt_edits_cursor_and_keys`;
   - `test_qt_mirror_rich.py:520`, the press in `test_self_drawn_widgets_are_images`;
   - `upstream_interactions.py:101`: `send(prompt_id, "key", "Up", **{COMMAND: True})`, importing `COMMAND` from `tests.photocraft.mock_host`. The script puts the repository on `sys.path` already.
