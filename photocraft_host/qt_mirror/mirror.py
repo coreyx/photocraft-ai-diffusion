@@ -390,7 +390,7 @@ class Mirror(QObject):
         # A docker's widget sits in the stand-in's off-screen QDockWidget, the window to resize.
         # Never shown, it doesn't lay out its widget on a resize: the layout is redone by hand,
         # then whatever frame the window keeps around the widget is added.
-        window = self.root.window()
+        window = self.root.window() or self.root
         window.resize(width, window.height())
         self._lay_out(window)
         if (frame := window.width() - self.root.width()) != 0:
