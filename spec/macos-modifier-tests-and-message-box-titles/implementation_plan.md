@@ -57,7 +57,7 @@ None at this time. The two side points in the findings stay out of scope and are
 - [x] **TASK-3:** Give `qt_modifiers` a `platform: str = sys.platform` parameter, used instead of reading `sys.platform` directly, as `configure_fonts` and `use_platform_tls` do. Its callers (`text.py:106`, `raster.py:64`) keep calling it without one.
 
 #### [NEW] `tests/photocraft/test_modifiers.py`
-- [ ] **TASK-4:** Unit tests of `qt_modifiers`:
+- [x] **TASK-4:** Unit tests of `qt_modifiers`:
   - on `win32` and `linux`, `{"ctrl": True}` gives `ControlModifier` and `{"meta": True}` gives `MetaModifier`;
   - on `darwin`, `{"meta": True}` (Command) gives `ControlModifier` and `{"ctrl": True}` gives `MetaModifier`;
   - `shift` and `alt` map the same everywhere, and an empty dict gives `NoModifier`.
