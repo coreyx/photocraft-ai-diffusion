@@ -63,7 +63,7 @@ None at this time. The two side points in the findings stay out of scope and are
   - `shift` and `alt` map the same everywhere, and an empty dict gives `NoModifier`.
 
 #### [MODIFY] `tests/photocraft/mock_host.py`
-- [ ] **TASK-5:** Add `COMMAND = "meta" if sys.platform == "darwin" else "ctrl"`, with a comment saying it is the modifier PhotoCraft sends for the key Qt calls Control: Command on a Mac (fork `render.rs:100`), Ctrl elsewhere.
+- [x] **TASK-5:** Add `COMMAND = "meta" if sys.platform == "darwin" else "ctrl"`, with a comment saying it is the modifier PhotoCraft sends for the key Qt calls Control: Command on a Mac (fork `render.rs:100`), Ctrl elsewhere.
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror_rich.py` and `tests/photocraft/upstream_interactions.py`
 - [ ] **TASK-6:** Send `COMMAND` where the tests mean Qt's Control:

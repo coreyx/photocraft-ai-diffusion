@@ -20,6 +20,7 @@ import copy
 import itertools
 import os
 import re
+import sys
 import threading
 import uuid
 from collections.abc import Callable
@@ -33,6 +34,9 @@ from photocraft_host import transport
 
 #: What the mock answers ``hello`` with.
 HOST_VERSION = "0.20.1-mock"
+#: The modifier PhotoCraft sends for the key Qt calls Control: Command on a Mac, where the
+#: fork reports it as ``meta`` (``process_plugin_ui/render.rs``), and Ctrl elsewhere.
+COMMAND = "meta" if sys.platform == "darwin" else "ctrl"
 
 
 @dataclass
