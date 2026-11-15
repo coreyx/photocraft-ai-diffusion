@@ -36,6 +36,7 @@ All notable changes to AI Diffusion for PhotoCraft are documented here. The form
 - The Animation workspace, until PhotoCraft has a Frame Animation panel.
 
 ### Fixed
+- On macOS, the plug-in's message boxes (Delete Workflow, Verification Failed and others) showed no title in PhotoCraft.
 - The plug-in could crash when PhotoCraft closed it while a network request was still under way, such as the first attempt to reach a server that isn't running. This happened every time on Linux. An exception that escapes the plug-in's code is now logged and the plug-in keeps running, as it does in Krita.
 - Each start logged a warning for every TLS backend the platform doesn't have: two on Linux, one on macOS.
 - The settings dialog opened at 420×320 with most of its Connection page out of view: the server-mode buttons, Server URL, Connect and Ok were past its edges. Dialogs now open at their Qt size. Rows share their width as Qt's stretch does, and the page list keeps its fixed width. On the Diffusion and Performance pages, slider settings no longer squeeze their descriptions. This needs the fork's PhotoCraft from this release on.
