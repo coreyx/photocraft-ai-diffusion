@@ -55,6 +55,14 @@ def test_the_generate_button_is_an_image_that_clicks(results: dict):
     assert results["generate_clicked"]
 
 
+def test_a_docker_built_with_a_document_open_binds_it(results: dict):
+    """A document PhotoCraft restored before the plug-in started: the docker's workspaces bind
+    its model, and Generate reaches it (spec ``docker-built-before-documents``)."""
+    bindings = results["docker_bindings"]
+    assert all(count > 0 for count in bindings.values()), bindings
+    assert results["docker_generate_reaches_model"]
+
+
 def test_unblur_is_disabled_without_its_control_model(results: dict):
     """REQ-25: Image guidance needs the tile/unblur control model; without it the slider is
     disabled in PhotoCraft's panel, with upstream's tooltip saying why."""

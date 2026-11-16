@@ -40,7 +40,7 @@ None at this time.
   - when the docker's constructor raises, the flag is still cleared.
 
 #### [MODIFY] `tests/photocraft/upstream_interactions.py` and `tests/photocraft/test_upstream_interactions.py`
-- [ ] **TASK-3:** With the script's document already open, build upstream's `ImageDiffusionWidget` through `Krita.instance().create_dock`. Hand its Generate, Upscale, Live and Custom Graph workspaces the document's model, as `update_content` does once connected. Record two things:
+- [x] **TASK-3:** With the script's document already open, build upstream's `ImageDiffusionWidget` through `Krita.instance().create_dock`. Hand its Generate, Upscale, Live and Custom Graph workspaces the document's model, as `update_content` does once connected. Record two things:
   - **each workspace's bindings:** the length of its `_model_bindings`;
   - **Generate:** whether its `clicked` reaches the model, with `model.generate` replaced by a recorder.
 

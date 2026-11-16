@@ -153,6 +153,32 @@ def main() -> int:
     results["unblur_tooltip"] = unblur.get("props", {}).get("tooltip")
     upscale_mirror.stop()
 
+    # The docker as the plug-in builds it, with this document already open (one PhotoCraft
+    # restored at launch): each workspace must bind the document's model once it's handed it.
+    from ai_diffusion.ui.diffusion import ImageDiffusionWidget
+    from photocraft_host.krita import DockWidgetFactory, DockWidgetFactoryBase, Krita
+
+    generated: list[bool] = []
+    model.generate = lambda: generated.append(True)  # pyright: ignore[reportAttributeAccessIssue]
+    factory = DockWidgetFactory(
+        "docker_check", DockWidgetFactoryBase.DockRight, ImageDiffusionWidget
+    )
+    docker = Krita.instance().create_dock(factory)
+    assert isinstance(docker, ImageDiffusionWidget)
+    workspaces = {
+        "generation": docker._generation,
+        "upscaling": docker._upscaling,
+        "live": docker._live,
+        "custom": docker._custom,
+    }
+    for workspace in workspaces.values():
+        workspace.model = model  # what ImageDiffusionWidget.update_content does once connected
+    results["docker_bindings"] = {
+        name: len(workspace._model_bindings) for name, workspace in workspaces.items()
+    }
+    docker._generation.generate_button.clicked.emit()
+    results["docker_generate_reaches_model"] = bool(generated)
+
     print(json.dumps(results), flush=True)
     mirror.stop()
     host.close()
