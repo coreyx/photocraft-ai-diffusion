@@ -58,7 +58,7 @@ None at this time.
 ### Plug-in: mirror (`photocraft_host/qt_mirror`)
 
 #### [MODIFY] `photocraft_host/qt_mirror/mirror.py`
-- [ ] **TASK-5:** Add the module function `wants_hover(widget)`. It is true when a class in `type(widget).__mro__`, other than PyQt6's own classes, defines `enterEvent` or `leaveEvent`. In `Mirror.build`, set `props["hover"] = True` for such widgets, and `None` otherwise, so the prop is left out.
+- [x] **TASK-5:** Add the module function `wants_hover(widget)`. It is true when a class in `type(widget).__mro__`, other than PyQt6's own classes, defines `enterEvent` or `leaveEvent`. In `Mirror.build`, set `props["hover"] = True` for such widgets, and `None` otherwise, so the prop is left out.
 - [ ] **TASK-6:** In `Mirror._on_input`, handle `kind == "hover"` before looking up an adapter, for any tracked widget, enabled or not, as Qt delivers hover. The new `Mirror._hover(widget, inside)` works as follows:
   - **On `true`:** move Qt's cursor to the widget's centre with `QCursor.setPos`, then send it a `QEnterEvent`.
   - **On `false`:** park the cursor at `PARKED_CURSOR`, then send it `QEvent.Type.Leave`.

@@ -13,6 +13,7 @@ anchored to the widget that was used (:mod:`.menus`).
 
 from __future__ import annotations
 
+import functools
 import itertools
 import logging
 from collections.abc import Callable
@@ -129,6 +130,26 @@ def fit_combo_to_panel(combo: QComboBox):
         return
     combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
     combo.setMinimumContentsLength(max(combo.minimumContentsLength(), PANEL_COMBO_CHARS))
+
+
+def wants_hover(widget: QWidget) -> bool:
+    """Whether ``widget``'s own code reacts to the pointer entering or leaving it.
+
+    PhotoCraft tells the plug-in about the pointer only for widgets marked ``hover``, so the
+    mark goes on widgets whose Python class overrides ``enterEvent`` or ``leaveEvent``, such as
+    upstream's ``FactorWidget``, which shows the target size while the pointer is over it. Qt's
+    own widgets are left out: PhotoCraft draws their hover look itself."""
+    return _class_wants_hover(type(widget))
+
+
+@functools.cache
+def _class_wants_hover(widget_class: type) -> bool:
+    # Cached per class: every flush builds every widget's node.
+    return any(
+        "enterEvent" in vars(cls) or "leaveEvent" in vars(cls)
+        for cls in widget_class.__mro__
+        if not cls.__module__.startswith("PyQt6")
+    )
 
 
 class Mirror(QObject):
@@ -316,6 +337,7 @@ class Mirror(QObject):
             "tooltip": _tooltip(widget),
             "enabled": None if widget.isEnabled() else False,
             "visible": False if hidden else None,
+            "hover": True if wants_hover(widget) else None,
         })
         if hidden:
             return node(nid, kind, props)
