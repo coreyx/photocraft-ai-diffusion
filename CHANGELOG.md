@@ -38,6 +38,7 @@ All notable changes to AI Diffusion for PhotoCraft are documented here. The form
 ### Fixed
 - The Generate panel's buttons ran past the panel's edge: the mode drop-down and queue button after Generate, and Add Control Layer and Add Region after the strength slider. The panel is now laid out at PhotoCraft's width. This needs the fork's PhotoCraft with `panel.resized`.
 - The Generation mode drop-down beside the main button didn't show. It now shows a chevron, and with a selection opens Fill, Expand, Add Content, Remove Content, Replace Background and the rest.
+- A generated result could only be deselected by selecting another. A click on the empty space in the history now deselects it, and its preview leaves the canvas. This needs the fork's PhotoCraft from this release on.
 - After a context menu was dismissed by clicking elsewhere, it no longer opened, for example on the history's results, until the panel was rebuilt.
 - On macOS, the plug-in's message boxes (Delete Workflow, Verification Failed and others) showed no title in PhotoCraft.
 - The plug-in could crash when PhotoCraft closed it while a network request was still under way, such as the first attempt to reach a server that isn't running. This happened every time on Linux. An exception that escapes the plug-in's code is now logged and the plug-in keeps running, as it does in Krita.
