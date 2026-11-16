@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 ---
 
 # Show Upscale's target size only while the pointer is over the scale row
