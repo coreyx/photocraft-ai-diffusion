@@ -32,13 +32,13 @@ None at this time.
 ### PhotoCraft fork
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/render.rs`
-- [ ] **TASK-1:** Add `empty_click(ui, n, cx, area_id)` beside `item_interaction`, used by `thumb_grid` and `list`:
+- [x] **TASK-1:** Add `empty_click(ui, n, cx, area_id)` beside `item_interaction`, used by `thumb_grid` and `list`:
   - **Before the items are drawn,** it senses a click on the grid's area from the previous frame, kept in egui's temporary memory under `area_id`. Items are registered after it, so they sit above it and take the clicks that land on them. Only a click that misses every item reaches it.
   - **The area** is the grid's rect at the full width it was laid out in, so it includes the rest of a short row. It's updated after the items are laid out each frame. On the first frame there is none yet, and nothing is sensed.
   - **On a plain primary click** (no Shift, no Ctrl/⌘), in `multi` mode, with a non-empty selection, it sets the local `selected` to `[]` and emits `InputKind::Select` with `[]`, as `select` does. Otherwise it does nothing.
 
   A comment explains why: Qt clears an Extended-selection list's selection on a click that hits no item. Upstream's history relies on this to deselect and hide its preview, and the fork had no way to send it.
-- [ ] **TASK-2:** Call `empty_click` from `thumb_grid` and `list`, then store each one's area after its items. Keys are still forwarded while the pointer is over the area. A secondary click on empty space still sends nothing.
+- [x] **TASK-2:** Call `empty_click` from `thumb_grid` and `list`, then store each one's area after its items. Keys are still forwarded while the pointer is over the area. A secondary click on empty space still sends nothing.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/tests.rs`
 - [ ] **TASK-3:** Add `a_click_on_a_grids_empty_space_clears_its_selection`:
