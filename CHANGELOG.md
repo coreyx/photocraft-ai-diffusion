@@ -38,6 +38,7 @@ All notable changes to AI Diffusion for PhotoCraft are documented here. The form
 ### Fixed
 - The Generate panel's buttons ran past the panel's edge: the mode drop-down and queue button after Generate, and Add Control Layer and Add Region after the strength slider. The panel is now laid out at PhotoCraft's width. This needs the fork's PhotoCraft with `panel.resized`.
 - The Generation mode drop-down beside the main button didn't show. It now shows a chevron, and with a selection opens Fill, Expand, Add Content, Remove Content, Replace Background and the rest.
+- In a document that was open before the plug-in started, the panel didn't respond: Generate queued nothing, and the history, Upscale and Live weren't connected. This happened, for example, to a document PhotoCraft restored at launch, or to one opened with PhotoCraft.
 - A generated result could only be deselected by selecting another. A click on the empty space in the history now deselects it, and its preview leaves the canvas. This needs the fork's PhotoCraft from this release on.
 - After a context menu was dismissed by clicking elsewhere, it no longer opened, for example on the history's results, until the panel was rebuilt.
 - On macOS, the plug-in's message boxes (Delete Workflow, Verification Failed and others) showed no title in PhotoCraft.
