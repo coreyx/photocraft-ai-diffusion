@@ -42,7 +42,7 @@ None at this time.
 ### PhotoCraft fork: drawing (`../photocraft`)
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/render.rs`
-- [ ] **TASK-3:** In `node()`, for a node with `hover: true`, test after drawing whether its rect contains the pointer, with `ui.rect_contains_pointer(response.rect)`.
+- [x] **TASK-3:** In `node()`, for a node with `hover: true`, test after drawing whether its rect contains the pointer, with `ui.rect_contains_pointer(response.rect)`.
   - Keep the last state in the tree's local values under `(id, "hovered")`, a key the plug-in never sets, and emit `InputKind::Hover` only when the state changes.
   - When such a node is skipped because it is hidden, and its local state says hovered, emit `false` and drop the state.
   - A removed node's local values are already dropped by `Tree::apply`, so a node inserted again starts unhovered.
