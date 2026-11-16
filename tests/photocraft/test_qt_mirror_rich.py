@@ -338,6 +338,13 @@ def test_history_list(mirror):
     grid = find_widget(panel.tree, grid_id)
     assert grid is not None and grid["props"]["selected"] == [red]
     assert "visible" not in panel.props(history.apply), "Apply shows with a selection"
+    # A click on the grid's empty space sends no items: upstream then hides the result's preview.
+    send("select", [])
+    wait_for(panel.app, lambda: not history.selectedItems())
+    panel.flush()
+    grid = find_widget(panel.tree, grid_id)
+    assert grid is not None and grid["props"]["selected"] == []
+    assert panel.props(history.apply).get("visible") is False, "Apply hides without a selection"
     send("click", {"item": blue, "count": 2})
     wait_for(panel.app, lambda: doubled == ["blue"])
     send("select", [red, blue])

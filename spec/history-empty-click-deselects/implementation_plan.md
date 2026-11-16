@@ -55,7 +55,7 @@ None at this time.
 ### Plug-in
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror_rich.py`
-- [ ] **TASK-4:** In `test_history_list`, after selecting `red`, send `select []`. Check three things:
+- [x] **TASK-4:** In `test_history_list`, after selecting `red`, send `select []`. Check three things:
   - the grid's `selected` is `[]`;
   - the history has no selected item;
   - Apply is hidden again.
