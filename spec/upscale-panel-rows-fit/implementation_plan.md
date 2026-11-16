@@ -40,7 +40,7 @@ None at this time.
 ### Plug-in
 
 #### [MODIFY] `photocraft_host/qt_mirror/mirror.py`
-- [ ] **TASK-3:** In `Mirror.build`, when a panel's mirror first tracks a `QComboBox` that has Qt's default `sizeAdjustPolicy`, set `AdjustToMinimumContentsLengthWithIcon` with `setMinimumContentsLength(PANEL_COMBO_CHARS)`, a new constant of 8. A comment explains why:
+- [x] **TASK-3:** In `Mirror.build`, when a panel's mirror first tracks a `QComboBox` that has Qt's default `sizeAdjustPolicy`, set `AdjustToMinimumContentsLengthWithIcon` with `setMinimumContentsLength(PANEL_COMBO_CHARS)`, a new constant of 8. A comment explains why:
   - with the default policy, Qt's minimum is the longest item;
   - the mirror lays a panel out at that minimum when it's wider than PhotoCraft's width, so self-drawn widgets are drawn too wide;
   - PhotoCraft draws drop-downs at its own width, cutting long text.

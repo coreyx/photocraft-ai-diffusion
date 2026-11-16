@@ -20,7 +20,7 @@ from typing import Any
 
 from PyQt6.QtCore import QObject, QTimer
 from PyQt6.QtGui import QIcon, QImage, QPixmap, QTextDocumentFragment
-from PyQt6.QtWidgets import QLayout, QMenu, QWidget
+from PyQt6.QtWidgets import QComboBox, QLayout, QMenu, QWidget
 
 from . import menus, tracker
 from .adapters import Input, adapter_for
@@ -40,6 +40,9 @@ POLL_MS = 500
 PANEL_WIDTH = 360
 #: How long a panel's width must hold still before it is laid out again, in milliseconds.
 RESIZE_SETTLE_MS = 100
+#: The characters a panel's drop-down is wide enough for in Qt's layout, in place of its longest
+#: item. PhotoCraft draws the drop-down itself, cutting a longer choice.
+PANEL_COMBO_CHARS = 8
 
 _ids = itertools.count(1)
 
@@ -113,6 +116,21 @@ def dialog_size(dialog: QWidget) -> dict[str, int]:
     return out
 
 
+def fit_combo_to_panel(combo: QComboBox):
+    """Size a panel's drop-down in Qt by a short contents length rather than its longest item.
+
+    With Qt's default policy, a drop-down's minimum width is its longest item: the server's
+    default upscaler name made the Upscale workspace's minimum 355 px. The mirror lays a panel
+    out at that minimum when it's wider than PhotoCraft's panel, so widgets drawn as images (the
+    Upscale button) were drawn too wide and pushed what follows them past the panel's edge
+    (``investigations/upscale-panel-rows-overflow``). A drop-down whose code chose its own
+    policy keeps it."""
+    if combo.sizeAdjustPolicy() != QComboBox.SizeAdjustPolicy.AdjustToContentsOnFirstShow:
+        return
+    combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+    combo.setMinimumContentsLength(max(combo.minimumContentsLength(), PANEL_COMBO_CHARS))
+
+
 class Mirror(QObject):
     """Mirrors ``root`` (and everything inside it) into the PhotoCraft panel ``surface_id``, or
     a dialog window when ``surface="dialog"``."""
@@ -173,6 +191,12 @@ class Mirror(QObject):
         from . import install
 
         install()
+        if not self._is_dialog:
+            # Before the size hint below is measured; build() covers drop-downs added later. A
+            # dialog parented to the panel is a window of its own and keeps its sizes.
+            for combo in self.root.findChildren(QComboBox):
+                if combo.window() is self.root.window():
+                    fit_combo_to_panel(combo)
         if not self._is_dialog and self.root.isWindow() and not self.root.isVisible():
             # Laid out and shown off screen, as a docker is in Krita: widgets drawn as images
             # need a size, and upstream asks isVisible() in places.
@@ -272,6 +296,8 @@ class Mirror(QObject):
         adapter = adapter_for(widget)
         if nid not in self._tracked:
             self._tracked.add(nid)
+            if not self._is_dialog and isinstance(widget, QComboBox):
+                fit_combo_to_panel(widget)
             widget.installEventFilter(self._filter)
             if adapter is not None:
                 adapter.connect(widget, self.mark_dirty)
