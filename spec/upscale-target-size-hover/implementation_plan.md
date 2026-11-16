@@ -31,7 +31,7 @@ None at this time.
 ### PhotoCraft fork: protocol (`../photocraft`)
 
 #### [MODIFY] `crates/process-plugin-protocol/src/event.rs`
-- [ ] **TASK-1:** Add `InputKind::Hover` (wire name `"hover"`), documented as: the pointer moved onto (`value` true) or off (`value` false) a widget whose `hover` prop is true.
+- [x] **TASK-1:** Add `InputKind::Hover` (wire name `"hover"`), documented as: the pointer moved onto (`value` true) or off (`value` false) a widget whose `hover` prop is true.
   - In `crates/process-plugin-protocol/src/tests.rs`, add `hover_input_has_the_documented_wire_shape`. It decodes `{"owner":"main","nodeId":"row","kind":"hover","value":true}` to `InputKind::Hover`, and encodes `InputKind::Hover` back to `"hover"`.
 
 #### [MODIFY] `crates/process-plugin-protocol/src/widget.rs`, `docs/process-plugins.md`
