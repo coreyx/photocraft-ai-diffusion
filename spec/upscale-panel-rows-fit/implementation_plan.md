@@ -26,7 +26,7 @@ None at this time.
 ### PhotoCraft fork
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/render.rs`
-- [ ] **TASK-1:** In `combo()`, build craft-ui's `ComboBox` with `.truncate()`, so the selected text is cut with an ellipsis to the width it's given rather than widening the drop-down. When the node has no `tooltip` prop, the drop-down's response shows the full selected text on hover. A comment explains why: craft-ui's `width` is a minimum, and a drop-down wider than the panel widens egui's layout region, which pushes every right-aligned item in the rows after it past the edge.
+- [x] **TASK-1:** In `combo()`, build craft-ui's `ComboBox` with `.truncate()`, so the selected text is cut with an ellipsis to the width it's given rather than widening the drop-down. When the node has no `tooltip` prop, the drop-down's response shows the full selected text on hover. A comment explains why: craft-ui's `width` is a minimum, and a drop-down wider than the panel widens egui's layout region, which pushes every right-aligned item in the rows after it past the edge.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/tests.rs`
 - [ ] **TASK-2:** Add `a_long_combo_choice_stays_inside_the_panel`, in a harness 300 points wide that draws the tree inside a vertical scroll area, like a panel's body:
