@@ -35,7 +35,7 @@ None at this time.
   - In `crates/process-plugin-protocol/src/tests.rs`, add `hover_input_has_the_documented_wire_shape`. It decodes `{"owner":"main","nodeId":"row","kind":"hover","value":true}` to `InputKind::Hover`, and encodes `InputKind::Hover` back to `"hover"`.
 
 #### [MODIFY] `crates/process-plugin-protocol/src/widget.rs`, `docs/process-plugins.md`
-- [ ] **TASK-2:** Document the common prop `hover` (default false) in the module docs and in the docs' list of common props. Add a paragraph under the input events saying when `hover` is sent:
+- [x] **TASK-2:** Document the common prop `hover` (default false) in the module docs and in the docs' list of common props. Add a paragraph under the input events saying when `hover` is sent:
   - when the pointer moves onto or off the widget's drawn area;
   - with `false` when a hovered widget is hidden or removed.
 
