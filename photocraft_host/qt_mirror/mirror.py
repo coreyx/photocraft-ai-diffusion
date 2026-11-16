@@ -401,11 +401,13 @@ class Mirror(QObject):
         widget = self._widgets.get(node_id)
         if handler is None and widget is None:
             return
-        if event.kind == "hover" and widget is not None:
-            try:
-                self._hover(widget, event.value is True)
-            except Exception:
-                log.exception("hover on %s failed", node_id)
+        if event.kind == "hover":
+            # Only widgets sent as hover-aware asked for it.
+            if widget is not None and wants_hover(widget):
+                try:
+                    self._hover(widget, event.value is True)
+                except Exception:
+                    log.exception("hover on %s failed", node_id)
             return
         self._force.add(node_id)
         self.mark_dirty()
@@ -431,7 +433,8 @@ class Mirror(QObject):
         offscreen platform the cursor never moves by itself, so it is moved into the widget
         before ``Enter``, and parked outside every window before ``Leave``. It is parked only if
         it is still in this widget: PhotoCraft may report entering the next hover-aware widget
-        before leaving this one."""
+        before leaving this one. In a shown window (a dialog) Qt may also send its own ``Enter``
+        or ``Leave`` for the move; both see the same cursor, so the widget decides the same."""
         if inside:
             center = widget.rect().center()
             QCursor.setPos(widget.mapToGlobal(center))

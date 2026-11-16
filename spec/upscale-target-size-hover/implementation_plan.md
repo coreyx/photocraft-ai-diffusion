@@ -71,7 +71,7 @@ None at this time.
 ### Plug-in: tests (`tests/photocraft`)
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror_rich.py`
-- [ ] **TASK-8:** Add `test_hover_reaches_widgets_that_handle_it`. A panel holds a widget class overriding `enterEvent`/`leaveEvent` that records `rect().contains(mapFromGlobal(QCursor.pos()))`, and a plain `QLabel`. It checks:
+- [x] **TASK-8:** Add `test_hover_reaches_widgets_that_handle_it`. A panel holds a widget class overriding `enterEvent`/`leaveEvent` that records `rect().contains(mapFromGlobal(QCursor.pos()))`, and a plain `QLabel`. It checks:
   - the first node has `hover: true` and the label's has no `hover`;
   - a `hover` `true` input runs `enterEvent` with the cursor inside;
   - `false` runs `leaveEvent` with the cursor outside;

@@ -10,6 +10,7 @@ import pytest
 from PyQt6.QtCore import QEvent, QStringListModel, Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import (
     QColor,
+    QCursor,
     QIcon,
     QKeyEvent,
     QMouseEvent,
@@ -635,6 +636,54 @@ def test_an_arrow_only_tool_button_shows_a_chevron(mirror):
     panel = mirror(column(down, plain))
     assert panel.props(down)["icon"] == "icon:chevron-down"
     assert "icon" not in panel.props(plain)
+
+
+class PointerAware(QWidget):
+    """Records whether Qt's cursor is over it when the pointer enters or leaves, as upstream's
+    ``FactorWidget`` decides whether to show the target size."""
+
+    def __init__(self):
+        super().__init__()
+        self.setFixedSize(120, 30)
+        self.seen: list[tuple[str, bool]] = []
+
+    def _under_cursor(self) -> bool:
+        return self.rect().contains(self.mapFromGlobal(QCursor.pos()))
+
+    def enterEvent(self, event):
+        self.seen.append(("enter", self._under_cursor()))
+        super().enterEvent(event)
+
+    def leaveEvent(self, a0):
+        self.seen.append(("leave", self._under_cursor()))
+        super().leaveEvent(a0)
+
+
+def test_hover_reaches_widgets_that_handle_it(mirror):
+    """PhotoCraft reports the pointer only for widgets marked ``hover``; the mirror plays it back
+    as Qt's Enter and Leave with Qt's cursor moved to match (spec
+    ``upscale-target-size-hover``)."""
+    aware = PointerAware()
+    label = QLabel("Target size")
+    panel = mirror(column(aware, label))
+    assert panel.props(aware).get("hover") is True
+    assert "hover" not in panel.props(label)
+
+    # The test's window is shown, so Qt may add an Enter or Leave of its own for the cursor's
+    # move; every one must see the cursor where PhotoCraft's pointer is.
+    panel.user(aware, "hover", True, done=lambda: bool(aware.seen))
+    settle(panel.app)
+    assert set(aware.seen) == {("enter", True)}
+    entered = len(aware.seen)
+    panel.user(aware, "hover", False, done=lambda: len(aware.seen) > entered)
+    settle(panel.app)
+    assert set(aware.seen[entered:]) == {("leave", False)}
+    assert not aware.rect().contains(aware.mapFromGlobal(QCursor.pos()))
+
+    # A widget not sent as hover-aware ignores it: the cursor stays parked.
+    parked = QCursor.pos()
+    panel.user(label, "hover", True)
+    assert QCursor.pos() == parked
 
 
 class Track(QWidget):
