@@ -41,7 +41,7 @@ None at this time.
 - [x] **TASK-2:** Call `empty_click` from `thumb_grid` and `list`, then store each one's area after its items. Keys are still forwarded while the pointer is over the area. A secondary click on empty space still sends nothing.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/tests.rs`
-- [ ] **TASK-3:** Add `a_click_on_a_grids_empty_space_clears_its_selection`:
+- [x] **TASK-3:** Add `a_click_on_a_grids_empty_space_clears_its_selection`:
   1. Set up a `thumbGrid` in `multi` mode with two 48-pt thumbnails, `selected: ["r1"]`, in a 700-pt harness, so the row has empty space after `r2`.
   2. Run a few frames.
   3. Click a point inside the grid's area to the right of `r2`, and check one `Select` event with `[]`.
