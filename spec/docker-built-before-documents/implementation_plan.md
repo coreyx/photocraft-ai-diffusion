@@ -26,7 +26,7 @@ None at this time.
 ### The `krita` stand-in
 
 #### [MODIFY] `photocraft_host/krita/_app.py`
-- [ ] **TASK-1:** In `Krita.create_dock`, set a `_building_dock` flag around `factory.create()`, cleared in a `finally`. `activeDocument()` returns `None` while it's set. The docstring says why:
+- [x] **TASK-1:** In `Krita.create_dock`, set a `_building_dock` flag around `factory.create()`, cleared in a `finally`. `activeDocument()` returns `None` while it's set. The docstring says why:
   - Krita builds its dockers before any document is open;
   - upstream's workspace widgets start from `root.active_model` and bind a model only when it differs;
   - a document active while they're built would never be bound.

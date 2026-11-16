@@ -327,6 +327,7 @@ class Krita(QObject):
         self._extensions: list[Extension] = []
         self._dock_factories: list[DockWidgetFactory] = []
         self._docks: list[DockWidget] = []
+        self._building_dock = False
         self._action_texts: dict[str, str] = {}
         self._window = Window()
 
@@ -378,8 +379,19 @@ class Krita(QObject):
                 self._action_texts[str(action.get("name"))] = text
 
     def create_dock(self, factory: DockWidgetFactory) -> DockWidget:
-        """Create a docker from its factory and keep it, so it hears of document changes."""
-        dock = factory.create()
+        """Create a docker from its factory and keep it, so it hears of document changes.
+
+        While it's built there is no active document, as in Krita, which builds its dockers before
+        any document is open. The docker hears of the open one afterwards (``canvasChanged``).
+        Upstream's workspaces start from ``root.active_model`` and bind a model only when it
+        differs from that one, so a document active while they were built would never be bound:
+        Generate would do nothing in a document PhotoCraft restored before the plug-in started.
+        """
+        self._building_dock = True
+        try:
+            dock = factory.create()
+        finally:
+            self._building_dock = False
         assert isinstance(dock, DockWidget)
         self._docks.append(dock)
         return dock
@@ -395,7 +407,7 @@ class Krita(QObject):
 
     def activeDocument(self) -> Document | None:
         host = self._host
-        if host is None or host.active is None:
+        if host is None or host.active is None or self._building_dock:
             return None
         return host.docs.get(host.active)
 
