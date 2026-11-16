@@ -20,6 +20,7 @@ from PyQt6.QtGui import (
 )
 from PyQt6.QtWidgets import (
     QApplication,
+    QComboBox,
     QCompleter,
     QDialog,
     QDialogButtonBox,
@@ -580,6 +581,49 @@ def test_a_panel_takes_the_size_photocraft_sends_as_it_registers(mirror, host: M
     content.resize(100, 30)  # as the real docker's widget was: not yet laid out in the dock
     panel = mirror(content)
     wait_for(panel.app, lambda: content.width() == 280)
+
+
+def test_a_long_drop_down_choice_doesnt_widen_the_panel(mirror, host: MockHost, qt_app):
+    """Qt's default drop-down is as wide as its longest item, which set the Upscale workspace's
+    minimum. The panel was laid out at that minimum, wider than PhotoCraft's, so the self-drawn
+    Upscale button pushed the queue button past the edge (spec ``upscale-panel-rows-fit``)."""
+    name = "Default (4x_NMKD-Superscale-SP_178000_G.pth)"
+    root = QWidget()
+    layout = QVBoxLayout(root)
+    model = QComboBox()
+    model.addItem(name)
+    own = QComboBox()  # one whose code chose its own size
+    own.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+    own.addItem("Short")
+    row = QHBoxLayout()
+    upscale = Switch("Upscale")
+    upscale.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+    queue = QToolButton()
+    queue.setText("Queue")
+    row.addWidget(upscale)
+    row.addWidget(queue)
+    layout.addWidget(model)
+    layout.addWidget(own)
+    layout.addLayout(row)
+    panel = mirror(root)
+
+    panel.host.resize_panel(PANEL, 280, 400)
+    wait_for(panel.app, lambda: root.width() == 280)
+    panel.flush()
+    image = panel.props(upscale)
+    assert image["width"] == upscale.width() and image["width"] + queue.width() <= 280
+    assert own.sizeAdjustPolicy() == QComboBox.SizeAdjustPolicy.AdjustToContents
+
+    # A dialog keeps Qt's sizes: it opens at its size hint, which the drop-down is part of.
+    dialog = QDialog()
+    dialog.setWindowTitle("Choose")
+    choice = QComboBox()
+    choice.addItem(name)
+    QVBoxLayout(dialog).addWidget(choice)
+    dialog.show()
+    wait_for(qt_app, lambda: any(m == "dialog.open" for m, _ in host.calls))
+    assert choice.sizeAdjustPolicy() == QComboBox.SizeAdjustPolicy.AdjustToContentsOnFirstShow
+    dialog.hide()
 
 
 def test_an_arrow_only_tool_button_shows_a_chevron(mirror):

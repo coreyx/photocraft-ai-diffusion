@@ -48,7 +48,7 @@ None at this time.
   A dialog's mirror leaves its drop-downs alone.
 
 #### [MODIFY] `tests/photocraft/test_qt_mirror_rich.py`
-- [ ] **TASK-4:** Add `test_a_long_drop_down_choice_doesnt_widen_the_panel`:
+- [x] **TASK-4:** Add `test_a_long_drop_down_choice_doesnt_widen_the_panel`:
   1. Set up a panel with a `QComboBox` holding a 45-character item, then a row with a self-drawn widget (the test file's existing painted widget) beside a tool button.
   2. Send `panel.resized` with 280 points. The root lays out at 280, not at the combo's full width, and the self-drawn widget's image fits within it.
   3. Mirror the same combo in a dialog: it keeps `AdjustToContentsOnFirstShow`.
