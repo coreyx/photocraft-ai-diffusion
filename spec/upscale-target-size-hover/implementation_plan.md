@@ -49,7 +49,7 @@ None at this time.
   - Add a doc comment on the new helper (`report_hover`) saying why: a plug-in drawing with its own toolkit can only show hover-dependent UI if it hears about the pointer.
 
 #### [MODIFY] `crates/ui-egui/src/process_plugin_ui/tests.rs`
-- [ ] **TASK-4:** Add `a_hover_node_reports_the_pointer_entering_and_leaving`. The harness holds a column with `hover: true` and a label inside, and a second column without `hover`. It checks:
+- [x] **TASK-4:** Add `a_hover_node_reports_the_pointer_entering_and_leaving`. The harness holds a column with `hover: true` and a label inside, and a second column without `hover`. It checks:
   - moving the pointer onto the first column sends one `hover` `true`, and further frames over it send nothing;
   - moving off sends one `false`;
   - hovering the second column sends nothing;
