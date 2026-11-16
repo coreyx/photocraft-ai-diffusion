@@ -19,9 +19,9 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
-from PyQt6.QtCore import QObject, QTimer
-from PyQt6.QtGui import QIcon, QImage, QPixmap, QTextDocumentFragment
-from PyQt6.QtWidgets import QComboBox, QLayout, QMenu, QWidget
+from PyQt6.QtCore import QEvent, QObject, QPoint, QPointF, QTimer
+from PyQt6.QtGui import QCursor, QEnterEvent, QIcon, QImage, QPixmap, QTextDocumentFragment
+from PyQt6.QtWidgets import QApplication, QComboBox, QLayout, QMenu, QWidget
 
 from . import menus, tracker
 from .adapters import Input, adapter_for
@@ -44,6 +44,9 @@ RESIZE_SETTLE_MS = 100
 #: The characters a panel's drop-down is wide enough for in Qt's layout, in place of its longest
 #: item. PhotoCraft draws the drop-down itself, cutting a longer choice.
 PANEL_COMBO_CHARS = 8
+#: Where Qt's cursor waits while the pointer is over no hover-aware widget: outside every window,
+#: so upstream code comparing ``QCursor.pos()`` with a widget never finds the pointer over it.
+PARKED_CURSOR = QPoint(-100000, -100000)
 
 _ids = itertools.count(1)
 
@@ -398,6 +401,12 @@ class Mirror(QObject):
         widget = self._widgets.get(node_id)
         if handler is None and widget is None:
             return
+        if event.kind == "hover" and widget is not None:
+            try:
+                self._hover(widget, event.value is True)
+            except Exception:
+                log.exception("hover on %s failed", node_id)
+            return
         self._force.add(node_id)
         self.mark_dirty()
         with menus.anchored(self, node_id):
@@ -412,6 +421,28 @@ class Mirror(QObject):
                 adapter.apply(widget, event, self)
             except Exception:
                 log.exception("input %s on %s failed", event.kind, node_id)
+
+    @staticmethod
+    def _hover(widget: QWidget, inside: bool):
+        """Play PhotoCraft's ``hover`` input into ``widget`` as Qt's ``Enter`` or ``Leave``.
+
+        Upstream's widgets decide what to show from ``QCursor.pos()`` and their enter and leave
+        handlers (``FactorWidget`` shows the target size while the pointer is over it). On the
+        offscreen platform the cursor never moves by itself, so it is moved into the widget
+        before ``Enter``, and parked outside every window before ``Leave``. It is parked only if
+        it is still in this widget: PhotoCraft may report entering the next hover-aware widget
+        before leaving this one."""
+        if inside:
+            center = widget.rect().center()
+            QCursor.setPos(widget.mapToGlobal(center))
+            pos = QPointF(QCursor.pos())
+            window = widget.window() or widget
+            event = QEnterEvent(QPointF(center), QPointF(window.mapFromGlobal(QCursor.pos())), pos)
+            QApplication.sendEvent(widget, event)
+        else:
+            if widget.rect().contains(widget.mapFromGlobal(QCursor.pos())):
+                QCursor.setPos(PARKED_CURSOR)
+            QApplication.sendEvent(widget, QEvent(QEvent.Type.Leave))
 
     def _on_panel_resized(self, data: dict[str, Any], _payload: bytes):
         """PhotoCraft's width for this panel (``panel.resized``), applied once it holds still."""
