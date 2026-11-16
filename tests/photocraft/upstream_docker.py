@@ -37,7 +37,7 @@ def main() -> int:
 
     plugin_main.install_krita_shim()
     host = MockHost()
-    host.add_document("Docker", 512, 512)
+    host.add_document("Docker", 1024, 1024)
     link = Transport(host.plugin_reader, host.plugin_writer)
     link.start()
     welcome = plugin_main.Welcome("test", 1, "en", data_dir, None, True)
@@ -91,6 +91,8 @@ def main() -> int:
         workspaces.append(model.workspace.name)
     results["switched"] = workspaces
 
+    results["target_size"] = target_size_on_hover(app, host, link, model, wait)
+
     cycle = []
     for _ in range(5):
         trigger("ai_diffusion_toggle_workspace")
@@ -123,6 +125,46 @@ def main() -> int:
     print(json.dumps(results), flush=True)
     host.close()
     return 0
+
+
+def target_size_on_hover(app, host, link, model, wait) -> dict[str, str]:
+    """Upscale's "Target size" line: when the page is first shown, while the pointer is over the
+    scale row as the slider moves, and after it leaves (spec ``upscale-target-size-hover``).
+
+    The docker shows its workspaces only once a server is connected, so an Upscale page of its
+    own is mirrored as a second panel. It gets the document's scale before it is first laid
+    out, as when the docker gives it the document on connecting: with Qt's offscreen cursor at
+    its starting point, the page took that for the pointer over the scale row."""
+    from ai_diffusion.ui.upscale import FactorWidget, UpscaleWidget
+    from photocraft_host.qt_mirror import Mirror
+
+    page = UpscaleWidget()
+    # Upstream's setter binds nothing when given the model the widget started with (the active
+    # document's, here); the docker gives it the document's model after starting with none.
+    page._model = None  # pyright: ignore[reportAttributeAccessIssue]
+    page.model = model  # binding applies the document's scale, 2x, before any layout
+    factor = page.findChild(FactorWidget)
+    assert factor is not None
+    mirror = Mirror(page, link, "upscaleCheck", "Upscale", poll_ms=60_000)
+    mirror.start()
+
+    def send(widget: Any, kind: str, value: Any):
+        mirror.flush()
+        handled: list[bool] = []
+        link.on("panel.input", lambda *_: handled.append(True))
+        data = {"owner": "upscaleCheck", "nodeId": mirror.node_id(widget), "kind": kind}
+        host.send_event("panel.input", {**data, "value": value, "modifiers": {}})
+        wait(lambda: bool(handled))
+        app.processEvents()
+
+    seen = {"shown": factor.target_label.text()}
+    send(factor, "hover", True)
+    send(factor.slider, "change", 250)
+    seen["dragged"] = factor.target_label.text()
+    send(factor, "hover", False)
+    seen["left"] = factor.target_label.text()
+    mirror.stop()
+    return seen
 
 
 if __name__ == "__main__":

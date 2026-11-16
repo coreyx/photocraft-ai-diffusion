@@ -78,7 +78,7 @@ None at this time.
   - `hover` on the label changes nothing.
 
 #### [MODIFY] `tests/photocraft/upstream_docker.py`, `tests/photocraft/test_upstream_docker.py`
-- [ ] **TASK-9:** Extend the docker run with a 1024×1024 document and a new result, `target_size`, recording the label after each step. The test asserts:
+- [x] **TASK-9:** Extend the docker run with a 1024×1024 document and a new result, `target_size`, recording the label after each step. The test asserts:
   - after switching to Upscale, the line is empty (it was `Target size: 2048 x 2048`);
   - after `hover` `true` on `FactorWidget`, then a slider `change` to 250, it reads `Target size: 2560 x 2560`;
   - after `hover` `false`, it is empty.

@@ -51,6 +51,16 @@ def test_four_workspaces(results: dict):
     assert results["toggle_cycle"] == ["upscaling", "live", "custom", "generation", "upscaling"]
 
 
+def test_the_target_size_shows_only_while_the_pointer_is_over_the_scale_row(results: dict):
+    """Upscale's target size line followed Qt's offscreen cursor, which sat over the page
+    before it was laid out, and nothing cleared it (spec ``upscale-target-size-hover``)."""
+    assert results["target_size"] == {
+        "shown": "",
+        "dragged": "Target size: 2560 x 2560",
+        "left": "",
+    }
+
+
 def test_leaving_live_stops_it(results: dict):
     assert results["live_after_leaving"] is False
 
