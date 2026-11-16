@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 ---
 
 # Build the plug-in's dockers as Krita does, before any document is active
