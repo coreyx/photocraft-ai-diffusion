@@ -7,9 +7,11 @@ is played back into it.
 
 from typing import Any
 
+from PyQt6.QtGui import QCursor, QGuiApplication
+
 from . import dialogs, menus, tracker
 from .adapters.text import install_completer_hook
-from .mirror import Mirror
+from .mirror import PARKED_CURSOR, Mirror
 from .tree import diff
 
 
@@ -23,6 +25,19 @@ def install(transport: Any = None):
     install_completer_hook()
     if transport is not None:
         dialogs.install(transport)
+    park_cursor()
+
+
+def park_cursor():
+    """Move Qt's cursor outside every window, where it stays until PhotoCraft reports the pointer
+    over a hover-aware widget.
+
+    The offscreen platform starts it at (10, 10), inside any widget at the top left of a window
+    not laid out yet. Upstream's ``FactorWidget``, given the document's scale before the Upscale
+    page was first laid out, took that for the pointer over it and showed the target size for
+    good (``investigations/upscale-target-size-always-shown``, cause 1)."""
+    if QGuiApplication.instance() is not None:
+        QCursor.setPos(PARKED_CURSOR)
 
 
 __all__ = ["Mirror", "diff", "install"]

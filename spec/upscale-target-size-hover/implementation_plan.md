@@ -65,7 +65,7 @@ None at this time.
   - The doc comment says why: upstream's widgets decide from `QCursor.pos()` and their enter/leave handlers, and on the offscreen platform the cursor never moves by itself.
 
 #### [MODIFY] `photocraft_host/qt_mirror/__init__.py`
-- [ ] **TASK-7:** Add the constant `PARKED_CURSOR = QPoint(-100000, -100000)`, used by `mirror.py`. In `install()`, park Qt's cursor there once a `QGuiApplication` exists.
+- [x] **TASK-7:** Add the constant `PARKED_CURSOR = QPoint(-100000, -100000)`, used by `mirror.py`. In `install()`, park Qt's cursor there once a `QGuiApplication` exists.
   - Comment why: the offscreen platform starts the cursor at (10, 10), inside any widget at the top left of a window that isn't laid out yet. Upstream's `FactorWidget` reads that as the pointer being over it ([findings](../../investigations/upscale-target-size-always-shown/findings.md), cause 1).
 
 ### Plug-in: tests (`tests/photocraft`)
