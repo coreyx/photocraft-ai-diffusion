@@ -7,7 +7,7 @@ The Generate panel's rows now fit the panel in PhotoCraft, and the Generation mo
 
 ## What Was Implemented
 
-### 1. PhotoCraft fork (`coreyx/photocraft`, `feat/process-plugins`, local commits)
+### 1. PhotoCraft fork (`coreyx/photocraft`, `feat/process-plugins`)
 - **`crates/process-plugin-protocol/src/event.rs`** (`5a717f29b`): the `panel.resized` topic and `PanelResized {panelId, width, height}`. Like `panel.input`, it goes to the panel's plug-in without a subscription.
 - **`crates/ui-egui/src/process_plugin_panels.rs`** (`88f386def`):
   - `body()` sends the panel's content width and visible height when first drawn, and whenever either changes by half a point.
@@ -84,4 +84,3 @@ To check on your side, with the fork's PhotoCraft rebuilt from `feat/process-plu
 - **A drop-down menu opens at its anchor's left edge, so the mode menu runs off the window's right edge.** PhotoCraft could open a pop-up so it stays inside the window.
 - **A tool button with both text and an icon draws only its text**, for example the Custom Graph "Text Output" expander, which now sends a chevron.
 - **Upstream's `GenerationWidget.model` setter does nothing when given the model the widget started with** (`generation.py:831`). In that case its signals, including `selection_bounds_changed`, are never connected. Krita creates its dockers before any document, so it doesn't happen there. In PhotoCraft it would happen if the plug-in started with a document already open. Not seen in this session, but worth a test.
-- **The fork's commits are local.** Push `feat/process-plugins` to `coreyx/photocraft` when you want them published.

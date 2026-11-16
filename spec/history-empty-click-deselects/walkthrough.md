@@ -4,7 +4,7 @@ A click on the empty space in the Generate panel's history now deselects the sel
 
 ## What Was Implemented
 
-### 1. PhotoCraft fork (`coreyx/photocraft`, `feat/process-plugins`, local commits)
+### 1. PhotoCraft fork (`coreyx/photocraft`, `feat/process-plugins`)
 - **`crates/ui-egui/src/process_plugin_ui/render.rs`** (`dc548e7fe`), `empty_click` and `remember_area`, used by `thumb_grid` and `list`:
   - **What a list keeps:** its area at the full width it was laid out in, from one frame to the next.
   - **How the click is sensed:** before the items are drawn, on that area. The items are registered after it and sit above it, so a click on a thumbnail or header still selects it.
@@ -59,4 +59,3 @@ To check on your side, in your PhotoCraft fork install, which has this build:
 
 ## Follow-ups
 - **Generate did nothing in a document that was open before the plug-in started.** In this session, PhotoCraft restored a recovered document at launch, and clicks on Generate there queued nothing and logged nothing. In a new document, Generate worked at once. This looks like the upstream `GenerationWidget.model` setter guard (`ai_diffusion/ui/generation.py:831`) noted in `generate-panel-rows-fit`'s follow-ups: given the model the widget started with, it doesn't connect the widget's signals. It needs its own investigation.
-- **The fork's commits are local.** Push `feat/process-plugins` to `coreyx/photocraft` when you want them published.

@@ -8,7 +8,7 @@ Either change alone fixes it.
 
 ## What Was Implemented
 
-### 1. PhotoCraft fork (`coreyx/photocraft`, `feat/process-plugins`, local commits)
+### 1. PhotoCraft fork (`coreyx/photocraft`, `feat/process-plugins`)
 - **`crates/ui-egui/src/process_plugin_ui/mod.rs`** (`cf7d0bf06`): `Tree::apply` collects the ids of a removed node and everything under it, and drops their local values once the patch has applied. A failed patch still changes nothing. A popup the plug-in inserts again under the same id then shows as the plug-in sends it.
 - **`crates/ui-egui/src/process_plugin_ui/tests.rs`** (`191afd4e2`): `a_removed_popup_leaves_no_local_state`. It stores a local `open: false` on a popup, as a click elsewhere does, removes the popup, and inserts it again open. The menu's entry is drawn.
 
@@ -38,4 +38,3 @@ Done in the fork's release build, with the rebuilt package in an isolated profil
 
 ## Follow-ups
 - **The fork's debug test build has 24 tests failing on missing glyphs.** That predates this work. One example: the "▾" its split buttons draw isn't in the `medium` font, and this egui version panics on a missing glyph in debug builds. Either the font needs the glyph, or the tests need `MissingGlyphPolicy::Tofu`.
-- **The fork's commits are local.** Push `feat/process-plugins` to `coreyx/photocraft` when you want them published.
