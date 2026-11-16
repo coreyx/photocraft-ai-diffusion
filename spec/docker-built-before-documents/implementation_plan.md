@@ -34,7 +34,7 @@ None at this time.
 ### Tests
 
 #### [MODIFY] `tests/photocraft/test_krita_shim.py`
-- [ ] **TASK-2:** Add `test_a_docker_is_built_before_the_active_document`, on the existing attached-host fixture with one document active:
+- [x] **TASK-2:** Add `test_a_docker_is_built_before_the_active_document`, on the existing attached-host fixture with one document active:
   - a `DockWidgetFactory` whose docker records `Krita.instance().activeDocument()` while it's built records `None`;
   - after `create_dock`, `activeDocument()` is that document again;
   - when the docker's constructor raises, the flag is still cleared.

@@ -553,3 +553,32 @@ def test_extensions_and_dockers_are_kept(connect, qt_app: QApplication):
     assert krita.windows() == [krita.activeWindow()]
     assert krita.icon("star").isNull()
     assert Canvas(View()).view() is not None
+
+
+def test_a_docker_is_built_before_the_active_document(host: MockHost, connect):
+    """As in Krita, whose dockers exist before any document: a docker built while a document is
+    open sees none, and hears of it afterwards (``canvasChanged``). Upstream's workspaces bind a
+    model only when it changes from the one they were built with."""
+    host.add_document("Open", 4, 4)
+    krita = connect()
+    open_doc = krita.activeDocument()
+    assert open_doc is not None
+    seen: list[Document | None] = []
+
+    class Docker(DockWidget):
+        def __init__(self):
+            super().__init__()
+            seen.append(Krita.instance().activeDocument())
+
+    dock = krita.create_dock(DockWidgetFactory("seeing", DockWidgetFactoryBase.DockRight, Docker))
+    assert isinstance(dock, Docker) and seen == [None]
+    assert krita.activeDocument() is open_doc, "the document is active again once it's built"
+
+    class Broken(DockWidget):
+        def __init__(self):
+            super().__init__()
+            raise RuntimeError("docker failed")
+
+    with pytest.raises(RuntimeError):
+        krita.create_dock(DockWidgetFactory("broken", DockWidgetFactoryBase.DockRight, Broken))
+    assert krita.activeDocument() is open_doc, "a failed docker leaves it active too"
